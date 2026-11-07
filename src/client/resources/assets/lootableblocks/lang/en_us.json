@@ -19,7 +19,7 @@
 	"gui.interactive_loot_block.mode.vanilla": "Vanilla Loot Table",
 
 
-	"block.lootableblocks.interactive_loot_block": "Interactive Loot Block",
-	"block.lootableblocks.lootable_vault_block": "Lootable Vault",
-	"block.lootableblocks.lootable_frozen_vault_block": "Lootable Frozen Vault"
+	"item.lootableblocks.interactive_loot_block": "Interactive Loot Block",
+	"item.lootableblocks.lootable_vault_block": "Lootable Vault",
+	"item.lootableblocks.lootable_frozen_vault_block": "Lootable Frozen Vault"
 }

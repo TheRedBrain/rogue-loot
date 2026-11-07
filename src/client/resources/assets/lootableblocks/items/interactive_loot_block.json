@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "lootableblocks:item/interactive_loot_block"
+  }
+}
