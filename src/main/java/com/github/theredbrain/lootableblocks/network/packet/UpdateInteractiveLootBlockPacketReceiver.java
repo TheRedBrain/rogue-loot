@@ -2,21 +2,21 @@ package com.github.theredbrain.lootableblocks.network.packet;
 
 import com.github.theredbrain.lootableblocks.block.entity.InteractiveLootBlockEntity;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class UpdateInteractiveLootBlockPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<UpdateInteractiveLootBlockPacket> {
 	@Override
 	public void receive(UpdateInteractiveLootBlockPacket payload, ServerPlayNetworking.Context context) {
 
-		ServerPlayerEntity serverPlayerEntity = context.player();
+		ServerPlayer serverPlayerEntity = context.player();
 
-		if (!serverPlayerEntity.isCreativeLevelTwoOp()) {
+		if (!serverPlayerEntity.canUseGameMasterBlocks()) {
 			return;
 		}
 
@@ -40,7 +40,7 @@ public class UpdateInteractiveLootBlockPacketReceiver implements ServerPlayNetwo
 
 		String alreadyLootedSoundId = payload.alreadyLootedSoundId();
 
-		World world = serverPlayerEntity.getWorld();
+		Level world = serverPlayerEntity.getWorld();
 
 		BlockEntity blockEntity = world.getBlockEntity(interactiveLootBlockPosition);
 		BlockState blockState = world.getBlockState(interactiveLootBlockPosition);
@@ -56,9 +56,9 @@ public class UpdateInteractiveLootBlockPacketReceiver implements ServerPlayNetwo
 			interactiveLootBlockEntity.setLootAcquiredSoundId(lootAcquiredSoundId);
 			interactiveLootBlockEntity.setAlreadyLootedMessage(alreadyLootedMessage);
 			interactiveLootBlockEntity.setAlreadyLootedSoundId(alreadyLootedSoundId);
-			serverPlayerEntity.sendMessage(Text.translatable("hud.message.script_block.update_successful"), true);
-			interactiveLootBlockEntity.markDirty();
-			world.updateListeners(interactiveLootBlockPosition, blockState, blockState, Block.NOTIFY_ALL);
+			serverPlayerEntity.displayClientMessage(Component.translatable("hud.message.script_block.update_successful"), true);
+			interactiveLootBlockEntity.setChanged();
+			world.sendBlockUpdated(interactiveLootBlockPosition, blockState, blockState, Block.UPDATE_ALL);
 		}
 	}
 }

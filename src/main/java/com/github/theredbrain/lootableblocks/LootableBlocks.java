@@ -7,11 +7,11 @@ import com.github.theredbrain.lootableblocks.registry.EntityRegistry;
 import com.github.theredbrain.lootableblocks.registry.ServerPacketRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ public class LootableBlocks implements ModInitializer {
 
 	public static final boolean isLootablesLoaded = FabricLoader.getInstance().isModLoaded("lootables");
 
-	public static void supplyLootableLoot(Identifier identifier, ServerWorld world, ServerPlayerEntity serverPlayerEntity, Vec3d pos, int rolls, int choices, boolean withChoice, @Nullable ItemStack itemStack) {
+	public static void supplyLootableLoot(Identifier identifier, ServerLevel world, ServerPlayer serverPlayerEntity, Vec3 pos, int rolls, int choices, boolean withChoice, @Nullable ItemStack itemStack) {
 		if (isLootablesLoaded) {
 			LootablesCompat.supplyLootableLoot(identifier, world, serverPlayerEntity, pos, rolls, choices, withChoice, itemStack);
 		} else {
@@ -30,13 +30,13 @@ public class LootableBlocks implements ModInitializer {
 		}
 	}
 
-	public static void removeLootableUses(ServerWorld world, Vec3d pos, String identifierString, @Nullable ServerPlayerEntity serverPlayerEntity) {
+	public static void removeLootableUses(ServerLevel world, Vec3 pos, String identifierString, @Nullable ServerPlayer serverPlayerEntity) {
 		if (isLootablesLoaded) {
 			LootablesCompat.removeLootableUses(world, pos, identifierString, serverPlayerEntity);
 		}
 	}
 
-	public static void removeLootableUses(ServerWorld world, Vec3d pos, Identifier identifier, @Nullable ServerPlayerEntity serverPlayerEntity) {
+	public static void removeLootableUses(ServerLevel world, Vec3 pos, Identifier identifier, @Nullable ServerPlayer serverPlayerEntity) {
 		if (isLootablesLoaded) {
 			LootablesCompat.removeLootableUses(world, pos, identifier, serverPlayerEntity);
 		}
@@ -56,7 +56,7 @@ public class LootableBlocks implements ModInitializer {
 	}
 
 	public static Identifier identifier(String path) {
-		return Identifier.of(MOD_ID, path);
+		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 
 	public static void info(String message) {

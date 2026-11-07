@@ -1,15 +1,15 @@
 package com.github.theredbrain.lootableblocks.compat;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class LootablesCompat {
 
-	public static void supplyLootableLoot(Identifier identifier, ServerWorld world, ServerPlayerEntity serverPlayerEntity, Vec3d pos, int rolls, int choices, boolean withChoice, @Nullable ItemStack itemStack) {
+	public static void supplyLootableLoot(Identifier identifier, ServerLevel world, ServerPlayer serverPlayerEntity, Vec3 pos, int rolls, int choices, boolean withChoice, @Nullable ItemStack itemStack) {
 //		if (withChoice) {
 //			LootablesApi.supplyLootWithChoices(
 //					identifier,
@@ -59,11 +59,11 @@ public class LootablesCompat {
 //		}
 	}
 
-	public static void removeLootableUses(ServerWorld world, Vec3d pos, String identifierString, @Nullable ServerPlayerEntity serverPlayerEntity) {
-		removeLootableUses(world, pos, Identifier.of(identifierString), serverPlayerEntity);
+	public static void removeLootableUses(ServerLevel world, Vec3 pos, String identifierString, @Nullable ServerPlayer serverPlayerEntity) {
+		removeLootableUses(world, pos, Identifier.parse(identifierString), serverPlayerEntity);
 	}
 
-	public static void removeLootableUses(ServerWorld world, Vec3d pos, Identifier identifier, @Nullable ServerPlayerEntity serverPlayerEntity) {
+	public static void removeLootableUses(ServerLevel world, Vec3 pos, Identifier identifier, @Nullable ServerPlayer serverPlayerEntity) {
 //		if (serverPlayerEntity != null) {
 //			LootablesApi.resetKey(getIdKeyForIdentifier(world, pos, identifier), serverPlayerEntity);
 //		} else {

@@ -5,8 +5,8 @@ import com.github.theredbrain.lootableblocks.registry.EntityRegistry;
 import com.github.theredbrain.lootableblocks.render.block.entity.LootableVaultBlockEntityRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.block.entity.BlockEntityRendererFactories;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
+import net.minecraft.client.renderer.rendertype.RenderType;
 
 public class LootableBlocksClient implements ClientModInitializer {
 	@Override
@@ -16,11 +16,11 @@ public class LootableBlocksClient implements ClientModInitializer {
 	}
 
 	private void registerTransparency() {
-		BlockRenderLayerMap.INSTANCE.putBlock(BlockRegistry.LOOTABLE_VAULT_BLOCK, RenderLayer.getCutout());
-		BlockRenderLayerMap.INSTANCE.putBlock(BlockRegistry.LOOTABLE_FROZEN_VAULT_BLOCK, RenderLayer.getCutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(BlockRegistry.LOOTABLE_VAULT_BLOCK, RenderType.getCutout());
+		BlockRenderLayerMap.INSTANCE.putBlock(BlockRegistry.LOOTABLE_FROZEN_VAULT_BLOCK, RenderType.getCutout());
 	}
 
 	private void registerBlockEntityRenderer() {
-		BlockEntityRendererFactories.register(EntityRegistry.LOOTABLE_VAULT_BLOCK_ENTITY, LootableVaultBlockEntityRenderer::new);
+		BlockEntityRenderers.register(EntityRegistry.LOOTABLE_VAULT_BLOCK_ENTITY, LootableVaultBlockEntityRenderer::new);
 	}
 }

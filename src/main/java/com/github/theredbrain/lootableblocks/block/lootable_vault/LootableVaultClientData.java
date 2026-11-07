@@ -1,6 +1,6 @@
 package com.github.theredbrain.lootableblocks.block.lootable_vault;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class LootableVaultClientData {
 	private float displayRotation;
@@ -19,6 +19,6 @@ public class LootableVaultClientData {
 
 	public void rotateDisplay() {
 		this.prevDisplayRotation = this.displayRotation;
-		this.displayRotation = MathHelper.wrapDegrees(this.displayRotation + 10.0F);
+		this.displayRotation = Mth.wrapDegrees(this.displayRotation + 10.0F);
 	}
 }

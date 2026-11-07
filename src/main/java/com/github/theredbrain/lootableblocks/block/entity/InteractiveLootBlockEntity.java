@@ -2,24 +2,23 @@ package com.github.theredbrain.lootableblocks.block.entity;
 
 import com.github.theredbrain.lootableblocks.LootableBlocks;
 import com.github.theredbrain.lootableblocks.registry.EntityRegistry;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.StringIdentifiable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public class InteractiveLootBlockEntity extends BlockEntity {
 	private final Set<UUID> playerSet = new HashSet<>();
@@ -38,7 +37,7 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void writeNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
 
 		List<UUID> list = this.playerSet.stream().toList();
 		int listSize = list.size();
@@ -54,7 +53,7 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 		}
 
 		if (this.mode != Mode.VANILLA) {
-			nbt.putString("mode", this.mode.asString());
+			nbt.putString("mode", this.mode.getSerializedName());
 		} else {
 			nbt.remove("mode");
 		}
@@ -105,7 +104,7 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void readNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup registryLookup) {
+	protected void readNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
 
 		this.playerSet.clear();
 		int listSize = nbt.getInt("listSize");
@@ -164,21 +163,21 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 		super.readNbt(nbt, registryLookup);
 	}
 
-	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return BlockEntityUpdateS2CPacket.create(this);
+	public ClientboundBlockEntityDataPacket getUpdatePacket() {
+		return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt(RegistryWrapper.WrapperLookup registryLookup) {
-		return this.createComponentlessNbt(registryLookup);
+	public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+		return this.saveCustomOnly(registryLookup);
 	}
 
 	@Override
-	public void markRemoved() {
-		if (this.world instanceof ServerWorld serverWorld) {
-			LootableBlocks.removeLootableUses(serverWorld, Vec3d.of(this.pos), this.lootTableIdentifierString, null);
+	public void setRemoved() {
+		if (this.level instanceof ServerLevel serverWorld) {
+			LootableBlocks.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
 		}
-		super.markRemoved();
+		super.setRemoved();
 	}
 
 	public String getLootTableIdentifierString() {
@@ -253,26 +252,26 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 		this.alreadyLootedSoundId = alreadyLootedSoundId;
 	}
 
-	public boolean isPlayerInSet(PlayerEntity playerEntity) {
-		return this.playerSet.contains(playerEntity.getUuid());
+	public boolean isPlayerInSet(Player playerEntity) {
+		return this.playerSet.contains(playerEntity.getUUID());
 	}
 
-	public void addPlayerToSet(PlayerEntity playerEntity) {
-		this.playerSet.add(playerEntity.getUuid());
+	public void addPlayerToSet(Player playerEntity) {
+		this.playerSet.add(playerEntity.getUUID());
 	}
 
-	public void removePlayerFromSet(PlayerEntity playerEntity) {
-		this.playerSet.remove(playerEntity.getUuid());
+	public void removePlayerFromSet(Player playerEntity) {
+		this.playerSet.remove(playerEntity.getUUID());
 	}
 
 	public void reset() {
 		this.playerSet.clear();
-		if (this.world instanceof ServerWorld serverWorld) {
-			LootableBlocks.removeLootableUses(serverWorld, Vec3d.of(this.pos), this.lootTableIdentifierString, null);
+		if (this.level instanceof ServerLevel serverWorld) {
+			LootableBlocks.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
 		}
 	}
 
-	public static enum Mode implements StringIdentifiable {
+	public static enum Mode implements StringRepresentable {
 		CHOICE("choice"),
 		RANDOM("random"),
 		VANILLA("vanilla");
@@ -284,16 +283,16 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 		}
 
 		@Override
-		public String asString() {
+		public String getSerializedName() {
 			return this.name;
 		}
 
 		public static Optional<Mode> byName(String name) {
-			return Arrays.stream(Mode.values()).filter(mode -> mode.asString().equals(name)).findFirst();
+			return Arrays.stream(Mode.values()).filter(mode -> mode.getSerializedName().equals(name)).findFirst();
 		}
 
-		public Text asText() {
-			return Text.translatable("gui.interactive_loot_block.mode." + this.name);
+		public Component asText() {
+			return Component.translatable("gui.interactive_loot_block.mode." + this.name);
 		}
 	}
 }

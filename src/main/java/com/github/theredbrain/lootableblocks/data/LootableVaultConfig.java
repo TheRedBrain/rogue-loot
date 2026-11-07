@@ -3,8 +3,8 @@ package com.github.theredbrain.lootableblocks.data;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
 public record LootableVaultConfig(
 		String lootable_identifier,
@@ -25,7 +25,7 @@ public record LootableVaultConfig(
 									Codec.BOOL.fieldOf("with_choice").forGetter(LootableVaultConfig::with_choice),
 									Codec.DOUBLE.fieldOf("activation_range").forGetter(LootableVaultConfig::activation_range),
 									Codec.DOUBLE.fieldOf("deactivation_range").forGetter(LootableVaultConfig::deactivation_range),
-									ItemStack.VALIDATED_CODEC.fieldOf("key_item").forGetter(LootableVaultConfig::key_item),
+									ItemStack.STRICT_CODEC.fieldOf("key_item").forGetter(LootableVaultConfig::key_item),
 									Codec.STRING.fieldOf("display_loot_table_identifier").forGetter(LootableVaultConfig::lootable_identifier)
 							)
 							.apply(instance, LootableVaultConfig::new)
