@@ -4,6 +4,6 @@ import com.github.theredbrain.lootableblocks.block.entity.InteractiveLootBlockEn
 
 public interface DuckPlayerEntityMixin {
 
-	void lootableblocks$openInteractiveLootBlockScreen(InteractiveLootBlockEntity interactiveLootBlockEntity);
+	default void lootableblocks$openInteractiveLootBlockScreen(InteractiveLootBlockEntity interactiveLootBlockEntity) {}
 
 }
