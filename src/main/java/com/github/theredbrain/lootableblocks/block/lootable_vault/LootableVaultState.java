@@ -22,7 +22,7 @@ public enum LootableVaultState implements StringRepresentable {
 		@Override
 		protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
 			if (!sharedData.hasDisplayItem()) {
-				LootableVaultBlockEntity.Server.updateDisplayItem(world, this, config, sharedData, pos);
+				LootableVaultBlockEntity.Server.cycleDisplayItemFromLootTable(world, this, config, sharedData, pos);
 			}
 
 			world.levelEvent(LevelEvent.ANIMATION_VAULT_ACTIVATE, pos, ominous ? 1 : 0);
@@ -65,8 +65,8 @@ public enum LootableVaultState implements StringRepresentable {
 
 	public LootableVaultState update(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultServerData serverData, LootableVaultSharedData sharedData) {
 		return switch (this) {
-			case INACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.activation_range());
-			case ACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.deactivation_range());
+			case INACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.activationRange());
+			case ACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
 			case UNLOCKING -> {
 				serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
 				yield EJECTING;
@@ -74,7 +74,7 @@ public enum LootableVaultState implements StringRepresentable {
 			case EJECTING -> {
 				this.ejectReward(world, pos);
 				serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
-				yield updateActiveState(world, pos, config, serverData, sharedData, config.deactivation_range());
+				yield updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
 			}
 		};
 	}
@@ -103,13 +103,13 @@ public enum LootableVaultState implements StringRepresentable {
 		world.playSound(null, pos, SoundEvents.VAULT_EJECT_ITEM, SoundSource.BLOCKS, 1.0F, 0.8F + 0.4F);
 	}
 
-	static enum Light {
+	enum Light {
 		HALF_LIT(6),
 		LIT(12);
 
 		final int luminance;
 
-		private Light(final int luminance) {
+		Light(final int luminance) {
 			this.luminance = luminance;
 		}
 	}

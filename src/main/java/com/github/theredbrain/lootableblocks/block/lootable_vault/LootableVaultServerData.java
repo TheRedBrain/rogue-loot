@@ -15,7 +15,7 @@ public class LootableVaultServerData {
 	public static Codec<LootableVaultServerData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 							UUIDUtil.CODEC_LINKED_SET.lenientOptionalFieldOf("rewarded_players", Set.of()).forGetter(data -> data.rewardedPlayers),
-							Codec.LONG.lenientOptionalFieldOf("state_updating_resumes_at", Long.valueOf(0L)).forGetter(data -> data.stateUpdatingResumesAt)
+							Codec.LONG.lenientOptionalFieldOf("state_updating_resumes_at", 0L).forGetter(data -> data.stateUpdatingResumesAt)
 					)
 					.apply(instance, LootableVaultServerData::new)
 	);
@@ -79,7 +79,7 @@ public class LootableVaultServerData {
 		this.markDirty();
 	}
 
-	public void copyFrom(LootableVaultServerData data) {
+	public void set(LootableVaultServerData data) {
 		this.stateUpdatingResumesAt = data.getStateUpdatingResumeTime();
 		this.rewardedPlayers.clear();
 		this.rewardedPlayers.addAll(data.rewardedPlayers);

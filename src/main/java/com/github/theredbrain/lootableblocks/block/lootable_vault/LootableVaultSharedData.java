@@ -4,14 +4,15 @@ import com.github.theredbrain.lootableblocks.data.LootableVaultConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.trialspawner.PlayerDetector;
+
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class LootableVaultSharedData {
 	static final String SHARED_DATA_KEY = "shared_data";
@@ -20,14 +21,14 @@ public class LootableVaultSharedData {
 							ItemStack.lenientOptionalFieldOf("display_item").forGetter(data -> data.displayItem),
 							UUIDUtil.CODEC_LINKED_SET.lenientOptionalFieldOf("connected_players", Set.of()).forGetter(data -> data.connectedPlayers),
 							Codec.DOUBLE
-									.lenientOptionalFieldOf("connected_particles_range", Double.valueOf(LootableVaultConfig.DEFAULT.deactivation_range()))
+									.lenientOptionalFieldOf("connected_particles_range", Double.valueOf(LootableVaultConfig.DEFAULT.deactivationRange()))
 									.forGetter(data -> data.connectedParticlesRange)
 					)
 					.apply(instance, LootableVaultSharedData::new)
 	);
 	private ItemStack displayItem = ItemStack.EMPTY;
 	private Set<UUID> connectedPlayers = new ObjectLinkedOpenHashSet<>();
-	private double connectedParticlesRange = LootableVaultConfig.DEFAULT.deactivation_range();
+	private double connectedParticlesRange = LootableVaultConfig.DEFAULT.deactivationRange();
 	boolean dirty;
 
 	LootableVaultSharedData(ItemStack displayItem, Set<UUID> connectedPlayers, double connectedParticlesRange) {
@@ -90,7 +91,7 @@ public class LootableVaultSharedData {
 		this.dirty = false;
 	}
 
-	public void copyFrom(LootableVaultSharedData data) {
+	public void set(LootableVaultSharedData data) {
 		this.displayItem = data.displayItem;
 		this.connectedPlayers = data.connectedPlayers;
 		this.connectedParticlesRange = data.connectedParticlesRange;

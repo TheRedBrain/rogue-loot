@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -18,6 +19,8 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
 public class InteractiveLootBlockEntity extends BlockEntity {
@@ -37,130 +40,97 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void writeNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+	protected void saveAdditional(ValueOutput view) {
 
-		List<UUID> list = this.playerSet.stream().toList();
-		int listSize = list.size();
-		nbt.putInt("listSize", listSize);
-		for (int i = 0; i < listSize; i++) {
-			nbt.putUuid("listEntry_" + i, list.get(i));
+		ValueOutput.TypedOutputList<UUID> listAppender = view.list("uuidList", UUIDUtil.AUTHLIB_CODEC);
+		for (UUID uuid : this.playerSet) {
+			listAppender.add(uuid);
 		}
 
 		if (!this.lootTableIdentifierString.isEmpty()) {
-			nbt.putString("lootTableIdentifierString", this.lootTableIdentifierString);
+			view.putString("lootTableIdentifierString", this.lootTableIdentifierString);
 		} else {
-			nbt.remove("lootTableIdentifierString");
+			view.discard("lootTableIdentifierString");
 		}
 
 		if (this.mode != Mode.VANILLA) {
-			nbt.putString("mode", this.mode.getSerializedName());
+			view.putString("mode", this.mode.getSerializedName());
 		} else {
-			nbt.remove("mode");
+			view.discard("mode");
 		}
 
 		if (this.rolls != 3) {
-			nbt.putInt("rolls", this.rolls);
+			view.putInt("rolls", this.rolls);
 		} else {
-			nbt.remove("rolls");
+			view.discard("rolls");
 		}
 
 		if (this.choices != 1) {
-			nbt.putInt("choices", this.choices);
+			view.putInt("choices", this.choices);
 		} else {
-			nbt.remove("choices");
+			view.discard("choices");
 		}
 
 		if (this.trackPlayers) {
-			nbt.putBoolean("trackPlayers", true);
+			view.putBoolean("trackPlayers", true);
 		} else {
-			nbt.remove("trackPlayers");
+			view.discard("trackPlayers");
 		}
 
 		if (!this.lootAcquiredMessage.isEmpty()) {
-			nbt.putString("lootAcquiredMessage", this.lootAcquiredMessage);
+			view.putString("lootAcquiredMessage", this.lootAcquiredMessage);
 		} else {
-			nbt.remove("lootAcquiredMessage");
+			view.discard("lootAcquiredMessage");
 		}
 
 		if (!this.lootAcquiredSoundId.isEmpty()) {
-			nbt.putString("lootAcquiredSoundId", this.lootAcquiredSoundId);
+			view.putString("lootAcquiredSoundId", this.lootAcquiredSoundId);
 		} else {
-			nbt.remove("lootAcquiredSoundId");
+			view.discard("lootAcquiredSoundId");
 		}
 
 		if (!this.alreadyLootedMessage.isEmpty()) {
-			nbt.putString("alreadyLootedMessage", this.alreadyLootedMessage);
+			view.putString("alreadyLootedMessage", this.alreadyLootedMessage);
 		} else {
-			nbt.remove("alreadyLootedMessage");
+			view.discard("alreadyLootedMessage");
 		}
 
 		if (!this.alreadyLootedSoundId.isEmpty()) {
-			nbt.putString("alreadyLootedSoundId", this.alreadyLootedSoundId);
+			view.putString("alreadyLootedSoundId", this.alreadyLootedSoundId);
 		} else {
-			nbt.remove("alreadyLootedSoundId");
+			view.discard("alreadyLootedSoundId");
 		}
 
-		super.writeNbt(nbt, registryLookup);
+		super.saveAdditional(view);
 	}
 
 	@Override
-	protected void readNbt(CompoundTag nbt, HolderLookup.Provider registryLookup) {
+	protected void loadAdditional(ValueInput view) {
 
 		this.playerSet.clear();
-		int listSize = nbt.getInt("listSize");
-		for (int i = 0; i < listSize; i++) {
-			if (nbt.containsUuid("listEntry_" + i)) {
-				this.playerSet.add(nbt.getUuid("listEntry_" + i));
-			}
+		for (UUID uuid : view.listOrEmpty("uuidList", UUIDUtil.AUTHLIB_CODEC)) {
+			this.playerSet.add(uuid);
 		}
 
-		if (nbt.contains("lootTableIdentifierString")) {
-			this.lootTableIdentifierString = nbt.getString("lootTableIdentifierString");
-		} else {
-			this.lootTableIdentifierString = "";
-		}
+		this.lootTableIdentifierString = view.getStringOr("lootTableIdentifierString", "");
 
-		this.mode = Mode.byName(nbt.getString("mode")).orElse(Mode.VANILLA);
+		this.mode = Mode.byName(view.getStringOr("mode", "")).orElse(Mode.VANILLA);
 
-		if (nbt.contains("rolls")) {
-			this.rolls = nbt.getInt("rolls");
-		} else {
-			this.rolls = 3;
-		}
+		this.rolls = view.getIntOr("rolls", 3);
 
-		if (nbt.contains("choices")) {
-			this.choices = nbt.getInt("choices");
-		} else {
-			this.choices = 1;
-		}
+		this.choices = view.getIntOr("choices", 1);
 
-		this.trackPlayers = nbt.contains("trackPlayers");
+		this.trackPlayers = view.getBooleanOr("trackPlayers", false);
 
-		if (nbt.contains("lootAcquiredMessage")) {
-			this.lootAcquiredMessage = nbt.getString("lootAcquiredMessage");
-		} else {
-			this.lootAcquiredMessage = "";
-		}
+		this.lootAcquiredMessage = view.getStringOr("lootAcquiredMessage", "");
 
-		if (nbt.contains("lootAcquiredSoundId")) {
-			this.lootAcquiredSoundId = nbt.getString("lootAcquiredSoundId");
-		} else {
-			this.lootAcquiredSoundId = "";
-		}
+		this.lootAcquiredSoundId = view.getStringOr("lootAcquiredSoundId", "");
 
-		if (nbt.contains("alreadyLootedMessage")) {
-			this.alreadyLootedMessage = nbt.getString("alreadyLootedMessage");
-		} else {
-			this.alreadyLootedMessage = "";
-		}
+		this.alreadyLootedMessage = view.getStringOr("alreadyLootedMessage", "");
 
-		if (nbt.contains("alreadyLootedSoundId")) {
-			this.alreadyLootedSoundId = nbt.getString("alreadyLootedSoundId");
-		} else {
-			this.alreadyLootedSoundId = "";
-		}
+		this.alreadyLootedSoundId = view.getStringOr("alreadyLootedSoundId", "");
 
-		super.readNbt(nbt, registryLookup);
+		super.loadAdditional(view);
 	}
 
 	public ClientboundBlockEntityDataPacket getUpdatePacket() {
@@ -271,14 +241,14 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 		}
 	}
 
-	public static enum Mode implements StringRepresentable {
+	public enum Mode implements StringRepresentable {
 		CHOICE("choice"),
 		RANDOM("random"),
 		VANILLA("vanilla");
 
 		private final String name;
 
-		private Mode(String name) {
+		Mode(String name) {
 			this.name = name;
 		}
 

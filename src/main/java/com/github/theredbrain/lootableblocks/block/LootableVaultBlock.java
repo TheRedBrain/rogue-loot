@@ -7,9 +7,8 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.util.ItemActionResult;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -26,7 +25,6 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
@@ -35,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
 public class LootableVaultBlock extends BaseEntityBlock {
 	public static final MapCodec<LootableVaultBlock> CODEC = simpleCodec(LootableVaultBlock::new);
 	public static final Property<LootableVaultState> LOOTABLE_VAULT_STATE = EnumProperty.create("lootable_vault_state", LootableVaultState.class);
-	public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-	public static final BooleanProperty OMINOUS = BlockStateProperties.OMINOUS;
 
 	@Override
 	public MapCodec<LootableVaultBlock> codec() {
@@ -46,35 +42,25 @@ public class LootableVaultBlock extends BaseEntityBlock {
 	public LootableVaultBlock(Properties settings) {
 		super(settings);
 		this.registerDefaultState(
-				this.stateDefinition.any().setValue(FACING, Direction.NORTH).with(LOOTABLE_VAULT_STATE, LootableVaultState.INACTIVE).with(OMINOUS, Boolean.FALSE)
+				this.stateDefinition.any().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH).setValue(LOOTABLE_VAULT_STATE, LootableVaultState.INACTIVE).setValue(BlockStateProperties.OMINOUS, Boolean.FALSE)
 		);
 	}
 
-//	@Override
-//	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, BlockHitResult hit) {
-//		BlockEntity blockEntity = world.getBlockEntity(pos);
-//		if (blockEntity instanceof LootableVaultBlockEntity lootableVaultBlockEntity && player.isCreativeLevelTwoOp()) {
-//			((DuckPlayerEntityMixin) player).scriptblocks$openLootableVaultBlockScreen(lootableVaultBlockEntity);
-//			return ActionResult.success(world.isClient);
-//		}
-//		return ActionResult.PASS;
-//	}
-
 	@Override
-	public ItemActionResult onUseWithItem(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	public InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
 		if (stack.isEmpty() || state.getValue(LOOTABLE_VAULT_STATE) != LootableVaultState.ACTIVE) {
-			return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		} else if (world instanceof ServerLevel serverWorld) {
 			if (serverWorld.getBlockEntity(pos) instanceof LootableVaultBlockEntity lootableVaultBlockEntity) {
-				LootableVaultBlockEntity.Server.tryUnlock(
+				LootableVaultBlockEntity.Server.tryInsertKey(
 						serverWorld, pos, state, lootableVaultBlockEntity.getConfig(world), lootableVaultBlockEntity.getServerData(), lootableVaultBlockEntity.getSharedData(), player, stack
 				);
-				return ItemActionResult.SUCCESS;
+				return InteractionResult.SUCCESS;
 			} else {
-				return ItemActionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+				return InteractionResult.TRY_WITH_EMPTY_HAND;
 			}
 		} else {
-			return ItemActionResult.CONSUME;
+			return InteractionResult.CONSUME;
 		}
 	}
 
@@ -86,7 +72,7 @@ public class LootableVaultBlock extends BaseEntityBlock {
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(FACING, LOOTABLE_VAULT_STATE, OMINOUS);
+		builder.add(HorizontalDirectionalBlock.FACING, LOOTABLE_VAULT_STATE, BlockStateProperties.OMINOUS);
 	}
 
 	@Nullable
@@ -109,17 +95,17 @@ public class LootableVaultBlock extends BaseEntityBlock {
 
 	@Override
 	public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-		return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+		return this.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, ctx.getHorizontalDirection().getOpposite());
 	}
 
 	@Override
 	public BlockState rotate(BlockState state, Rotation rotation) {
-		return state.setValue(FACING, rotation.getRotated(state.getValue(FACING)));
+		return state.setValue(HorizontalDirectionalBlock.FACING, rotation.rotate(state.getValue(HorizontalDirectionalBlock.FACING)));
 	}
 
 	@Override
 	public BlockState mirror(BlockState state, Mirror mirror) {
-		return state.rotate(mirror.getRotation(state.getValue(FACING)));
+		return state.rotate(mirror.getRotation(state.getValue(HorizontalDirectionalBlock.FACING)));
 	}
 
 	@Override
