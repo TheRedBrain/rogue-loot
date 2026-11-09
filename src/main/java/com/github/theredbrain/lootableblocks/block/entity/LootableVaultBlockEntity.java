@@ -62,6 +62,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 	private final LootableVaultServerData serverData = new LootableVaultServerData();
 	private final LootableVaultSharedData sharedData = new LootableVaultSharedData();
 	private final LootableVaultClientData clientData = new LootableVaultClientData();
+	private LootableVaultConfig config = null;
 	private String lootableVaultConfigIdentifier = "";
 
 	public LootableVaultBlockEntity(BlockPos pos, BlockState state) {
@@ -98,6 +99,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 		input.read("server_data", LootableVaultServerData.CODEC).ifPresent(this.serverData::set);
 
 		this.lootableVaultConfigIdentifier = input.getStringOr("config_identifier", "");
+		this.config = null;
 
 		super.loadAdditional(input);
 	}
@@ -152,16 +154,23 @@ public class LootableVaultBlockEntity extends BlockEntity {
 	}
 
 	public LootableVaultConfig getConfig(Level world) {
+		if (this.config != null) {
+			return this.config;
+		}
 		Identifier identifier = Identifier.tryParse(this.lootableVaultConfigIdentifier);
 		Optional<Holder.Reference<Registry<LootableVaultConfig>>> optionalLootableVaultConfigRegistryReference = world.registryAccess().get(CustomDynamicRegistries.LOOTABLE_VAULT_CONFIG_REGISTRY_KEY);
 		if (optionalLootableVaultConfigRegistryReference.isPresent()) {
 			Optional<Holder.Reference<LootableVaultConfig>> optionalLootableVaultConfigReference = optionalLootableVaultConfigRegistryReference.get().value().get(identifier);
 			if (optionalLootableVaultConfigReference.isPresent()) {
-				return optionalLootableVaultConfigReference.get().value();
+				this.config = optionalLootableVaultConfigReference.get().value();
+				return this.config;
 			}
 		}
-		LootableBlocks.info("Config not valid: " + this.lootableVaultConfigIdentifier);
-		return LootableVaultConfig.DEFAULT;
+		if (!this.lootableVaultConfigIdentifier.isEmpty()) {
+			LootableBlocks.info("Config not valid: " + this.lootableVaultConfigIdentifier);
+		}
+		this.config = LootableVaultConfig.DEFAULT;
+		return this.config;
 	}
 
 	private void removeLootableUses(ServerLevel serverWorld, Vec3 pos, @Nullable ServerPlayer serverPlayerEntity) {
