@@ -241,8 +241,9 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	}
 
 	public enum Mode implements StringRepresentable {
-		CHOICE("choice"),
-		RANDOM("random"),
+		LOOTABLE_CHOICE("lootable_choice"),
+		LOOTABLE_RANDOM("lootable_random"),
+		ROGUE_LOOT("rogue_loot"),
 		VANILLA("vanilla");
 
 		private final String name;

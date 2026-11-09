@@ -14,8 +14,9 @@
 	"gui.interactive_rogue_loot_block.already_looted_message_placeholder": "Already Looted Message",
 	"gui.interactive_rogue_loot_block.already_looted_sound_id_placeholder": "Already Looted Sound Id",
 
-	"gui.interactive_rogue_loot_block.mode.choice": "Choice Lootable",
-	"gui.interactive_rogue_loot_block.mode.random": "Random Lootable",
+	"gui.interactive_rogue_loot_block.mode.lootable_choice": "Choice Lootable",
+	"gui.interactive_rogue_loot_block.mode.lootable_random": "Random Lootable",
+	"gui.interactive_rogue_loot_block.mode.rogue_loot": "Rogue Loot Table",
 	"gui.interactive_rogue_loot_block.mode.vanilla": "Vanilla Loot Table",
 
 

@@ -18,7 +18,7 @@ import net.minecraft.network.chat.Component;
 @Environment(value = EnvType.CLIENT)
 public class InteractiveRogueLootBlockScreen extends Screen {
 	private static final Component LOOT_TABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.loot_table_identifier_label");
-	private static final Component LOOTABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.lootable_identifier_label");
+	private static final Component LOOTABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.loot_table_identifier_label");
 	private static final Component ROLLS_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.rolls_label");
 	private static final Component CHOICES_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.choices_label");
 	private static final Component TRACK_PLAYERS_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.track_players_label");
@@ -119,12 +119,12 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 		this.rollsField.setVisible(false);
 		this.choicesField.setVisible(false);
 
-		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.CHOICE) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE || this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
 
 			this.rollsField.setVisible(true);
 			this.choicesField.setVisible(true);
 
-		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.RANDOM) {
+		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
 
 			this.rollsField.setVisible(true);
 
@@ -171,7 +171,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 		ClientPlayNetworking.send(new UpdateInteractiveRogueLootBlockPacket(
 				this.interactiveRogueLootBlockEntity.getBlockPos(),
 				this.lootTableIdentifierStringField.getValue(),
-				this.lootBlockMode.getSerializedName(),
+				this.lootBlockMode,
 				parseInt(this.rollsField.getValue()),
 				parseInt(this.choicesField.getValue()),
 				this.trackPlayers,
@@ -199,7 +199,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 			this.rollsField.extractRenderState(graphics, mouseX, mouseY, a);
 		}
 
-		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.CHOICE) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
 			graphics.text(this.font, CHOICES_LABEL_TEXT, this.width / 2 - 49, 79, -6250336);
 			this.choicesField.extractRenderState(graphics, mouseX, mouseY, a);
 		}

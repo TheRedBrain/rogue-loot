@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.block;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
+import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.entity.player.DuckPlayerEntityMixin;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -76,10 +77,12 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 						}
 					} else {
 						Vec3 lootPos = new Vec3(interactiveRogueLootBlockEntity.getBlockPos().getX(), interactiveRogueLootBlockEntity.getBlockPos().getY(), interactiveRogueLootBlockEntity.getBlockPos().getZ());
-						if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.CHOICE) {
+						if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
 							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), true, null);
-						} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.RANDOM) {
+						} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
 							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), false, null);
+						} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
+							RogueLootTableHelper.supplyRogueLootTable(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), null);
 						} else {
 							List<ItemStack> lootStacks = getLootItems(serverWorld, pos, player, interactiveRogueLootBlockEntity);
 							for (ItemStack itemStack : lootStacks) {
