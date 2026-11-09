@@ -29,7 +29,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"lootableblocks" {
+		"rogueloot" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}

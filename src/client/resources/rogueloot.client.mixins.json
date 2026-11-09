@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "com.github.theredbrain.rogueloot.mixin.client",
+	"compatibilityLevel": "JAVA_25",
+	"client": [
+		"network.ClientPlayerEntityMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

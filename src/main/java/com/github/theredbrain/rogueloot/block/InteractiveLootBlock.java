@@ -1,0 +1,131 @@
+package com.github.theredbrain.rogueloot.block;
+
+import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.block.entity.InteractiveLootBlockEntity;
+import com.github.theredbrain.rogueloot.entity.player.DuckPlayerEntityMixin;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class InteractiveLootBlock extends BaseEntityBlock {
+	public static final MapCodec<InteractiveLootBlock> CODEC = simpleCodec(InteractiveLootBlock::new);
+
+	public InteractiveLootBlock(Properties settings) {
+		super(settings);
+	}
+
+	public MapCodec<InteractiveLootBlock> codec() {
+		return CODEC;
+	}
+
+	@Nullable
+	@Override
+	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+		return new InteractiveLootBlockEntity(pos, state);
+	}
+
+	@Override
+	public RenderShape getRenderShape(BlockState state) {
+		return RenderShape.MODEL;
+	}
+
+	@Override
+	public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+		if (state.is(this)) {
+			BlockEntity blockEntity = world.getBlockEntity(pos);
+			if (blockEntity instanceof InteractiveLootBlockEntity interactiveLootBlockEntity) {
+
+				if (player.canUseGameMasterBlocks()) {
+					((DuckPlayerEntityMixin) player).lootableblocks$openInteractiveLootBlockScreen(interactiveLootBlockEntity);
+					return InteractionResult.SUCCESS;
+				} else if (world instanceof ServerLevel serverWorld && !serverWorld.isClientSide() && player instanceof ServerPlayer serverPlayerEntity) {
+					if (interactiveLootBlockEntity.isPlayerInSet(serverPlayerEntity)) {
+						String alreadyLootedSoundId = interactiveLootBlockEntity.getAlreadyLootedSoundId();
+						if (!alreadyLootedSoundId.isEmpty()) {
+							SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(Identifier.parse(alreadyLootedSoundId));
+							serverPlayerEntity.playSound(soundEvent, 1.0F, 1.0F);
+						}
+						String alreadyLootedMessage = interactiveLootBlockEntity.getAlreadyLootedMessage();
+						if (!alreadyLootedMessage.isEmpty()) {
+							serverPlayerEntity.sendSystemMessage(Component.translatable(alreadyLootedMessage), true);
+						}
+					} else {
+						Vec3 lootPos = new Vec3(interactiveLootBlockEntity.getBlockPos().getX(), interactiveLootBlockEntity.getBlockPos().getY(), interactiveLootBlockEntity.getBlockPos().getZ());
+						if (interactiveLootBlockEntity.getMode() == InteractiveLootBlockEntity.Mode.CHOICE) {
+							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveLootBlockEntity.getRolls(), interactiveLootBlockEntity.getChoices(), true, null);
+						} else if (interactiveLootBlockEntity.getMode() == InteractiveLootBlockEntity.Mode.RANDOM) {
+							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveLootBlockEntity.getRolls(), interactiveLootBlockEntity.getChoices(), false, null);
+						} else {
+							List<ItemStack> lootStacks = getLootItems(serverWorld, pos, player, interactiveLootBlockEntity);
+							for (ItemStack itemStack : lootStacks) {
+								player.getInventory().placeItemBackInInventory(itemStack);
+							}
+							lootWasSupplied(serverPlayerEntity, interactiveLootBlockEntity);
+						}
+						return InteractionResult.SUCCESS;
+					}
+				}
+			}
+		}
+		return InteractionResult.PASS;
+	}
+
+	protected void neighborUpdate(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+		if (!world.isClientSide()) {
+			if (world.hasNeighborSignal(pos) && world.getBlockEntity(pos) instanceof InteractiveLootBlockEntity interactiveLootBlockEntity) {
+				interactiveLootBlockEntity.reset();
+			}
+		}
+	}
+
+	public static void lootWasSupplied(ServerPlayer serverPlayerEntity, InteractiveLootBlockEntity interactiveLootBlockEntity) {
+		if (interactiveLootBlockEntity.trackPlayers()) {
+			interactiveLootBlockEntity.addPlayerToSet(serverPlayerEntity);
+		}
+		String lootAcquiredSoundId = interactiveLootBlockEntity.getLootAcquiredSoundId();
+		if (!lootAcquiredSoundId.isEmpty()) {
+			SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(Identifier.parse(lootAcquiredSoundId));
+			serverPlayerEntity.playSound(soundEvent, 1.0F, 1.0F);
+		}
+		String lootAcquiredMessage = interactiveLootBlockEntity.getLootAcquiredMessage();
+		if (!lootAcquiredMessage.isEmpty()) {
+			serverPlayerEntity.sendSystemMessage(Component.translatable(lootAcquiredMessage), true);
+		}
+	}
+
+	private static List<ItemStack> getLootItems(ServerLevel serverWorld, BlockPos pos, Player player, InteractiveLootBlockEntity interactiveLootBlockEntity) {
+		List<ItemStack> list = new ArrayList<>();
+		Identifier lootTableIdentifier = Identifier.tryParse(interactiveLootBlockEntity.getLootTableIdentifierString());
+		if (lootTableIdentifier != null) {
+			LootTable lootTable = serverWorld.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableIdentifier));
+			LootParams params = new LootParams.Builder(serverWorld).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.THIS_ENTITY, player).create(LootContextParamSets.VAULT);
+			list = lootTable.getRandomItems(params);
+		}
+		return list;
+	}
+}

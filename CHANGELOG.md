@@ -1,3 +1,10 @@
+# 2.0.0
+
+Renamed to Rogue Loot.
+Updated to 26.1.x
+
+- disabled compatibility with Lootables. If Lootables gets updated, this will be re-enabled.
+
 # 1.1.0
 
 - update to Lootables 0.2.0

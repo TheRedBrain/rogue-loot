@@ -1,0 +1,100 @@
+package com.github.theredbrain.rogueloot.block.lootable_vault;
+
+import com.google.common.annotations.VisibleForTesting;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
+import net.minecraft.core.UUIDUtil;
+import net.minecraft.world.entity.player.Player;
+
+public class LootableVaultServerData {
+	static final String SERVER_DATA_KEY = "server_data";
+	public static Codec<LootableVaultServerData> CODEC = RecordCodecBuilder.create(
+			instance -> instance.group(
+							UUIDUtil.CODEC_LINKED_SET.lenientOptionalFieldOf("rewarded_players", Set.of()).forGetter(data -> data.rewardedPlayers),
+							Codec.LONG.lenientOptionalFieldOf("state_updating_resumes_at", 0L).forGetter(data -> data.stateUpdatingResumesAt)
+					)
+					.apply(instance, LootableVaultServerData::new)
+	);
+	private static final int MAX_STORED_REWARDED_PLAYERS = 128;
+	private final Set<UUID> rewardedPlayers = new ObjectLinkedOpenHashSet<>();
+	private long stateUpdatingResumesAt;
+	private long lastFailedUnlockTime;
+	boolean dirty;
+
+	LootableVaultServerData(Set<UUID> rewardedPlayers, long stateUpdatingResumesAt) {
+		this.rewardedPlayers.addAll(rewardedPlayers);
+		this.stateUpdatingResumesAt = stateUpdatingResumesAt;
+	}
+
+	public LootableVaultServerData() {
+	}
+
+	public void setLastFailedUnlockTime(long lastFailedUnlockTime) {
+		this.lastFailedUnlockTime = lastFailedUnlockTime;
+	}
+
+	public long getLastFailedUnlockTime() {
+		return this.lastFailedUnlockTime;
+	}
+
+	Set<UUID> getRewardedPlayers() {
+		return this.rewardedPlayers;
+	}
+
+	public boolean hasRewardedPlayer(Player player) {
+		return this.rewardedPlayers.contains(player.getUUID());
+	}
+
+	@VisibleForTesting
+	public void markPlayerAsRewarded(Player player) {
+		this.rewardedPlayers.add(player.getUUID());
+		if (this.rewardedPlayers.size() > 128) {
+			Iterator<UUID> iterator = this.rewardedPlayers.iterator();
+			if (iterator.hasNext()) {
+				iterator.next();
+				iterator.remove();
+			}
+		}
+
+		this.markDirty();
+	}
+
+	@VisibleForTesting
+	public void unmarkPlayerAsRewarded(Player player) {
+		this.rewardedPlayers.remove(player.getUUID());
+
+		this.markDirty();
+	}
+
+	public long getStateUpdatingResumeTime() {
+		return this.stateUpdatingResumesAt;
+	}
+
+	public void setStateUpdatingResumeTime(long stateUpdatingResumesAt) {
+		this.stateUpdatingResumesAt = stateUpdatingResumesAt;
+		this.markDirty();
+	}
+
+	public void set(LootableVaultServerData data) {
+		this.stateUpdatingResumesAt = data.getStateUpdatingResumeTime();
+		this.rewardedPlayers.clear();
+		this.rewardedPlayers.addAll(data.rewardedPlayers);
+	}
+
+	public boolean isDirty() {
+		return this.dirty;
+	}
+
+	private void markDirty() {
+		this.dirty = true;
+	}
+
+	public void markClean() {
+		this.dirty = false;
+	}
+
+}

@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "lootableblocks",
+	"id": "rogueloot",
 	"version": "${version}",
-	"name": "Lootable Blocks",
-	"description": "Lootable Blocks adds various blocks which can supply 'Lootables', an extended version of loot tables added by the 'Lootables' mod.",
+	"name": "Rogue Loot",
+	"description": "Rogue Loot adds various blocks which can supply 'Lootables', an extended version of loot tables added by the 'Lootables' mod.",
 	"authors": [
 		"TheRedBrain"
 	],
@@ -11,20 +11,20 @@
 		"sources": "https://github.com/TheRedBrain/lootable-blocks"
 	},
 	"license": "MIT",
-	"icon": "assets/lootableblocks/icon.png",
+	"icon": "assets/rogueloot/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.github.theredbrain.lootableblocks.LootableBlocks"
+			"com.github.theredbrain.rogueloot.RogueLoot"
 		],
 		"client": [
-			"com.github.theredbrain.lootableblocks.LootableBlocksClient"
+			"com.github.theredbrain.rogueloot.RogueLootClient"
 		]
 	},
 	"mixins": [
-      "lootableblocks.mixins.json",
+		"rogueloot.mixins.json",
 		{
-			"config": "lootableblocks.client.mixins.json",
+			"config": "rogueloot.client.mixins.json",
 			"environment": "client"
 		}
 	],
