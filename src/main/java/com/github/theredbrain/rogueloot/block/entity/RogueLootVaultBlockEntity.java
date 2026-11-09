@@ -1,12 +1,12 @@
 package com.github.theredbrain.rogueloot.block.entity;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import com.github.theredbrain.rogueloot.block.LootableVaultBlock;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultClientData;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultServerData;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultSharedData;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultState;
-import com.github.theredbrain.rogueloot.data.LootableVaultConfig;
+import com.github.theredbrain.rogueloot.block.RogueLootVaultBlock;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultClientData;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultServerData;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultSharedData;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
+import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
 import com.mojang.logging.LogUtils;
@@ -57,16 +57,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class LootableVaultBlockEntity extends BlockEntity {
+public class RogueLootVaultBlockEntity extends BlockEntity {
 	private static final Logger LOGGER = LogUtils.getLogger();
-	private final LootableVaultServerData serverData = new LootableVaultServerData();
-	private final LootableVaultSharedData sharedData = new LootableVaultSharedData();
-	private final LootableVaultClientData clientData = new LootableVaultClientData();
-	private LootableVaultConfig config = null;
+	private final RogueLootVaultServerData serverData = new RogueLootVaultServerData();
+	private final RogueLootVaultSharedData sharedData = new RogueLootVaultSharedData();
+	private final RogueLootVaultClientData clientData = new RogueLootVaultClientData();
+	private RogueLootVaultConfig config = null;
 	private String lootableVaultConfigIdentifier = "";
 
-	public LootableVaultBlockEntity(BlockPos pos, BlockState state) {
-		super(EntityRegistry.LOOTABLE_VAULT_BLOCK_ENTITY, pos, state);
+	public RogueLootVaultBlockEntity(BlockPos pos, BlockState state) {
+		super(EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY, pos, state);
 	}
 
 	@Nullable
@@ -77,7 +77,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 
 	@Override
 	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
-		return Util.make(new CompoundTag(), tag -> tag.store("shared_data", LootableVaultSharedData.CODEC, registries.createSerializationContext(NbtOps.INSTANCE), this.sharedData));
+		return Util.make(new CompoundTag(), tag -> tag.store("shared_data", RogueLootVaultSharedData.CODEC, registries.createSerializationContext(NbtOps.INSTANCE), this.sharedData));
 	}
 
 	@Override
@@ -85,8 +85,8 @@ public class LootableVaultBlockEntity extends BlockEntity {
 
 		output.putString("config_identifier", this.lootableVaultConfigIdentifier);
 
-		output.store("shared_data", LootableVaultSharedData.CODEC, this.sharedData);
-		output.store("server_data", LootableVaultServerData.CODEC, this.serverData);
+		output.store("shared_data", RogueLootVaultSharedData.CODEC, this.sharedData);
+		output.store("server_data", RogueLootVaultServerData.CODEC, this.serverData);
 
 		super.saveAdditional(output);
 	}
@@ -94,9 +94,9 @@ public class LootableVaultBlockEntity extends BlockEntity {
 	@Override
 	protected void loadAdditional(ValueInput input) {
 
-		input.read("shared_data", LootableVaultSharedData.CODEC).ifPresent(this.sharedData::set);
+		input.read("shared_data", RogueLootVaultSharedData.CODEC).ifPresent(this.sharedData::set);
 
-		input.read("server_data", LootableVaultServerData.CODEC).ifPresent(this.serverData::set);
+		input.read("server_data", RogueLootVaultServerData.CODEC).ifPresent(this.serverData::set);
 
 		this.lootableVaultConfigIdentifier = input.getStringOr("config_identifier", "");
 		this.config = null;
@@ -113,23 +113,23 @@ public class LootableVaultBlockEntity extends BlockEntity {
 	}
 
 	@Nullable
-	public LootableVaultServerData getServerData() {
+	public RogueLootVaultServerData getServerData() {
 		return this.level != null && !this.level.isClientSide() ? this.serverData : null;
 	}
 
-	public LootableVaultSharedData getSharedData() {
+	public RogueLootVaultSharedData getSharedData() {
 		return this.sharedData;
 	}
 
-	public LootableVaultClientData getClientData() {
+	public RogueLootVaultClientData getClientData() {
 		return this.clientData;
 	}
 
 	public void markAsRewarded(ServerPlayer serverPlayerEntity, ItemStack itemStack) {
 		if (this.level instanceof ServerLevel serverWorld) {
-			LootableVaultServerData serverData = this.getServerData();
-			LootableVaultSharedData sharedData = this.getSharedData();
-			LootableVaultConfig config = this.getConfig(serverWorld);
+			RogueLootVaultServerData serverData = this.getServerData();
+			RogueLootVaultSharedData sharedData = this.getSharedData();
+			RogueLootVaultConfig config = this.getConfig(serverWorld);
 			if (serverData != null && sharedData != null) {
 				serverPlayerEntity.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
 				itemStack.consume(config.keyItem().create().getCount(), serverPlayerEntity);
@@ -142,9 +142,9 @@ public class LootableVaultBlockEntity extends BlockEntity {
 
 	public void unmarkAsRewarded(ServerPlayer serverPlayerEntity) {
 		if (this.level instanceof ServerLevel serverWorld) {
-			LootableVaultServerData serverData = this.getServerData();
-			LootableVaultSharedData sharedData = this.getSharedData();
-			LootableVaultConfig config = this.getConfig(serverWorld);
+			RogueLootVaultServerData serverData = this.getServerData();
+			RogueLootVaultSharedData sharedData = this.getSharedData();
+			RogueLootVaultConfig config = this.getConfig(serverWorld);
 			if (serverData != null && sharedData != null) {
 				serverData.unmarkPlayerAsRewarded(serverPlayerEntity);
 				sharedData.updateConnectedPlayers(serverWorld, this.worldPosition, serverData, config, config.deactivationRange());
@@ -153,14 +153,14 @@ public class LootableVaultBlockEntity extends BlockEntity {
 		}
 	}
 
-	public LootableVaultConfig getConfig(Level world) {
+	public RogueLootVaultConfig getConfig(Level world) {
 		if (this.config != null) {
 			return this.config;
 		}
 		Identifier identifier = Identifier.tryParse(this.lootableVaultConfigIdentifier);
-		Optional<Holder.Reference<Registry<LootableVaultConfig>>> optionalLootableVaultConfigRegistryReference = world.registryAccess().get(CustomDynamicRegistries.LOOTABLE_VAULT_CONFIG_REGISTRY_KEY);
+		Optional<Holder.Reference<Registry<RogueLootVaultConfig>>> optionalLootableVaultConfigRegistryReference = world.registryAccess().get(CustomDynamicRegistries.ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY);
 		if (optionalLootableVaultConfigRegistryReference.isPresent()) {
-			Optional<Holder.Reference<LootableVaultConfig>> optionalLootableVaultConfigReference = optionalLootableVaultConfigRegistryReference.get().value().get(identifier);
+			Optional<Holder.Reference<RogueLootVaultConfig>> optionalLootableVaultConfigReference = optionalLootableVaultConfigRegistryReference.get().value().get(identifier);
 			if (optionalLootableVaultConfigReference.isPresent()) {
 				this.config = optionalLootableVaultConfigReference.get().value();
 				return this.config;
@@ -169,7 +169,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 		if (!this.lootableVaultConfigIdentifier.isEmpty()) {
 			RogueLoot.info("Config not valid: " + this.lootableVaultConfigIdentifier);
 		}
-		this.config = LootableVaultConfig.DEFAULT;
+		this.config = RogueLootVaultConfig.DEFAULT;
 		return this.config;
 	}
 
@@ -179,7 +179,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 
 	public static final class Client {
 
-		public static void tick(Level world, BlockPos pos, BlockState state, LootableVaultClientData clientData, LootableVaultSharedData sharedData) {
+		public static void tick(Level world, BlockPos pos, BlockState state, RogueLootVaultClientData clientData, RogueLootVaultSharedData sharedData) {
 			clientData.rotateDisplay();
 			if (world.getGameTime() % 20L == 0L) {
 				emitConnectionParticlesForNearbyPlayers(world, pos, state, sharedData);
@@ -189,7 +189,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			playIdleSounds(world, pos, sharedData);
 		}
 
-		public static void emitActivationParticles(Level world, BlockPos pos, BlockState state, LootableVaultSharedData sharedData, ParticleOptions particle) {
+		public static void emitActivationParticles(Level world, BlockPos pos, BlockState state, RogueLootVaultSharedData sharedData, ParticleOptions particle) {
 			emitConnectionParticlesForNearbyPlayers(world, pos, state, sharedData);
 			RandomSource random = world.getRandom();
 
@@ -210,7 +210,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		private static void emitIdleParticles(Level world, BlockPos pos, LootableVaultSharedData sharedData, ParticleOptions particle) {
+		private static void emitIdleParticles(Level world, BlockPos pos, RogueLootVaultSharedData sharedData, ParticleOptions particle) {
 			RandomSource random = world.getRandom();
 			if (random.nextFloat() <= 0.5F) {
 				Vec3 vec3d = randomPosInsideCage(pos, random);
@@ -232,7 +232,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		private static void emitConnectionParticlesForNearbyPlayers(Level world, BlockPos pos, BlockState state, LootableVaultSharedData sharedData) {
+		private static void emitConnectionParticlesForNearbyPlayers(Level world, BlockPos pos, BlockState state, RogueLootVaultSharedData sharedData) {
 			Set<UUID> set = sharedData.getConnectedPlayers();
 			if (!set.isEmpty()) {
 				Vec3 vec3d = keyholePos(pos, state.getValue(VaultBlock.FACING));
@@ -246,11 +246,11 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		private static boolean isWithinConnectionRange(BlockPos pos, LootableVaultSharedData sharedData, Player player) {
+		private static boolean isWithinConnectionRange(BlockPos pos, RogueLootVaultSharedData sharedData, Player player) {
 			return player.blockPosition().distSqr(pos) <= Mth.square(sharedData.getConnectedParticlesRange());
 		}
 
-		private static void playIdleSounds(Level world, BlockPos pos, LootableVaultSharedData sharedData) {
+		private static void playIdleSounds(Level world, BlockPos pos, RogueLootVaultSharedData sharedData) {
 			if (shouldDisplayActiveEffects(sharedData)) {
 				RandomSource random = world.getRandom();
 				if (random.nextFloat() <= 0.02F) {
@@ -261,7 +261,7 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		public static boolean shouldDisplayActiveEffects(LootableVaultSharedData sharedData) {
+		public static boolean shouldDisplayActiveEffects(RogueLootVaultSharedData sharedData) {
 			return sharedData.hasDisplayItem();
 		}
 
@@ -280,22 +280,22 @@ public class LootableVaultBlockEntity extends BlockEntity {
 
 	public static final class Server {
 
-		public static void tick(ServerLevel world, BlockPos pos, BlockState state, LootableVaultConfig config, LootableVaultServerData serverData, LootableVaultSharedData sharedData) {
-			LootableVaultState vaultState = state.getValue(LootableVaultBlock.LOOTABLE_VAULT_STATE);
+		public static void tick(ServerLevel world, BlockPos pos, BlockState state, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData) {
+			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (shouldCycleDisplayItem(world.getGameTime(), vaultState)) {
 				cycleDisplayItemFromLootTable(world, vaultState, config, sharedData, pos);
 			}
 
 			BlockState blockState = state;
 			if (world.getGameTime() >= serverData.getStateUpdatingResumeTime()) {
-				blockState = state.setValue(LootableVaultBlock.LOOTABLE_VAULT_STATE, vaultState.update(world, pos, config, serverData, sharedData));
+				blockState = state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, vaultState.update(world, pos, config, serverData, sharedData));
 				if (!state.equals(blockState)) {
 					setVaultState(world, pos, state, blockState, config, sharedData);
 				}
 			}
 
 			if (serverData.isDirty() || sharedData.isDirty()) {
-				LootableVaultBlockEntity.setChanged(world, pos, state);
+				RogueLootVaultBlockEntity.setChanged(world, pos, state);
 				if (sharedData.isDirty()) {
 					world.sendBlockUpdated(pos, state, blockState, Block.UPDATE_CLIENTS);
 				}
@@ -309,13 +309,13 @@ public class LootableVaultBlockEntity extends BlockEntity {
 				ServerLevel world,
 				BlockPos pos,
 				BlockState state,
-				LootableVaultConfig config,
-				LootableVaultServerData serverData,
-				LootableVaultSharedData sharedData,
+				RogueLootVaultConfig config,
+				RogueLootVaultServerData serverData,
+				RogueLootVaultSharedData sharedData,
 				Player player,
 				ItemStack stack
 		) {
-			LootableVaultState vaultState = state.getValue(LootableVaultBlock.LOOTABLE_VAULT_STATE);
+			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (canEjectReward(config, vaultState)) {
 				if (!isValidToInsert(config, stack)) {
 					RogueLoot.info("invalid key");
@@ -342,14 +342,14 @@ public class LootableVaultBlockEntity extends BlockEntity {
 			}
 		}
 
-		static void setVaultState(ServerLevel world, BlockPos pos, BlockState oldState, BlockState newState, LootableVaultConfig config, LootableVaultSharedData sharedData) {
-			LootableVaultState vaultState = oldState.getValue(LootableVaultBlock.LOOTABLE_VAULT_STATE);
-			LootableVaultState vaultState2 = newState.getValue(LootableVaultBlock.LOOTABLE_VAULT_STATE);
+		static void setVaultState(ServerLevel world, BlockPos pos, BlockState oldState, BlockState newState, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
+			RogueLootVaultState vaultState = oldState.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
+			RogueLootVaultState vaultState2 = newState.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			world.setBlock(pos, newState, Block.UPDATE_ALL);
 			vaultState.onStateChange(world, pos, vaultState2, config, sharedData, (Boolean) newState.getValue(VaultBlock.OMINOUS));
 		}
 
-		public static void cycleDisplayItemFromLootTable(ServerLevel world, LootableVaultState state, LootableVaultConfig config, LootableVaultSharedData sharedData, BlockPos pos) {
+		public static void cycleDisplayItemFromLootTable(ServerLevel world, RogueLootVaultState state, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, BlockPos pos) {
 			if (!canEjectReward(config, state)) {
 				sharedData.setDisplayItem(ItemStack.EMPTY);
 			} else {
@@ -369,12 +369,12 @@ public class LootableVaultBlockEntity extends BlockEntity {
 		}
 
 		public static void unlock(
-				ServerLevel world, BlockState state, BlockPos pos, LootableVaultConfig config, LootableVaultServerData serverData, LootableVaultSharedData sharedData
+				ServerLevel world, BlockState state, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData
 		) {
 //			serverData.setItemsToEject(itemsToEject);
 			sharedData.setDisplayItem(ItemStack.EMPTY);
 			serverData.setStateUpdatingResumeTime(world.getGameTime() + 14L);
-			setVaultState(world, pos, state, state.setValue(LootableVaultBlock.LOOTABLE_VAULT_STATE, LootableVaultState.UNLOCKING), config, sharedData);
+			setVaultState(world, pos, state, state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, RogueLootVaultState.UNLOCKING), config, sharedData);
 		}
 
 //		private static List<ItemStack> generateLoot(ServerWorld world, LootableVaultConfig config, BlockPos pos, PlayerEntity player) {
@@ -387,19 +387,19 @@ public class LootableVaultBlockEntity extends BlockEntity {
 //			return lootTable.generateLoot(lootContextParameterSet);
 //		}
 
-		private static boolean canEjectReward(LootableVaultConfig config, LootableVaultState state) {
-			return !Objects.equals(config.lootableIdentifier(), "") && !config.keyItem().create().isEmpty() && state != LootableVaultState.INACTIVE;
+		private static boolean canEjectReward(RogueLootVaultConfig config, RogueLootVaultState state) {
+			return !Objects.equals(config.lootableIdentifier(), "") && !config.keyItem().create().isEmpty() && state != RogueLootVaultState.INACTIVE;
 		}
 
-		private static boolean isValidToInsert(LootableVaultConfig config, ItemStack stack) {
+		private static boolean isValidToInsert(RogueLootVaultConfig config, ItemStack stack) {
 			return ItemStack.isSameItemSameComponents(stack, config.keyItem().create()) && stack.getCount() >= config.keyItem().create().getCount();
 		}
 
-		private static boolean shouldCycleDisplayItem(long time, LootableVaultState state) {
-			return time % 20L == 0L && state == LootableVaultState.ACTIVE;
+		private static boolean shouldCycleDisplayItem(long time, RogueLootVaultState state) {
+			return time % 20L == 0L && state == RogueLootVaultState.ACTIVE;
 		}
 
-		private static void playInsertFailSound(ServerLevel world, LootableVaultServerData serverData, BlockPos pos, SoundEvent sound) {
+		private static void playInsertFailSound(ServerLevel world, RogueLootVaultServerData serverData, BlockPos pos, SoundEvent sound) {
 			if (world.getGameTime() >= serverData.getLastFailedUnlockTime() + 15L) {
 				world.playSound(null, pos, sound, SoundSource.BLOCKS);
 				serverData.setLastFailedUnlockTime(world.getGameTime());

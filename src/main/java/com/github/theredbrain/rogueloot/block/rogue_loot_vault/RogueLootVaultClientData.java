@@ -1,12 +1,12 @@
-package com.github.theredbrain.rogueloot.block.lootable_vault;
+package com.github.theredbrain.rogueloot.block.rogue_loot_vault;
 
 import net.minecraft.util.Mth;
 
-public class LootableVaultClientData {
+public class RogueLootVaultClientData {
 	private float displayRotation;
 	private float prevDisplayRotation;
 
-	public LootableVaultClientData() {
+	public RogueLootVaultClientData() {
 	}
 
 	public float getDisplayRotation() {

@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "facing=east,ominous=false,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active",
+      "y": 90
+    },
+    "facing=east,ominous=false,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward",
+      "y": 90
+    },
+    "facing=east,ominous=false,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive",
+      "y": 90
+    },
+    "facing=east,ominous=false,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking",
+      "y": 90
+    },
+    "facing=east,ominous=true,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active_ominous",
+      "y": 90
+    },
+    "facing=east,ominous=true,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward_ominous",
+      "y": 90
+    },
+    "facing=east,ominous=true,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive_ominous",
+      "y": 90
+    },
+    "facing=east,ominous=true,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking_ominous",
+      "y": 90
+    },
+    "facing=north,ominous=false,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active"
+    },
+    "facing=north,ominous=false,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward"
+    },
+    "facing=north,ominous=false,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive"
+    },
+    "facing=north,ominous=false,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking"
+    },
+    "facing=north,ominous=true,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active_ominous"
+    },
+    "facing=north,ominous=true,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward_ominous"
+    },
+    "facing=north,ominous=true,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive_ominous"
+    },
+    "facing=north,ominous=true,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking_ominous"
+    },
+    "facing=south,ominous=false,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active",
+      "y": 180
+    },
+    "facing=south,ominous=false,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward",
+      "y": 180
+    },
+    "facing=south,ominous=false,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive",
+      "y": 180
+    },
+    "facing=south,ominous=false,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking",
+      "y": 180
+    },
+    "facing=south,ominous=true,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active_ominous",
+      "y": 180
+    },
+    "facing=south,ominous=true,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward_ominous",
+      "y": 180
+    },
+    "facing=south,ominous=true,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive_ominous",
+      "y": 180
+    },
+    "facing=south,ominous=true,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking_ominous",
+      "y": 180
+    },
+    "facing=west,ominous=false,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active",
+      "y": 270
+    },
+    "facing=west,ominous=false,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward",
+      "y": 270
+    },
+    "facing=west,ominous=false,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive",
+      "y": 270
+    },
+    "facing=west,ominous=false,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking",
+      "y": 270
+    },
+    "facing=west,ominous=true,rogue_loot_vault_state=active": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/active_ominous",
+      "y": 270
+    },
+    "facing=west,ominous=true,rogue_loot_vault_state=ejecting": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/ejecting_reward_ominous",
+      "y": 270
+    },
+    "facing=west,ominous=true,rogue_loot_vault_state=inactive": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/inactive_ominous",
+      "y": 270
+    },
+    "facing=west,ominous=true,rogue_loot_vault_state=unlocking": {
+      "model": "rogueloot:block/rogue_loot_frozen_vault/unlocking_ominous",
+      "y": 270
+    }
+  }
+}

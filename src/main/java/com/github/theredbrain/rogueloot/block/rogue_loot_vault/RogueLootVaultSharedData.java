@@ -1,6 +1,6 @@
-package com.github.theredbrain.rogueloot.block.lootable_vault;
+package com.github.theredbrain.rogueloot.block.rogue_loot_vault;
 
-import com.github.theredbrain.rogueloot.data.LootableVaultConfig;
+import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
@@ -14,30 +14,30 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class LootableVaultSharedData {
+public class RogueLootVaultSharedData {
 	static final String SHARED_DATA_KEY = "shared_data";
-	public static Codec<LootableVaultSharedData> CODEC = RecordCodecBuilder.create(
+	public static Codec<RogueLootVaultSharedData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 							ItemStack.lenientOptionalFieldOf("display_item").forGetter(data -> data.displayItem),
 							UUIDUtil.CODEC_LINKED_SET.lenientOptionalFieldOf("connected_players", Set.of()).forGetter(data -> data.connectedPlayers),
 							Codec.DOUBLE
-									.lenientOptionalFieldOf("connected_particles_range", Double.valueOf(LootableVaultConfig.DEFAULT.deactivationRange()))
+									.lenientOptionalFieldOf("connected_particles_range", Double.valueOf(RogueLootVaultConfig.DEFAULT.deactivationRange()))
 									.forGetter(data -> data.connectedParticlesRange)
 					)
-					.apply(instance, LootableVaultSharedData::new)
+					.apply(instance, RogueLootVaultSharedData::new)
 	);
 	private ItemStack displayItem = ItemStack.EMPTY;
 	private Set<UUID> connectedPlayers = new ObjectLinkedOpenHashSet<>();
-	private double connectedParticlesRange = LootableVaultConfig.DEFAULT.deactivationRange();
+	private double connectedParticlesRange = RogueLootVaultConfig.DEFAULT.deactivationRange();
 	boolean dirty;
 
-	LootableVaultSharedData(ItemStack displayItem, Set<UUID> connectedPlayers, double connectedParticlesRange) {
+	RogueLootVaultSharedData(ItemStack displayItem, Set<UUID> connectedPlayers, double connectedParticlesRange) {
 		this.displayItem = displayItem;
 		this.connectedPlayers.addAll(connectedPlayers);
 		this.connectedParticlesRange = connectedParticlesRange;
 	}
 
-	public LootableVaultSharedData() {
+	public RogueLootVaultSharedData() {
 	}
 
 	public ItemStack getDisplayItem() {
@@ -67,7 +67,7 @@ public class LootableVaultSharedData {
 		return this.connectedParticlesRange;
 	}
 
-	public void updateConnectedPlayers(ServerLevel world, BlockPos pos, LootableVaultServerData serverData, LootableVaultConfig config, double radius) {
+	public void updateConnectedPlayers(ServerLevel world, BlockPos pos, RogueLootVaultServerData serverData, RogueLootVaultConfig config, double radius) {
 		Set<UUID> set = (Set<UUID>) PlayerDetector.INCLUDING_CREATIVE_PLAYERS
 				.detect(world, PlayerDetector.EntitySelector.SELECT_FROM_LEVEL, pos, radius, false)
 				.stream()
@@ -91,7 +91,7 @@ public class LootableVaultSharedData {
 		this.dirty = false;
 	}
 
-	public void set(LootableVaultSharedData data) {
+	public void set(RogueLootVaultSharedData data) {
 		this.displayItem = data.displayItem;
 		this.connectedPlayers = data.connectedPlayers;
 		this.connectedParticlesRange = data.connectedParticlesRange;

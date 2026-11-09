@@ -22,7 +22,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 
-public class InteractiveLootBlockEntity extends BlockEntity {
+public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	private final Set<UUID> playerSet = new HashSet<>();
 	private String lootTableIdentifierString = "";
 	private Mode mode = Mode.VANILLA;
@@ -34,8 +34,8 @@ public class InteractiveLootBlockEntity extends BlockEntity {
 	private String alreadyLootedMessage = "gui.interactive_loot_block.already_looted";
 	private String alreadyLootedSoundId = "block.chest.locked";
 
-	public InteractiveLootBlockEntity(BlockPos pos, BlockState state) {
-		super(EntityRegistry.INTERACTIVE_LOOT_BLOCK_ENTITY, pos, state);
+	public InteractiveRogueLootBlockEntity(BlockPos pos, BlockState state) {
+		super(EntityRegistry.INTERACTIVE_ROGUE_LOOT_BLOCK_ENTITY, pos, state);
 	}
 
 	@Override

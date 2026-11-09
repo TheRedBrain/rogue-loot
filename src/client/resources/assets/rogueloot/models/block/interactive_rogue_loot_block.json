@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "particle": "#up",
+    "down": "rogueloot:block/wip_block_down",
+    "up": "rogueloot:block/wip_block_up",
+    "north": "rogueloot:block/wip_block_north",
+    "east": "rogueloot:block/wip_block_east",
+    "south": "rogueloot:block/wip_block_south",
+    "west": "rogueloot:block/wip_block_west"
+  }
+}

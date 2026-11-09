@@ -1,4 +1,4 @@
-package com.github.theredbrain.rogueloot.block.lootable_vault;
+package com.github.theredbrain.rogueloot.block.rogue_loot_vault;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.serialization.Codec;
@@ -10,14 +10,14 @@ import java.util.UUID;
 import net.minecraft.core.UUIDUtil;
 import net.minecraft.world.entity.player.Player;
 
-public class LootableVaultServerData {
+public class RogueLootVaultServerData {
 	static final String SERVER_DATA_KEY = "server_data";
-	public static Codec<LootableVaultServerData> CODEC = RecordCodecBuilder.create(
+	public static Codec<RogueLootVaultServerData> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
 							UUIDUtil.CODEC_LINKED_SET.lenientOptionalFieldOf("rewarded_players", Set.of()).forGetter(data -> data.rewardedPlayers),
 							Codec.LONG.lenientOptionalFieldOf("state_updating_resumes_at", 0L).forGetter(data -> data.stateUpdatingResumesAt)
 					)
-					.apply(instance, LootableVaultServerData::new)
+					.apply(instance, RogueLootVaultServerData::new)
 	);
 	private static final int MAX_STORED_REWARDED_PLAYERS = 128;
 	private final Set<UUID> rewardedPlayers = new ObjectLinkedOpenHashSet<>();
@@ -25,12 +25,12 @@ public class LootableVaultServerData {
 	private long lastFailedUnlockTime;
 	boolean dirty;
 
-	LootableVaultServerData(Set<UUID> rewardedPlayers, long stateUpdatingResumesAt) {
+	RogueLootVaultServerData(Set<UUID> rewardedPlayers, long stateUpdatingResumesAt) {
 		this.rewardedPlayers.addAll(rewardedPlayers);
 		this.stateUpdatingResumesAt = stateUpdatingResumesAt;
 	}
 
-	public LootableVaultServerData() {
+	public RogueLootVaultServerData() {
 	}
 
 	public void setLastFailedUnlockTime(long lastFailedUnlockTime) {
@@ -79,7 +79,7 @@ public class LootableVaultServerData {
 		this.markDirty();
 	}
 
-	public void set(LootableVaultServerData data) {
+	public void set(RogueLootVaultServerData data) {
 		this.stateUpdatingResumesAt = data.getStateUpdatingResumeTime();
 		this.rewardedPlayers.clear();
 		this.rewardedPlayers.addAll(data.rewardedPlayers);

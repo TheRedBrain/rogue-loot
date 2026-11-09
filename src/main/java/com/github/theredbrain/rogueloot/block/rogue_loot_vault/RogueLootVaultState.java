@@ -1,7 +1,7 @@
-package com.github.theredbrain.rogueloot.block.lootable_vault;
+package com.github.theredbrain.rogueloot.block.rogue_loot_vault;
 
-import com.github.theredbrain.rogueloot.block.entity.LootableVaultBlockEntity;
-import com.github.theredbrain.rogueloot.data.LootableVaultConfig;
+import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
+import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -10,19 +10,19 @@ import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.LevelEvent;
 
-public enum LootableVaultState implements StringRepresentable {
+public enum RogueLootVaultState implements StringRepresentable {
 	INACTIVE("inactive", Light.HALF_LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 			sharedData.setDisplayItem(ItemStack.EMPTY);
 			world.levelEvent(LevelEvent.ANIMATION_VAULT_DEACTIVATE, pos, ominous ? 1 : 0);
 		}
 	},
 	ACTIVE("active", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 			if (!sharedData.hasDisplayItem()) {
-				LootableVaultBlockEntity.Server.cycleDisplayItemFromLootTable(world, this, config, sharedData, pos);
+				RogueLootVaultBlockEntity.Server.cycleDisplayItemFromLootTable(world, this, config, sharedData, pos);
 			}
 
 			world.levelEvent(LevelEvent.ANIMATION_VAULT_ACTIVATE, pos, ominous ? 1 : 0);
@@ -30,18 +30,18 @@ public enum LootableVaultState implements StringRepresentable {
 	},
 	UNLOCKING("unlocking", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 			world.playSound(null, pos, SoundEvents.VAULT_INSERT_ITEM, SoundSource.BLOCKS);
 		}
 	},
 	EJECTING("ejecting", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 			world.playSound(null, pos, SoundEvents.VAULT_OPEN_SHUTTER, SoundSource.BLOCKS);
 		}
 
 		@Override
-		protected void onChangedFrom(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData) {
+		protected void onChangedFrom(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
 			world.playSound(null, pos, SoundEvents.VAULT_CLOSE_SHUTTER, SoundSource.BLOCKS);
 		}
 	};
@@ -49,7 +49,7 @@ public enum LootableVaultState implements StringRepresentable {
 	private final String id;
 	private final Light light;
 
-	LootableVaultState(final String id, final Light light) {
+	RogueLootVaultState(final String id, final Light light) {
 		this.id = id;
 		this.light = light;
 	}
@@ -63,7 +63,7 @@ public enum LootableVaultState implements StringRepresentable {
 		return this.light.luminance;
 	}
 
-	public LootableVaultState update(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultServerData serverData, LootableVaultSharedData sharedData) {
+	public RogueLootVaultState update(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData) {
 		return switch (this) {
 			case INACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.activationRange());
 			case ACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
@@ -79,23 +79,23 @@ public enum LootableVaultState implements StringRepresentable {
 		};
 	}
 
-	private static LootableVaultState updateActiveState(
-			ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultServerData serverData, LootableVaultSharedData sharedData, double radius
+	private static RogueLootVaultState updateActiveState(
+			ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData, double radius
 	) {
 		sharedData.updateConnectedPlayers(world, pos, serverData, config, radius);
 		serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
 		return sharedData.hasConnectedPlayers() ? ACTIVE : INACTIVE;
 	}
 
-	public void onStateChange(ServerLevel world, BlockPos pos, LootableVaultState newState, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+	public void onStateChange(ServerLevel world, BlockPos pos, RogueLootVaultState newState, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 		this.onChangedFrom(world, pos, config, sharedData);
 		newState.onChangedTo(world, pos, config, sharedData, ominous);
 	}
 
-	protected void onChangedTo(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData, boolean ominous) {
+	protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
 	}
 
-	protected void onChangedFrom(ServerLevel world, BlockPos pos, LootableVaultConfig config, LootableVaultSharedData sharedData) {
+	protected void onChangedFrom(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
 	}
 
 	private void ejectReward(ServerLevel world, BlockPos pos) {

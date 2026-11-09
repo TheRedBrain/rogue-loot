@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.gui.screen.ingame;
 
-import com.github.theredbrain.rogueloot.block.entity.InteractiveLootBlockEntity;
-import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveLootBlockPacket;
+import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
+import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveRogueLootBlockPacket;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -16,20 +16,20 @@ import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
 @Environment(value = EnvType.CLIENT)
-public class InteractiveLootBlockScreen extends Screen {
-	private static final Component LOOT_TABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_loot_block.loot_table_identifier_label");
-	private static final Component LOOTABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_loot_block.lootable_identifier_label");
-	private static final Component ROLLS_LABEL_TEXT = Component.translatable("gui.interactive_loot_block.rolls_label");
-	private static final Component CHOICES_LABEL_TEXT = Component.translatable("gui.interactive_loot_block.choices_label");
-	private static final Component TRACK_PLAYERS_LABEL_TEXT = Component.translatable("gui.interactive_loot_block.track_players_label");
-	private static final Component LOOT_ACQUIRED_MESSAGE_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_loot_block.loot_acquired_message_placeholder");
-	private static final Component LOOT_ACQUIRED_SOUND_ID_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_loot_block.loot_acquired_sound_id_placeholder");
-	private static final Component ALREADY_LOOTED_MESSAGE_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_loot_block.already_looted_message_placeholder");
-	private static final Component ALREADY_LOOTED_SOUND_ID_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_loot_block.already_looted_sound_id_placeholder");
-	private final InteractiveLootBlockEntity interactiveLootBlockEntity;
+public class InteractiveRogueLootBlockScreen extends Screen {
+	private static final Component LOOT_TABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.loot_table_identifier_label");
+	private static final Component LOOTABLE_IDENTIFIER_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.lootable_identifier_label");
+	private static final Component ROLLS_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.rolls_label");
+	private static final Component CHOICES_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.choices_label");
+	private static final Component TRACK_PLAYERS_LABEL_TEXT = Component.translatable("gui.interactive_rogue_loot_block.track_players_label");
+	private static final Component LOOT_ACQUIRED_MESSAGE_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_rogue_loot_block.loot_acquired_message_placeholder");
+	private static final Component LOOT_ACQUIRED_SOUND_ID_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_rogue_loot_block.loot_acquired_sound_id_placeholder");
+	private static final Component ALREADY_LOOTED_MESSAGE_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_rogue_loot_block.already_looted_message_placeholder");
+	private static final Component ALREADY_LOOTED_SOUND_ID_PLACEHOLDER_TEXT = Component.translatable("gui.interactive_rogue_loot_block.already_looted_sound_id_placeholder");
+	private final InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity;
 	private EditBox lootTableIdentifierStringField;
-	private InteractiveLootBlockEntity.Mode lootBlockMode;
-	private CycleButton<InteractiveLootBlockEntity.Mode> lootBlockModeCycleButton;
+	private InteractiveRogueLootBlockEntity.Mode lootBlockMode;
+	private CycleButton<InteractiveRogueLootBlockEntity.Mode> lootBlockModeCycleButton;
 	private EditBox rollsField;
 	private EditBox choicesField;
 	private boolean trackPlayers;
@@ -39,9 +39,9 @@ public class InteractiveLootBlockScreen extends Screen {
 	private EditBox alreadyLootedMessageField;
 	private EditBox alreadyLootedSoundIdField;
 
-	public InteractiveLootBlockScreen(InteractiveLootBlockEntity interactiveLootBlockEntity) {
+	public InteractiveRogueLootBlockScreen(InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 		super(GameNarrator.NO_TITLE);
-		this.interactiveLootBlockEntity = interactiveLootBlockEntity;
+		this.interactiveRogueLootBlockEntity = interactiveRogueLootBlockEntity;
 	}
 
 	private void done() {
@@ -57,27 +57,27 @@ public class InteractiveLootBlockScreen extends Screen {
 	protected void init() {
 		this.lootTableIdentifierStringField = new EditBox(this.font, this.width / 2 - 154, 30, 308, 20, Component.translatable(""));
 		this.lootTableIdentifierStringField.setMaxLength(128);
-		this.lootTableIdentifierStringField.setValue(this.interactiveLootBlockEntity.getLootTableIdentifierString());
+		this.lootTableIdentifierStringField.setValue(this.interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 		this.addWidget(this.lootTableIdentifierStringField);
 
-		this.lootBlockMode = this.interactiveLootBlockEntity.getMode();
+		this.lootBlockMode = this.interactiveRogueLootBlockEntity.getMode();
 
-		this.lootBlockModeCycleButton = this.addRenderableWidget(CycleButton.builder(InteractiveLootBlockEntity.Mode::asText, this.lootBlockMode).withValues(InteractiveLootBlockEntity.Mode.values()).create(this.width / 2 - 154, 54, 308, 20, Component.empty(), (button, lootBlockMode) -> {
+		this.lootBlockModeCycleButton = this.addRenderableWidget(CycleButton.builder(InteractiveRogueLootBlockEntity.Mode::asText, this.lootBlockMode).withValues(InteractiveRogueLootBlockEntity.Mode.values()).create(this.width / 2 - 154, 54, 308, 20, Component.empty(), (button, lootBlockMode) -> {
 			this.lootBlockMode = lootBlockMode;
 			this.updateWidgets();
 		}));
 
 		this.rollsField = new EditBox(this.font, this.width / 2 - 154, 89, 100, 20, Component.empty());
 		this.rollsField.setMaxLength(128);
-		this.rollsField.setValue(Integer.toString(this.interactiveLootBlockEntity.getRolls()));
+		this.rollsField.setValue(Integer.toString(this.interactiveRogueLootBlockEntity.getRolls()));
 		this.addWidget(this.rollsField);
 
 		this.choicesField = new EditBox(this.font, this.width / 2 - 50, 89, 100, 20, Component.empty());
 		this.choicesField.setMaxLength(128);
-		this.choicesField.setValue(Integer.toString(this.interactiveLootBlockEntity.getChoices()));
+		this.choicesField.setValue(Integer.toString(this.interactiveRogueLootBlockEntity.getChoices()));
 		this.addWidget(this.choicesField);
 
-		this.trackPlayers = this.interactiveLootBlockEntity.trackPlayers();
+		this.trackPlayers = this.interactiveRogueLootBlockEntity.trackPlayers();
 
 		this.trackPlayersCycleButton = this.addRenderableWidget(CycleButton.onOffBuilder(this.trackPlayers).create(this.width / 2 + 54, 89, 100, 20, Component.empty(), (button, trackPlayers) -> {
 			this.trackPlayers = trackPlayers;
@@ -85,25 +85,25 @@ public class InteractiveLootBlockScreen extends Screen {
 
 		this.lootAcquiredMessageField = new EditBox(this.font, this.width / 2 - 154, 113, 308, 20, Component.translatable(""));
 		this.lootAcquiredMessageField.setMaxLength(128);
-		this.lootAcquiredMessageField.setValue(this.interactiveLootBlockEntity.getLootAcquiredMessage());
+		this.lootAcquiredMessageField.setValue(this.interactiveRogueLootBlockEntity.getLootAcquiredMessage());
 		this.lootAcquiredMessageField.setHint(LOOT_ACQUIRED_MESSAGE_PLACEHOLDER_TEXT);
 		this.addWidget(this.lootAcquiredMessageField);
 
 		this.lootAcquiredSoundIdField = new EditBox(this.font, this.width / 2 - 154, 137, 308, 20, Component.translatable(""));
 		this.lootAcquiredSoundIdField.setMaxLength(128);
-		this.lootAcquiredSoundIdField.setValue(this.interactiveLootBlockEntity.getLootAcquiredSoundId());
+		this.lootAcquiredSoundIdField.setValue(this.interactiveRogueLootBlockEntity.getLootAcquiredSoundId());
 		this.lootAcquiredSoundIdField.setHint(LOOT_ACQUIRED_SOUND_ID_PLACEHOLDER_TEXT);
 		this.addWidget(this.lootAcquiredSoundIdField);
 
 		this.alreadyLootedMessageField = new EditBox(this.font, this.width / 2 - 154, 161, 308, 20, Component.translatable(""));
 		this.alreadyLootedMessageField.setMaxLength(128);
-		this.alreadyLootedMessageField.setValue(this.interactiveLootBlockEntity.getAlreadyLootedMessage());
+		this.alreadyLootedMessageField.setValue(this.interactiveRogueLootBlockEntity.getAlreadyLootedMessage());
 		this.alreadyLootedMessageField.setHint(ALREADY_LOOTED_MESSAGE_PLACEHOLDER_TEXT);
 		this.addWidget(this.alreadyLootedMessageField);
 
 		this.alreadyLootedSoundIdField = new EditBox(this.font, this.width / 2 - 154, 185, 308, 20, Component.translatable(""));
 		this.alreadyLootedSoundIdField.setMaxLength(128);
-		this.alreadyLootedSoundIdField.setValue(this.interactiveLootBlockEntity.getAlreadyLootedSoundId());
+		this.alreadyLootedSoundIdField.setValue(this.interactiveRogueLootBlockEntity.getAlreadyLootedSoundId());
 		this.alreadyLootedSoundIdField.setHint(ALREADY_LOOTED_SOUND_ID_PLACEHOLDER_TEXT);
 		this.addWidget(this.alreadyLootedSoundIdField);
 
@@ -119,12 +119,12 @@ public class InteractiveLootBlockScreen extends Screen {
 		this.rollsField.setVisible(false);
 		this.choicesField.setVisible(false);
 
-		if (this.lootBlockMode == InteractiveLootBlockEntity.Mode.CHOICE) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.CHOICE) {
 
 			this.rollsField.setVisible(true);
 			this.choicesField.setVisible(true);
 
-		} else if (this.lootBlockMode == InteractiveLootBlockEntity.Mode.RANDOM) {
+		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.RANDOM) {
 
 			this.rollsField.setVisible(true);
 
@@ -142,7 +142,7 @@ public class InteractiveLootBlockScreen extends Screen {
 		String string4 = this.lootAcquiredSoundIdField.getValue();
 		String string5 = this.alreadyLootedMessageField.getValue();
 		String string6 = this.alreadyLootedSoundIdField.getValue();
-		InteractiveLootBlockEntity.Mode var = this.lootBlockMode;
+		InteractiveRogueLootBlockEntity.Mode var = this.lootBlockMode;
 		this.init(width, height);
 		this.trackPlayers = bool;
 		this.lootTableIdentifierStringField.setValue(string);
@@ -168,8 +168,8 @@ public class InteractiveLootBlockScreen extends Screen {
 	}
 
 	private void updateInteractiveLootBlock() {
-		ClientPlayNetworking.send(new UpdateInteractiveLootBlockPacket(
-				this.interactiveLootBlockEntity.getBlockPos(),
+		ClientPlayNetworking.send(new UpdateInteractiveRogueLootBlockPacket(
+				this.interactiveRogueLootBlockEntity.getBlockPos(),
 				this.lootTableIdentifierStringField.getValue(),
 				this.lootBlockMode.getSerializedName(),
 				parseInt(this.rollsField.getValue()),
@@ -187,19 +187,19 @@ public class InteractiveLootBlockScreen extends Screen {
 
 		super.extractRenderState(graphics, mouseX, mouseY, a);
 
-		if (this.lootBlockMode == InteractiveLootBlockEntity.Mode.VANILLA) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.VANILLA) {
 			graphics.text(this.font, LOOT_TABLE_IDENTIFIER_LABEL_TEXT, this.width / 2 - 153, 20, -6250336);
 		} else {
 			graphics.text(this.font, LOOTABLE_IDENTIFIER_LABEL_TEXT, this.width / 2 - 153, 20, -6250336);
 		}
 		this.lootTableIdentifierStringField.extractRenderState(graphics, mouseX, mouseY, a);
 
-		if (this.lootBlockMode != InteractiveLootBlockEntity.Mode.VANILLA) {
+		if (this.lootBlockMode != InteractiveRogueLootBlockEntity.Mode.VANILLA) {
 			graphics.text(this.font, ROLLS_LABEL_TEXT, this.width / 2 - 153, 79, -6250336);
 			this.rollsField.extractRenderState(graphics, mouseX, mouseY, a);
 		}
 
-		if (this.lootBlockMode == InteractiveLootBlockEntity.Mode.CHOICE) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.CHOICE) {
 			graphics.text(this.font, CHOICES_LABEL_TEXT, this.width / 2 - 49, 79, -6250336);
 			this.choicesField.extractRenderState(graphics, mouseX, mouseY, a);
 		}

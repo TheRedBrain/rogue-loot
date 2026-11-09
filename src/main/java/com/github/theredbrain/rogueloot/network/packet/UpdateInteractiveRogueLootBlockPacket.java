@@ -1,15 +1,16 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record UpdateInteractiveLootBlockPacket(
-		BlockPos interactiveLootBlockPosition,
+public record UpdateInteractiveRogueLootBlockPacket(
+		BlockPos interactiveRogueLootBlockPosition,
 		String lootTableIdentifierString,
-		String mode,
+		InteractiveRogueLootBlockEntity.Mode mode,
 		int rolls,
 		int choices,
 		boolean trackPlayers,
@@ -18,14 +19,14 @@ public record UpdateInteractiveLootBlockPacket(
 		String alreadyLootedMessage,
 		String alreadyLootedSoundId
 ) implements CustomPacketPayload {
-	public static final Type<UpdateInteractiveLootBlockPacket> PACKET_ID = new Type<>(RogueLoot.identifier("update_interactive_loot_block"));
-	public static final StreamCodec<RegistryFriendlyByteBuf, UpdateInteractiveLootBlockPacket> PACKET_CODEC = StreamCodec.ofMember(UpdateInteractiveLootBlockPacket::write, UpdateInteractiveLootBlockPacket::new);
+	public static final Type<UpdateInteractiveRogueLootBlockPacket> PACKET_ID = new Type<>(RogueLoot.identifier("update_interactive_rogue_loot_block"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, UpdateInteractiveRogueLootBlockPacket> PACKET_CODEC = StreamCodec.ofMember(UpdateInteractiveRogueLootBlockPacket::write, UpdateInteractiveRogueLootBlockPacket::new);
 
-	public UpdateInteractiveLootBlockPacket(RegistryFriendlyByteBuf registryByteBuf) {
+	public UpdateInteractiveRogueLootBlockPacket(RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				registryByteBuf.readBlockPos(),
 				registryByteBuf.readUtf(),
-				registryByteBuf.readUtf(),
+				registryByteBuf.readEnum(InteractiveRogueLootBlockEntity.Mode.class),
 				registryByteBuf.readInt(),
 				registryByteBuf.readInt(),
 				registryByteBuf.readBoolean(),
@@ -37,9 +38,9 @@ public record UpdateInteractiveLootBlockPacket(
 	}
 
 	private void write(RegistryFriendlyByteBuf registryByteBuf) {
-		registryByteBuf.writeBlockPos(this.interactiveLootBlockPosition);
+		registryByteBuf.writeBlockPos(this.interactiveRogueLootBlockPosition);
 		registryByteBuf.writeUtf(this.lootTableIdentifierString);
-		registryByteBuf.writeUtf(this.mode);
+		registryByteBuf.writeEnum(this.mode);
 		registryByteBuf.writeInt(this.rolls);
 		registryByteBuf.writeInt(this.choices);
 		registryByteBuf.writeBoolean(this.trackPlayers);

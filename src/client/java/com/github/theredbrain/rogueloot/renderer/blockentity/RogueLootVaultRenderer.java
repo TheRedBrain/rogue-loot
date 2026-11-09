@@ -1,8 +1,8 @@
 package com.github.theredbrain.rogueloot.renderer.blockentity;
 
-import com.github.theredbrain.rogueloot.block.entity.LootableVaultBlockEntity;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultClientData;
-import com.github.theredbrain.rogueloot.renderer.blockentity.state.LootableVaultRenderState;
+import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultClientData;
+import com.github.theredbrain.rogueloot.renderer.blockentity.state.RogueLootVaultRenderState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
@@ -23,38 +23,38 @@ import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
-public class LootableVaultRenderer implements BlockEntityRenderer<LootableVaultBlockEntity, LootableVaultRenderState> {
+public class RogueLootVaultRenderer implements BlockEntityRenderer<RogueLootVaultBlockEntity, RogueLootVaultRenderState> {
 	private final ItemModelResolver itemModelResolver;
 	private final RandomSource random = RandomSource.create();
 
-	public LootableVaultRenderer(final BlockEntityRendererProvider.Context context) {
+	public RogueLootVaultRenderer(final BlockEntityRendererProvider.Context context) {
 		this.itemModelResolver = context.itemModelResolver();
 	}
 
-	public LootableVaultRenderState createRenderState() {
-		return new LootableVaultRenderState();
+	public RogueLootVaultRenderState createRenderState() {
+		return new RogueLootVaultRenderState();
 	}
 
 	public void extractRenderState(
-			final LootableVaultBlockEntity blockEntity,
-			final LootableVaultRenderState state,
+			final RogueLootVaultBlockEntity blockEntity,
+			final RogueLootVaultRenderState state,
 			final float partialTicks,
 			final Vec3 cameraPosition,
 			final ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress
 	) {
 		BlockEntityRenderer.super.extractRenderState(blockEntity, state, partialTicks, cameraPosition, breakProgress);
 		ItemStack displayItem = blockEntity.getSharedData().getDisplayItem();
-		if (LootableVaultBlockEntity.Client.shouldDisplayActiveEffects(blockEntity.getSharedData()) && !displayItem.isEmpty() && blockEntity.getLevel() != null) {
+		if (RogueLootVaultBlockEntity.Client.shouldDisplayActiveEffects(blockEntity.getSharedData()) && !displayItem.isEmpty() && blockEntity.getLevel() != null) {
 			state.displayItem = new ItemClusterRenderState();
 			this.itemModelResolver.updateForTopItem(state.displayItem.item, displayItem, ItemDisplayContext.GROUND, blockEntity.getLevel(), null, 0);
 			state.displayItem.count = ItemClusterRenderState.getRenderedAmount(displayItem.getCount());
 			state.displayItem.seed = ItemClusterRenderState.getSeedForItemStack(displayItem);
-			LootableVaultClientData clientData = blockEntity.getClientData();
+			RogueLootVaultClientData clientData = blockEntity.getClientData();
 			state.spin = Mth.rotLerp(partialTicks, clientData.getPreviousDisplayRotation(), clientData.getDisplayRotation());
 		}
 	}
 
-	public void submit(final LootableVaultRenderState state, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final CameraRenderState camera) {
+	public void submit(final RogueLootVaultRenderState state, final PoseStack poseStack, final SubmitNodeCollector submitNodeCollector, final CameraRenderState camera) {
 		if (state.displayItem != null) {
 			poseStack.pushPose();
 			poseStack.translate(0.5F, 0.4F, 0.5F);

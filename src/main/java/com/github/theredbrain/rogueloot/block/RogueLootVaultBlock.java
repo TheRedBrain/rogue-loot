@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.block;
 
-import com.github.theredbrain.rogueloot.block.entity.LootableVaultBlockEntity;
-import com.github.theredbrain.rogueloot.block.lootable_vault.LootableVaultState;
+import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
+import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
@@ -30,30 +30,30 @@ import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-public class LootableVaultBlock extends BaseEntityBlock {
-	public static final MapCodec<LootableVaultBlock> CODEC = simpleCodec(LootableVaultBlock::new);
-	public static final Property<LootableVaultState> LOOTABLE_VAULT_STATE = EnumProperty.create("lootable_vault_state", LootableVaultState.class);
+public class RogueLootVaultBlock extends BaseEntityBlock {
+	public static final MapCodec<RogueLootVaultBlock> CODEC = simpleCodec(RogueLootVaultBlock::new);
+	public static final Property<RogueLootVaultState> ROGUE_LOOT_VAULT_STATE = EnumProperty.create("rogue_loot_vault_state", RogueLootVaultState.class);
 
 	@Override
-	public MapCodec<LootableVaultBlock> codec() {
+	public MapCodec<RogueLootVaultBlock> codec() {
 		return CODEC;
 	}
 
-	public LootableVaultBlock(Properties settings) {
+	public RogueLootVaultBlock(Properties settings) {
 		super(settings);
 		this.registerDefaultState(
-				this.stateDefinition.any().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH).setValue(LOOTABLE_VAULT_STATE, LootableVaultState.INACTIVE).setValue(BlockStateProperties.OMINOUS, Boolean.FALSE)
+				this.stateDefinition.any().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH).setValue(ROGUE_LOOT_VAULT_STATE, RogueLootVaultState.INACTIVE).setValue(BlockStateProperties.OMINOUS, Boolean.FALSE)
 		);
 	}
 
 	@Override
 	public InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
-		if (stack.isEmpty() || state.getValue(LOOTABLE_VAULT_STATE) != LootableVaultState.ACTIVE) {
+		if (stack.isEmpty() || state.getValue(ROGUE_LOOT_VAULT_STATE) != RogueLootVaultState.ACTIVE) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
 		} else if (world instanceof ServerLevel serverWorld) {
-			if (serverWorld.getBlockEntity(pos) instanceof LootableVaultBlockEntity lootableVaultBlockEntity) {
-				LootableVaultBlockEntity.Server.tryInsertKey(
-						serverWorld, pos, state, lootableVaultBlockEntity.getConfig(world), lootableVaultBlockEntity.getServerData(), lootableVaultBlockEntity.getSharedData(), player, stack
+			if (serverWorld.getBlockEntity(pos) instanceof RogueLootVaultBlockEntity rogueLootVaultBlockEntity) {
+				RogueLootVaultBlockEntity.Server.tryInsertKey(
+						serverWorld, pos, state, rogueLootVaultBlockEntity.getConfig(world), rogueLootVaultBlockEntity.getServerData(), rogueLootVaultBlockEntity.getSharedData(), player, stack
 				);
 				return InteractionResult.SUCCESS;
 			} else {
@@ -67,12 +67,12 @@ public class LootableVaultBlock extends BaseEntityBlock {
 	@Nullable
 	@Override
 	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-		return new LootableVaultBlockEntity(pos, state);
+		return new RogueLootVaultBlockEntity(pos, state);
 	}
 
 	@Override
 	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-		builder.add(HorizontalDirectionalBlock.FACING, LOOTABLE_VAULT_STATE, BlockStateProperties.OMINOUS);
+		builder.add(HorizontalDirectionalBlock.FACING, ROGUE_LOOT_VAULT_STATE, BlockStateProperties.OMINOUS);
 	}
 
 	@Nullable
@@ -81,15 +81,15 @@ public class LootableVaultBlock extends BaseEntityBlock {
 		return world instanceof ServerLevel serverWorld
 				? createTickerHelper(
 				type,
-				EntityRegistry.LOOTABLE_VAULT_BLOCK_ENTITY,
-				(worldx, pos, statex, blockEntity) -> LootableVaultBlockEntity.Server.tick(
+				EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
+				(worldx, pos, statex, blockEntity) -> RogueLootVaultBlockEntity.Server.tick(
 						serverWorld, pos, statex, blockEntity.getConfig(world), blockEntity.getServerData(), blockEntity.getSharedData()
 				)
 		)
 				: createTickerHelper(
 				type,
-				EntityRegistry.LOOTABLE_VAULT_BLOCK_ENTITY,
-				(worldx, pos, statex, blockEntity) -> LootableVaultBlockEntity.Client.tick(worldx, pos, statex, blockEntity.getClientData(), blockEntity.getSharedData())
+				EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
+				(worldx, pos, statex, blockEntity) -> RogueLootVaultBlockEntity.Client.tick(worldx, pos, statex, blockEntity.getClientData(), blockEntity.getSharedData())
 		);
 	}
 

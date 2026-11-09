@@ -18,6 +18,14 @@ repositories {
 		name = "FzzyMaven"
 		url = "https://maven.fzzyhmstrs.me/"
 	}
+
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+		content {
+			includeGroup "maven.modrinth"
+		}
+	}
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -37,6 +45,47 @@ loom {
 
 }
 
+sourceSets {
+	testmod {
+		compileClasspath += sourceSets.main.compileClasspath
+		runtimeClasspath += sourceSets.main.runtimeClasspath
+	}
+
+	testmodClient {
+		compileClasspath += sourceSets.main.compileClasspath
+		runtimeClasspath += sourceSets.main.runtimeClasspath
+		compileClasspath += sourceSets.client.compileClasspath
+		runtimeClasspath += sourceSets.client.runtimeClasspath
+
+		compileClasspath += sourceSets.testmod.compileClasspath
+		runtimeClasspath += sourceSets.testmod.runtimeClasspath
+	}
+}
+
+loom {
+	runs {
+		testmodClient {
+			client()
+			ideConfigGenerated project.rootProject == project
+			name = "Testmod Client"
+			source sourceSets.testmodClient
+		}
+		testmodServer {
+			server()
+			ideConfigGenerated project.rootProject == project
+			name = "Testmod Server"
+			source sourceSets.testmod
+		}
+	}
+
+	mods {
+		"rogueloot_test" {
+			sourceSet sourceSets.testmod
+			sourceSet sourceSets.testmodClient
+		}
+	}
+}
+
 dependencies {
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
@@ -50,6 +99,15 @@ dependencies {
 		exclude(group: "me.lucko")
 		exclude(group: "com.terraformersmc")
 	}
+
+	// Data Fixer
+	implementation "maven.modrinth:easy-data-fix:${project.easy_data_fix_version}-fabric"
+
+	// Test mod
+	testmodImplementation sourceSets.main.output
+	testmodClientImplementation sourceSets.main.output
+	testmodClientImplementation sourceSets.client.output
+	testmodClientImplementation sourceSets.testmod.output
 
 //	// Lootable
 //	implementation "me.fzzyhmstrs:lootables:${project.lootable_version}"
@@ -80,10 +138,8 @@ java {
 }
 
 jar {
-	inputs.property "archivesName", project.base.archivesName
-
 	from("LICENSE") {
-		rename { "${it}_${inputs.properties.archivesName}"}
+		rename { "${it}_${project.base.archivesName.get()}"}
 	}
 }
 
@@ -144,6 +200,7 @@ if (project.hasProperty('release_type')) {
 			// The type can either be `project` or `version`
 			required.project 'fzzy-config'
 			required.project 'fabric-api'
+			required.project 'easy-data-fix'
 			optional.project 'lootables'
 			optional.project 'loot-n-explore'
 		}

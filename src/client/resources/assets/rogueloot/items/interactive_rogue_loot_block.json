@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "rogueloot:item/interactive_rogue_loot_block"
+  }
+}
