@@ -199,7 +199,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 			this.rollsField.extractRenderState(graphics, mouseX, mouseY, a);
 		}
 
-		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
+		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE || this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
 			graphics.text(this.font, CHOICES_LABEL_TEXT, this.width / 2 - 49, 79, -6250336);
 			this.choicesField.extractRenderState(graphics, mouseX, mouseY, a);
 		}
