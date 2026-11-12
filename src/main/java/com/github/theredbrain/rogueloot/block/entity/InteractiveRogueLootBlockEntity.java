@@ -1,12 +1,8 @@
 package com.github.theredbrain.rogueloot.block.entity;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
@@ -21,6 +17,12 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	private final Set<UUID> playerSet = new HashSet<>();
@@ -144,7 +146,12 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	@Override
 	public void setRemoved() {
 		if (this.level instanceof ServerLevel serverWorld) {
-			RogueLoot.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
+			Vec3 pos = Vec3.atLowerCornerOf(this.worldPosition);
+			if (this.mode == Mode.ROGUE_LOOT) {
+				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, this.lootTableIdentifierString, this.rolls, this.choices, null);
+			} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
+				RogueLoot.removeLootableUses(serverWorld, pos, this.lootTableIdentifierString, null);
+			}
 		}
 		super.setRemoved();
 	}

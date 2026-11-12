@@ -78,7 +78,7 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 					} else {
 						Identifier identifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 						if (!interactiveRogueLootBlockEntity.getLootTableIdentifierString().isEmpty() && identifier != null) {
-							Vec3 lootPos = new Vec3(interactiveRogueLootBlockEntity.getBlockPos().getX(), interactiveRogueLootBlockEntity.getBlockPos().getY(), interactiveRogueLootBlockEntity.getBlockPos().getZ());
+							Vec3 lootPos = Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos());
 							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
 								RogueLoot.supplyLootableLoot(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), true, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
@@ -92,13 +92,12 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 								}
 								lootWasSupplied(serverPlayerEntity, interactiveRogueLootBlockEntity);
 							}
-							return InteractionResult.SUCCESS;
 						}
 					}
 				}
 			}
 		}
-		return InteractionResult.PASS;
+		return InteractionResult.SUCCESS;
 	}
 
 	protected void neighborUpdate(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {

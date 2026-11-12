@@ -9,6 +9,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,21 @@ public record GeneratedRogueLoot(
 		this.maxChoices = maxChoices;
 	}
 
+	public static GeneratedRogueLoot copy(GeneratedRogueLoot generatedRogueLoot) {
+		List<VisibleRogueLootTableEntry> newVisibleRogueLootTableEntryList = new ArrayList<>();
+		generatedRogueLoot.entryList().forEach((visibleRogueLootTableEntry -> {
+			newVisibleRogueLootTableEntryList.add(VisibleRogueLootTableEntry.copy(visibleRogueLootTableEntry));
+		}));
+		return new GeneratedRogueLoot(
+				generatedRogueLoot.backGroundTexturePath(),
+				new ArrayList<>(generatedRogueLoot.requirementsNotMetFormatting()),
+				new ArrayList<>(generatedRogueLoot.requirementsMetFormatting()),
+				newVisibleRogueLootTableEntryList,
+				generatedRogueLoot.minChoices(),
+				generatedRogueLoot.maxChoices()
+		);
+	}
+
 	public record VisibleRogueLootTableEntry(
 			String entryBackgroundTexturePathAddition,
 			Optional<ItemStackTemplate> displayStack,
@@ -110,6 +126,16 @@ public record GeneratedRogueLoot(
 			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId != null ? parentRogueLootTableEntryId : "";
 		}
 
+		public static VisibleRogueLootTableEntry copy(VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
+			return new VisibleRogueLootTableEntry(
+					visibleRogueLootTableEntry.entryBackgroundTexturePathAddition(),
+					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),
+					visibleRogueLootTableEntry.iconTextureIdentifier(),
+					visibleRogueLootTableEntry.labelText(),
+					new ArrayList<>(visibleRogueLootTableEntry.labelFormatting()),
+					visibleRogueLootTableEntry.parentRogueLootTableEntryId()
+			);
+		}
 	}
 
 }

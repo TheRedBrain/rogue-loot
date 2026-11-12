@@ -1,17 +1,14 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.data.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
 
 import java.util.List;
@@ -28,7 +25,7 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 		List<String> chosenRogueLootEntries = payload.chosenRogueLootEntries();
 		Identifier localRogueLootTableIdentifier = payload.localRogueLootTableIdentifier();
 
-		RogueLootTableHelper.removeGeneratedRogueLoot(serverLevel, localRogueLootTableIdentifier, serverPlayer);
+		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localRogueLootTableIdentifier, serverPlayer);
 
 		for (String entry : chosenRogueLootEntries) {
 			Identifier identifier = Identifier.tryParse(entry);

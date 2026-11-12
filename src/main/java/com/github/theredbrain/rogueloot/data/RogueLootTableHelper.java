@@ -35,12 +35,12 @@ public class RogueLootTableHelper {
 			return;
 		}
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, choices);
-		GeneratedRogueLoot generatedRogueLoot = getGeneratedRogueLootForPlayer(serverLevel, localIdentifier, serverPlayerEntity);
+		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, localIdentifier, serverPlayerEntity);
 		if (generatedRogueLoot == null) {
 			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayerEntity, rolls, choices);
 		}
 		if (generatedRogueLoot != null) {
-			setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayerEntity);
+			DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayerEntity);
 			serverPlayerEntity.openMenu(createRogueLootMenuProvider(serverLevel, generatedRogueLoot, localIdentifier));
 		}
 
@@ -87,7 +87,7 @@ public class RogueLootTableHelper {
 
 	public static void removeRogueLootTableUses(ServerLevel serverLevel, Vec3 pos, Identifier identifier, int rolls, int choices, @Nullable ServerPlayer serverPlayerEntity) {
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, choices);
-		removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayerEntity);
+		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayerEntity);
 	}
 
 	@Nullable
@@ -176,20 +176,6 @@ public class RogueLootTableHelper {
 				rogueLootTable.minChoices(),
 				rogueLootTable.maxChoices()
 		);
-	}
-
-	@Nullable
-	public static GeneratedRogueLoot getGeneratedRogueLootForPlayer(ServerLevel serverLevel, Identifier localIdentifier, ServerPlayer serverPlayerEntity) {
-		// TODO get with localIdentifier from serverLevel data attachment
-		return null;
-	}
-
-	public static void setGeneratedRogueLootForPlayer(ServerLevel serverLevel, GeneratedRogueLoot generatedRogueLoot, Identifier localIdentifier, ServerPlayer serverPlayerEntity) {
-		// TODO get with localIdentifier from serverLevel data attachment
-	}
-
-	public static void removeGeneratedRogueLoot(ServerLevel serverLevel, Identifier localIdentifier, @Nullable ServerPlayer serverPlayerEntity) {
-		// TODO remove localIdentifier entry from serverLevel data attachment (if serverPlayer is given, only for that player)
 	}
 
 	public static Identifier getLocalRogueLootTableId(ServerLevel serverLevel, Identifier identifier, Vec3 pos, int rolls, int choices) {
