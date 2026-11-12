@@ -176,7 +176,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 
 	private void removeLootableUses(ServerLevel serverWorld, Vec3 pos, @Nullable ServerPlayer serverPlayerEntity, RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-			RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, config.lootTableIdentifier(), serverPlayerEntity);
+			RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, config.lootTableIdentifier(), config.rolls(), config.choices(), serverPlayerEntity);
 		} else {
 			RogueLoot.removeLootableUses(serverWorld, pos, config.lootTableIdentifier(), serverPlayerEntity);
 		}

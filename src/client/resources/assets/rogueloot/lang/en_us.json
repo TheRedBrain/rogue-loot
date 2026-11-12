@@ -20,6 +20,11 @@
 	"gui.interactive_rogue_loot_block.mode.vanilla": "Vanilla Loot Table",
 
 
+	"gui.rogue_loot_screen.confirm": "Confirm",
+	"gui.rogue_loot_screen.choices.simple": "%s/%s choices",
+	"gui.rogue_loot_screen.choices.range": "%s out of %s to %s choices",
+
+
 	"item.rogueloot.interactive_rogue_loot_block": "Interactive Rogue Loot Block",
 	"item.rogueloot.rogue_loot_vault_block": "Rogue Loot Vault",
 	"item.rogueloot.rogue_loot_frozen_vault_block": "Rogue Loot Frozen Vault"

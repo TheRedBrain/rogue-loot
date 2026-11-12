@@ -76,21 +76,24 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 							serverPlayerEntity.sendSystemMessage(Component.translatable(alreadyLootedMessage), true);
 						}
 					} else {
-						Vec3 lootPos = new Vec3(interactiveRogueLootBlockEntity.getBlockPos().getX(), interactiveRogueLootBlockEntity.getBlockPos().getY(), interactiveRogueLootBlockEntity.getBlockPos().getZ());
-						if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
-							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), true, null);
-						} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
-							RogueLoot.supplyLootableLoot(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), false, null);
-						} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
-							RogueLootTableHelper.supplyRogueLootTable(Identifier.parse(interactiveRogueLootBlockEntity.getLootTableIdentifierString()), serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), null);
-						} else {
-							List<ItemStack> lootStacks = getLootItems(serverWorld, pos, player, interactiveRogueLootBlockEntity);
-							for (ItemStack itemStack : lootStacks) {
-								player.getInventory().placeItemBackInInventory(itemStack);
+						Identifier identifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
+						if (!interactiveRogueLootBlockEntity.getLootTableIdentifierString().isEmpty() && identifier != null) {
+							Vec3 lootPos = new Vec3(interactiveRogueLootBlockEntity.getBlockPos().getX(), interactiveRogueLootBlockEntity.getBlockPos().getY(), interactiveRogueLootBlockEntity.getBlockPos().getZ());
+							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
+								RogueLoot.supplyLootableLoot(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), true, null);
+							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
+								RogueLoot.supplyLootableLoot(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), false, null);
+							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
+								RogueLootTableHelper.supplyRogueLootTable(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getChoices(), null);
+							} else {
+								List<ItemStack> lootStacks = getLootItems(serverWorld, pos, player, interactiveRogueLootBlockEntity);
+								for (ItemStack itemStack : lootStacks) {
+									player.getInventory().placeItemBackInInventory(itemStack);
+								}
+								lootWasSupplied(serverPlayerEntity, interactiveRogueLootBlockEntity);
 							}
-							lootWasSupplied(serverPlayerEntity, interactiveRogueLootBlockEntity);
+							return InteractionResult.SUCCESS;
 						}
-						return InteractionResult.SUCCESS;
 					}
 				}
 			}

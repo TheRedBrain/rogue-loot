@@ -4,6 +4,7 @@ import com.github.theredbrain.rogueloot.compat.LootablesCompat;
 import com.github.theredbrain.rogueloot.registry.BlockRegistry;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.github.theredbrain.rogueloot.registry.RogueLootMenuTypes;
 import com.github.theredbrain.rogueloot.registry.ServerPacketRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -53,6 +54,7 @@ public class RogueLoot implements ModInitializer {
 		BlockRegistry.init();
 		CustomDynamicRegistries.init();
 		EntityRegistry.init();
+		RogueLootMenuTypes.init();
 	}
 
 	public static Identifier identifier(String path) {
