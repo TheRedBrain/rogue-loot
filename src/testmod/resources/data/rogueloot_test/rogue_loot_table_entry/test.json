@@ -1,0 +1,14 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:coal"
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:coal"
+  },
+  "rarity": "rogueloot:uncommon"
+}

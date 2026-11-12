@@ -1,0 +1,12 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:oak_log"
+      }
+    }
+  ],
+  "label_text": "Oak Log",
+  "rarity": "rogueloot:common"
+}

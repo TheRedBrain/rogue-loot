@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:stone"
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:stone"
+  },
+  "label_text": "Stone",
+  "rarity": "rogueloot:common"
+}

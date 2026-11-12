@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:shield"
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:shield"
+  },
+  "label_text": "Shield",
+  "rarity": "rogueloot:rare"
+}

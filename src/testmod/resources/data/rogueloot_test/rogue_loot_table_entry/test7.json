@@ -1,0 +1,17 @@
+{
+  "components": [
+    {
+      "type": "mob_effect_instance",
+      "mob_effect": {
+        "id": "minecraft:strength",
+        "amplifier": 0,
+        "duration": 300
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:wheat"
+  },
+  "label_text": "Wheat",
+  "rarity": "rogueloot:uncommon"
+}

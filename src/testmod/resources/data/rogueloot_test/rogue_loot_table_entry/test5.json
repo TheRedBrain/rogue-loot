@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:diamond"
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:diamond"
+  },
+  "label_text": "Diamond",
+  "rarity": "rogueloot:epic"
+}

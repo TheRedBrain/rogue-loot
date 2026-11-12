@@ -1,0 +1,11 @@
+{
+  "background_texture_path": "rogueloot:textures/gui/container/rogue_loot_gui/default.png",
+  "entries_asset_path_addition": "",
+  "requirements_not_met_formatting": [
+    "red",
+    "bold"
+  ],
+  "requirements_met_formatting": [
+    "blue"
+  ]
+}

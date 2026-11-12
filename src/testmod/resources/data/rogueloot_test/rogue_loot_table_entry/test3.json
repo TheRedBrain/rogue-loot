@@ -1,0 +1,15 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:iron_sword"
+      }
+    }
+  ],
+  "display_stack": {
+    "id": "minecraft:iron_sword"
+  },
+  "label_text": "Iron Sword",
+  "rarity": "rogueloot:rare"
+}
