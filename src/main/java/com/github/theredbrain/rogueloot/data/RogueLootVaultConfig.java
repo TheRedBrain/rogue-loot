@@ -12,7 +12,8 @@ public record RogueLootVaultConfig(
 		String lootTableIdentifier,
 		Mode lootTableMode,
 		int rolls,
-		int choices,
+		int minChoices,
+		int maxChoices,
 		double activationRange,
 		double deactivationRange,
 		ItemStackTemplate keyItem,
@@ -24,7 +25,8 @@ public record RogueLootVaultConfig(
 									Codec.STRING.fieldOf("loot_table_identifier").forGetter(RogueLootVaultConfig::lootTableIdentifier),
 									Mode.CODEC.optionalFieldOf("loot_table_mode", Mode.ROGUE_LOOT).forGetter(RogueLootVaultConfig::lootTableMode),
 									Codec.INT.fieldOf("rolls").forGetter(RogueLootVaultConfig::rolls),
-									Codec.INT.fieldOf("choices").forGetter(RogueLootVaultConfig::choices),
+									Codec.INT.fieldOf("min_choices").forGetter(RogueLootVaultConfig::minChoices),
+									Codec.INT.fieldOf("max_choices").forGetter(RogueLootVaultConfig::maxChoices),
 									Codec.DOUBLE.fieldOf("activation_range").forGetter(RogueLootVaultConfig::activationRange),
 									Codec.DOUBLE.fieldOf("deactivation_range").forGetter(RogueLootVaultConfig::deactivationRange),
 									ItemStackTemplate.CODEC.fieldOf("key_item").forGetter(RogueLootVaultConfig::keyItem),
@@ -40,6 +42,7 @@ public record RogueLootVaultConfig(
 				Mode.ROGUE_LOOT,
 				3,
 				1,
+				1,
 				4.0,
 				4.5,
 				new ItemStackTemplate(Items.TRIAL_KEY),
@@ -50,6 +53,8 @@ public record RogueLootVaultConfig(
 	private DataResult<RogueLootVaultConfig> validate() {
 		return this.activationRange > this.deactivationRange
 				? DataResult.error(() -> "Activation range (" + this.activationRange + ") must be less or equal to deactivation range (" + this.deactivationRange + ")")
+				: this.minChoices > this.maxChoices
+				? DataResult.error(() -> "Min choices (" + this.minChoices + ") must be less or equal to max choices (" + this.maxChoices + ")")
 				: DataResult.success(this);
 	}
 

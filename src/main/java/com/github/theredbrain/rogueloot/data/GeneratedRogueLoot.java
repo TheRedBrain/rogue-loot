@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record GeneratedRogueLoot(
-		String backGroundTexturePath,
+		String backgroundTexturePath,
 		List<ChatFormatting> requirementsNotMetFormatting,
 		List<ChatFormatting> requirementsMetFormatting,
 		List<VisibleRogueLootTableEntry> entryList,
@@ -22,9 +22,9 @@ public record GeneratedRogueLoot(
 		int maxChoices
 ) {
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.STRING.optionalFieldOf("", "").forGetter(x -> x.backGroundTexturePath),
-			ChatFormatting.CODEC.listOf().optionalFieldOf("requirements_not_met_formatting", List.of()).forGetter(x -> x.requirementsNotMetFormatting),
-			ChatFormatting.CODEC.listOf().optionalFieldOf("requirements_met_formatting", List.of()).forGetter(x -> x.requirementsMetFormatting),
+			Codec.STRING.fieldOf("background_texture_path").forGetter(x -> x.backgroundTexturePath),
+			ChatFormatting.CODEC.listOf().fieldOf("requirements_not_met_formatting").forGetter(x -> x.requirementsNotMetFormatting),
+			ChatFormatting.CODEC.listOf().fieldOf("requirements_met_formatting").forGetter(x -> x.requirementsMetFormatting),
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
 			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
 			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices)
@@ -32,7 +32,7 @@ public record GeneratedRogueLoot(
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.composite(
 			ByteBufCodecs.STRING_UTF8,
-			GeneratedRogueLoot::backGroundTexturePath,
+			GeneratedRogueLoot::backgroundTexturePath,
 			ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
 			GeneratedRogueLoot::requirementsNotMetFormatting,
 			ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
@@ -47,14 +47,14 @@ public record GeneratedRogueLoot(
 	);
 
 	public GeneratedRogueLoot(
-			String backGroundTexturePath,
+			String backgroundTexturePath,
 			List<ChatFormatting> requirementsNotMetFormatting,
 			List<ChatFormatting> requirementsMetFormatting,
 			List<VisibleRogueLootTableEntry> entryList,
 			int minChoices,
 			int maxChoices
 	) {
-		this.backGroundTexturePath = backGroundTexturePath != null ? backGroundTexturePath : "";
+		this.backgroundTexturePath = backgroundTexturePath != null ? backgroundTexturePath : "";
 		this.requirementsNotMetFormatting = requirementsNotMetFormatting != null ? requirementsNotMetFormatting : List.of();
 		this.requirementsMetFormatting = requirementsMetFormatting != null ? requirementsMetFormatting : List.of();
 		this.entryList = entryList != null ? entryList : List.of();
@@ -68,7 +68,7 @@ public record GeneratedRogueLoot(
 			newVisibleRogueLootTableEntryList.add(VisibleRogueLootTableEntry.copy(visibleRogueLootTableEntry));
 		}));
 		return new GeneratedRogueLoot(
-				generatedRogueLoot.backGroundTexturePath(),
+				generatedRogueLoot.backgroundTexturePath(),
 				new ArrayList<>(generatedRogueLoot.requirementsNotMetFormatting()),
 				new ArrayList<>(generatedRogueLoot.requirementsMetFormatting()),
 				newVisibleRogueLootTableEntryList,
@@ -89,8 +89,8 @@ public record GeneratedRogueLoot(
 				Codec.STRING.fieldOf("entry_background_texture_path_addition").forGetter(x -> x.entryBackgroundTexturePathAddition),
 				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
-				Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
-				ChatFormatting.CODEC.listOf().optionalFieldOf("label_formatting", List.of()).forGetter(x -> x.labelFormatting),
+				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
+				ChatFormatting.CODEC.listOf().fieldOf("label_formatting").forGetter(x -> x.labelFormatting),
 				Codec.STRING.fieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
 

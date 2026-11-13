@@ -17,7 +17,7 @@ public record RogueLootTableEntry(
 		Optional<ItemStackTemplate> displayStack,
 		String iconTexturePath,
 		String labelText,
-		String rarity
+		String rarityIdString
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
@@ -25,7 +25,7 @@ public record RogueLootTableEntry(
 			ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
-			Codec.STRING.fieldOf("rarity").forGetter(x -> x.rarity)
+			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString)
 	).apply(instance, RogueLootTableEntry::new));
 
 	public RogueLootTableEntry(
@@ -34,14 +34,14 @@ public record RogueLootTableEntry(
 			Optional<ItemStackTemplate> displayStack,
 			String iconTexturePath,
 			String labelText,
-			String rarity
+			String rarityIdString
 	) {
 		this.unlockPredicate = unlockPredicate;
 		this.rogueLootTableEntryComponents = rogueLootTableEntryComponents != null ? rogueLootTableEntryComponents : List.of();
 		this.displayStack = displayStack;
 		this.iconTexturePath = iconTexturePath != null ? iconTexturePath : "";
 		this.labelText = labelText != null ? labelText : "";
-		this.rarity = rarity;
+		this.rarityIdString = rarityIdString;
 	}
 
 	public record RogueLootTableEntryComponent(

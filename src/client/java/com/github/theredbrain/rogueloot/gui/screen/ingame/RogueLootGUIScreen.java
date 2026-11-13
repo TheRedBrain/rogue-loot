@@ -308,8 +308,8 @@ public class RogueLootGUIScreen extends AbstractContainerScreen<RogueLootGuiMenu
 
 		int x = this.leftPos;
 		int y = this.topPos;
-		Identifier identifier = Identifier.tryParse(this.menu.getGeneratedRogueLoot().backGroundTexturePath());
-		if (!this.menu.getGeneratedRogueLoot().backGroundTexturePath().isEmpty() && identifier != null) {
+		Identifier identifier = Identifier.tryParse(this.menu.getGeneratedRogueLoot().backgroundTexturePath());
+		if (!this.menu.getGeneratedRogueLoot().backgroundTexturePath().isEmpty() && identifier != null) {
 			graphics.blit(RenderPipelines.GUI_TEXTURED, identifier, x, y, 0.0F, 0.0F, this.imageWidth, this.imageHeight, this.imageWidth, this.imageHeight);
 		}
 

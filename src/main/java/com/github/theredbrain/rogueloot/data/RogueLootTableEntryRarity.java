@@ -11,7 +11,6 @@ public record RogueLootTableEntryRarity(
 		int defaultWeight,
 		List<ChatFormatting> labelFormatting
 ) {
-	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, List.of());
 	public static final Codec<RogueLootTableEntryRarity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.optionalFieldOf("asset_path_addition", "").forGetter(x -> x.assetPathAddition),
 			Codec.INT.optionalFieldOf("default_weight", 1).forGetter(x -> x.defaultWeight),

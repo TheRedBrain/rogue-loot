@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.block.entity;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -29,7 +29,8 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	private String lootTableIdentifierString = "";
 	private Mode mode = Mode.VANILLA;
 	private int rolls = 3;
-	private int choices = 1;
+	private int minChoices = 1;
+	private int maxChoices = 1;
 	private boolean trackPlayers = false;
 	private String lootAcquiredMessage = "gui.interactive_loot_block.loot_acquired";
 	private String lootAcquiredSoundId = "";
@@ -66,11 +67,13 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 			view.discard("rolls");
 		}
 
-		if (this.choices != 1) {
-			view.putInt("choices", this.choices);
+		if (this.minChoices != 1) {
+			view.putInt("choices", this.minChoices);
 		} else {
 			view.discard("choices");
 		}
+
+		view.putInt("max_choices", this.maxChoices);
 
 		if (this.trackPlayers) {
 			view.putBoolean("trackPlayers", true);
@@ -119,7 +122,9 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 
 		this.rolls = view.getIntOr("rolls", 3);
 
-		this.choices = view.getIntOr("choices", 1);
+		this.minChoices = view.getIntOr("choices", 1);
+
+		this.maxChoices = view.getIntOr("max_choices", 1);
 
 		this.trackPlayers = view.getBooleanOr("trackPlayers", false);
 
@@ -148,7 +153,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		if (this.level instanceof ServerLevel serverWorld) {
 			Vec3 pos = Vec3.atLowerCornerOf(this.worldPosition);
 			if (this.mode == Mode.ROGUE_LOOT) {
-				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, this.lootTableIdentifierString, this.rolls, this.choices, null);
+				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
 			} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
 				RogueLoot.removeLootableUses(serverWorld, pos, this.lootTableIdentifierString, null);
 			}
@@ -180,12 +185,20 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		this.rolls = rolls;
 	}
 
-	public int getChoices() {
-		return this.choices;
+	public int getMinChoices() {
+		return this.minChoices;
 	}
 
-	public void setChoices(int choices) {
-		this.choices = choices;
+	public void setMinChoices(int minChoices) {
+		this.minChoices = minChoices;
+	}
+
+	public int getMaxChoices() {
+		return this.maxChoices;
+	}
+
+	public void setMaxChoices(int maxChoices) {
+		this.maxChoices = maxChoices;
 	}
 
 	public boolean trackPlayers() {
@@ -248,10 +261,10 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	}
 
 	public enum Mode implements StringRepresentable {
-		LOOTABLE_CHOICE("lootable_choice"),
-		LOOTABLE_RANDOM("lootable_random"),
+		VANILLA("vanilla"),
 		ROGUE_LOOT("rogue_loot"),
-		VANILLA("vanilla");
+		LOOTABLE_CHOICE("lootable_choice"),
+		LOOTABLE_RANDOM("lootable_random");
 
 		private final String name;
 
@@ -269,7 +282,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		}
 
 		public Component asText() {
-			return Component.translatable("gui.interactive_loot_block.mode." + this.name);
+			return Component.translatable("gui.interactive_rogue_loot_block.mode." + this.name);
 		}
 	}
 }

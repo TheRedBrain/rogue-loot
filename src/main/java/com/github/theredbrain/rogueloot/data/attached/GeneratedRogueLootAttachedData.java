@@ -1,5 +1,6 @@
-package com.github.theredbrain.rogueloot.data;
+package com.github.theredbrain.rogueloot.data.attached;
 
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.UUIDUtil;

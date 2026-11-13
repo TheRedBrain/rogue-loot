@@ -6,7 +6,7 @@ import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultCli
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultServerData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultSharedData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
-import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
@@ -176,7 +176,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 
 	private void removeLootableUses(ServerLevel serverWorld, Vec3 pos, @Nullable ServerPlayer serverPlayerEntity, RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-			RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, config.lootTableIdentifier(), config.rolls(), config.choices(), serverPlayerEntity);
+			RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayerEntity);
 		} else {
 			RogueLoot.removeLootableUses(serverWorld, pos, config.lootTableIdentifier(), serverPlayerEntity);
 		}
@@ -335,9 +335,9 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.choices(), stack);
+						RogueLootTableHelper.supplyRogueLootTable(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.maxChoices(), stack);
 					} else {
-						RogueLoot.supplyLootableLoot(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.choices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
+						RogueLoot.supplyLootableLoot(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 					}
 					serverData.markPlayerAsRewarded(player);
 					sharedData.updateConnectedPlayers(world, pos, serverData, config, config.deactivationRange());

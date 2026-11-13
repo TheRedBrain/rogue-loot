@@ -12,7 +12,5 @@
   "rarity_overrides": {
     "rogueloot_test:test": 2
   },
-  "gui_settings_id": "rogueloot_test:test1",
-  "min_choices": 1,
-  "max_choices": 2
+  "gui_settings_id": "rogueloot_test:test1"
 }

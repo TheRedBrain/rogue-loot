@@ -8,6 +8,8 @@
 	"gui.interactive_rogue_loot_block.rogue_loot_identifier_label": "Lootable Identifier",
 	"gui.interactive_rogue_loot_block.rolls_label": "Rolls",
 	"gui.interactive_rogue_loot_block.choices_label": "Choices",
+	"gui.interactive_rogue_loot_block.min_choices_label": "Min Choices",
+	"gui.interactive_rogue_loot_block.max_choices_label": "Max Choices",
 	"gui.interactive_rogue_loot_block.track_players_label": "Track players",
 	"gui.interactive_rogue_loot_block.loot_acquired_message_placeholder": "Loot Acquired Message",
 	"gui.interactive_rogue_loot_block.loot_acquired_sound_id_placeholder": "Loot Acquired Sound Id",

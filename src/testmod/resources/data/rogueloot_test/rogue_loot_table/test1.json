@@ -1,6 +1,4 @@
 {
   "rogue_loot_table_entries": "#rogueloot_test:test",
-  "gui_settings_id": "rogueloot:default",
-  "min_choices": 1,
-  "max_choices": 2
+  "gui_settings_id": "rogueloot:default"
 }

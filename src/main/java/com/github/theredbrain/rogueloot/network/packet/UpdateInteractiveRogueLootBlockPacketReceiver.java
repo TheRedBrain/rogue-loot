@@ -28,7 +28,9 @@ public class UpdateInteractiveRogueLootBlockPacketReceiver implements ServerPlay
 
 		int rolls = payload.rolls();
 
-		int choices = payload.choices();
+		int minChoices = payload.minChoices();
+
+		int maxChoices = payload.maxChoices();
 
 		boolean trackPlayers = payload.trackPlayers();
 
@@ -50,7 +52,8 @@ public class UpdateInteractiveRogueLootBlockPacketReceiver implements ServerPlay
 			interactiveRogueLootBlockEntity.setLootTableIdentifierString(lootTableIdentifierString);
 			interactiveRogueLootBlockEntity.setMode(mode);
 			interactiveRogueLootBlockEntity.setRolls(rolls);
-			interactiveRogueLootBlockEntity.setChoices(choices);
+			interactiveRogueLootBlockEntity.setMinChoices(minChoices);
+			interactiveRogueLootBlockEntity.setMaxChoices(maxChoices);
 			interactiveRogueLootBlockEntity.setTrackPlayers(trackPlayers);
 			interactiveRogueLootBlockEntity.setLootAcquiredMessage(lootAcquiredMessage);
 			interactiveRogueLootBlockEntity.setLootAcquiredSoundId(lootAcquiredSoundId);

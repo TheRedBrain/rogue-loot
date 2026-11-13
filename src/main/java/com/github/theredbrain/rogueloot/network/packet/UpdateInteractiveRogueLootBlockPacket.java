@@ -12,7 +12,8 @@ public record UpdateInteractiveRogueLootBlockPacket(
 		String lootTableIdentifierString,
 		InteractiveRogueLootBlockEntity.Mode mode,
 		int rolls,
-		int choices,
+		int minChoices,
+		int maxChoices,
 		boolean trackPlayers,
 		String lootAcquiredMessage,
 		String lootAcquiredSoundId,
@@ -29,6 +30,7 @@ public record UpdateInteractiveRogueLootBlockPacket(
 				registryByteBuf.readEnum(InteractiveRogueLootBlockEntity.Mode.class),
 				registryByteBuf.readInt(),
 				registryByteBuf.readInt(),
+				registryByteBuf.readInt(),
 				registryByteBuf.readBoolean(),
 				registryByteBuf.readUtf(),
 				registryByteBuf.readUtf(),
@@ -42,7 +44,8 @@ public record UpdateInteractiveRogueLootBlockPacket(
 		registryByteBuf.writeUtf(this.lootTableIdentifierString);
 		registryByteBuf.writeEnum(this.mode);
 		registryByteBuf.writeInt(this.rolls);
-		registryByteBuf.writeInt(this.choices);
+		registryByteBuf.writeInt(this.minChoices);
+		registryByteBuf.writeInt(this.maxChoices);
 		registryByteBuf.writeBoolean(this.trackPlayers);
 		registryByteBuf.writeUtf(this.lootAcquiredMessage);
 		registryByteBuf.writeUtf(this.lootAcquiredSoundId);
