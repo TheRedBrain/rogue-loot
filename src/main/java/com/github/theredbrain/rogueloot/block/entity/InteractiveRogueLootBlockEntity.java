@@ -126,6 +126,13 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 
 		this.maxChoices = view.getIntOr("max_choices", 1);
 
+		if (this.minChoices > this.maxChoices) {
+			if (this.getLevel() != null) {
+				RogueLoot.info("min_choices > max_choices for Interactive Rogue Loot Block at position: " + this.getBlockPos().toShortString() + " in " + this.getLevel().dimension() + ". This has been corrected.");
+			}
+			this.maxChoices = this.minChoices;
+		}
+
 		this.trackPlayers = view.getBooleanOr("trackPlayers", false);
 
 		this.lootAcquiredMessage = view.getStringOr("lootAcquiredMessage", "");

@@ -32,6 +32,11 @@ public class UpdateInteractiveRogueLootBlockPacketReceiver implements ServerPlay
 
 		int maxChoices = payload.maxChoices();
 
+		if (minChoices > maxChoices) {
+			serverPlayerEntity.sendSystemMessage(Component.translatable("hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices"));
+			maxChoices = minChoices;
+		}
+
 		boolean trackPlayers = payload.trackPlayers();
 
 		String lootAcquiredMessage = payload.lootAcquiredMessage();

@@ -201,7 +201,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 				this.lootBlockMode,
 				parseInt(this.rollsField.getValue()),
 				parseInt(this.minChoicesField.getValue()),
-				parseInt(this.minChoicesField.getValue()),
+				parseInt(this.maxChoicesField.getValue()),
 				this.trackPlayers,
 				this.lootAcquiredMessageField.getValue(),
 				this.lootAcquiredSoundIdField.getValue(),

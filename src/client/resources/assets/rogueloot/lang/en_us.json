@@ -27,6 +27,10 @@
 	"gui.rogue_loot_screen.choices.range": "%s out of %s to %s choices",
 
 
+	"hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices": "Max Choices was smaller than Min Choices. This has been corrected.",
+	"hud.message.rogue_loot.update_successful": "Update successful!",
+
+
 	"item.rogueloot.interactive_rogue_loot_block": "Interactive Rogue Loot Block",
 	"item.rogueloot.rogue_loot_vault_block": "Rogue Loot Vault",
 	"item.rogueloot.rogue_loot_frozen_vault_block": "Rogue Loot Frozen Vault"
