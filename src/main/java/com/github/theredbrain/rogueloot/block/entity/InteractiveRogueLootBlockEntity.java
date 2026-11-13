@@ -256,7 +256,12 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	public void reset() {
 		this.playerSet.clear();
 		if (this.level instanceof ServerLevel serverWorld) {
-			RogueLoot.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
+			Vec3 pos = Vec3.atLowerCornerOf(this.worldPosition);
+			if (this.mode == Mode.ROGUE_LOOT) {
+				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
+			} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
+				RogueLoot.removeLootableUses(serverWorld, pos, this.lootTableIdentifierString, null);
+			}
 		}
 	}
 

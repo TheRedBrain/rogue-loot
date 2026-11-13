@@ -65,10 +65,16 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 
 		this.lootBlockMode = this.interactiveRogueLootBlockEntity.getMode();
 
-		this.lootBlockModeCycleButton = this.addRenderableWidget(CycleButton.builder(InteractiveRogueLootBlockEntity.Mode::asText, this.lootBlockMode).withValues(InteractiveRogueLootBlockEntity.Mode.values()).create(this.width / 2 - 154, 54, 308, 20, Component.empty(), (button, lootBlockMode) -> {
-			this.lootBlockMode = lootBlockMode;
-			this.updateWidgets();
-		}));
+		this.lootBlockModeCycleButton = this.addRenderableWidget(
+				CycleButton.builder(InteractiveRogueLootBlockEntity.Mode::asText, this.lootBlockMode)
+						.withValues(InteractiveRogueLootBlockEntity.Mode.values())
+						.displayOnlyValue()
+						.create(this.width / 2 - 154, 54, 308, 20, Component.empty(), (button, lootBlockMode) -> {
+									this.lootBlockMode = lootBlockMode;
+									this.updateWidgets();
+								}
+						)
+		);
 
 		this.rollsField = new EditBox(this.font, this.width / 2 - 154, 89, 74, 20, Component.empty());
 		this.rollsField.setMaxLength(128);
@@ -89,6 +95,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 
 		this.trackPlayersCycleButton = this.addRenderableWidget(
 				CycleButton.onOffBuilder(this.trackPlayers)
+						.displayOnlyValue()
 						.create(this.width / 2 + 80, 89, 74, 20, Component.empty(), (button, trackPlayers) -> {
 							this.trackPlayers = trackPlayers;
 						})
@@ -241,6 +248,11 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 	@Override
 	public boolean isPauseScreen() {
 		return false;
+	}
+
+	@Override
+	public boolean isInGameUi() {
+		return true;
 	}
 
 	public static int parseInt(String string) {

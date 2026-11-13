@@ -1,9 +1,9 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import com.github.theredbrain.rogueloot.data.DataAttachmentHelper;
+import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
-import com.github.theredbrain.rogueloot.data.RogueLootTableHelper;
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;

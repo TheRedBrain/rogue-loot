@@ -22,13 +22,14 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,9 +101,10 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 		return InteractionResult.SUCCESS;
 	}
 
-	protected void neighborUpdate(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		if (!world.isClientSide()) {
-			if (world.hasNeighborSignal(pos) && world.getBlockEntity(pos) instanceof InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+	@Override
+	protected void neighborChanged(final BlockState state, final Level level, final BlockPos pos, final Block block, final @Nullable Orientation orientation, final boolean movedByPiston) {
+		if (!level.isClientSide()) {
+			if (level.hasNeighborSignal(pos) && level.getBlockEntity(pos) instanceof InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 				interactiveRogueLootBlockEntity.reset();
 			}
 		}
