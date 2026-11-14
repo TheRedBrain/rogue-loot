@@ -12,7 +12,7 @@ import java.util.Optional;
 public class BanishRogueLootEntryPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<BanishRogueLootEntryPacket> {
 
 	@Override
-	public void receive(BanishRogueLootEntryPacket payload, ServerPlayNetworking.Context context) {
+	public void receive(final BanishRogueLootEntryPacket payload, final ServerPlayNetworking.Context context) {
 
 		ServerPlayer serverPlayer = context.player();
 

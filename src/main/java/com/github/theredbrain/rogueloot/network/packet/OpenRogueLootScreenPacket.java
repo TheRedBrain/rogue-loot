@@ -15,7 +15,7 @@ public record OpenRogueLootScreenPacket(
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, OpenRogueLootScreenPacket> PACKET_CODEC = StreamCodec.ofMember(OpenRogueLootScreenPacket::write, OpenRogueLootScreenPacket::new);
 
-	public OpenRogueLootScreenPacket(RegistryFriendlyByteBuf registryByteBuf) {
+	public OpenRogueLootScreenPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				GeneratedRogueLoot.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readIdentifier(),
@@ -23,7 +23,7 @@ public record OpenRogueLootScreenPacket(
 		);
 	}
 
-	private void write(RegistryFriendlyByteBuf registryByteBuf) {
+	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		GeneratedRogueLoot.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLoot);
 		registryByteBuf.writeIdentifier(this.localRogueLootTableIdentifier);
 		registryByteBuf.writeInt(this.banishingAttempts);

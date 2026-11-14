@@ -10,7 +10,7 @@ public class PlayerHelper {
 	/**
 	 * @return Whether the cost has been paid
 	 */
-	public static boolean payItemCost(ServerPlayer serverPlayer, ItemStack costStack) {
+	public static boolean payItemCost(final ServerPlayer serverPlayer, final ItemStack costStack) {
 
 		// create inventory copy
 		int playerInventorySize = serverPlayer.getInventory().getContainerSize();
@@ -68,7 +68,7 @@ public class PlayerHelper {
 	/**
 	 * @return How many times the given itemStack is inside the serverPlayer's inventory
 	 */
-	public static int countAffordableTransactions(ServerPlayer serverPlayer, ItemStack costStack) {
+	public static int countAffordableTransactions(final ServerPlayer serverPlayer, final ItemStack costStack) {
 
 		// player inventory copy
 		int inventorySize = serverPlayer.getInventory().getContainerSize();

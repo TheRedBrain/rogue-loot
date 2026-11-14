@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 public class UpdateInteractiveRogueLootBlockPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<UpdateInteractiveRogueLootBlockPacket> {
 	@Override
-	public void receive(UpdateInteractiveRogueLootBlockPacket payload, ServerPlayNetworking.Context context) {
+	public void receive(final UpdateInteractiveRogueLootBlockPacket payload, final ServerPlayNetworking.Context context) {
 
 		ServerPlayer serverPlayerEntity = context.player();
 

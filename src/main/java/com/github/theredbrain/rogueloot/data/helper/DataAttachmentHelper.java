@@ -21,7 +21,7 @@ import java.util.UUID;
 public class DataAttachmentHelper {
 
 	@Nullable
-	public static GeneratedRogueLoot getGeneratedRogueLootForPlayer(ServerLevel serverLevel, Identifier localIdentifier, ServerPlayer serverPlayer) {
+	public static GeneratedRogueLoot getGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final Identifier localIdentifier, final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData generatedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
 		if (generatedRogueLootAttachedData.generatedRogueLootData().containsKey(localIdentifier)) {
 			Map<UUID, GeneratedRogueLoot> map = generatedRogueLootAttachedData.generatedRogueLootData().get(localIdentifier);
@@ -32,7 +32,7 @@ public class DataAttachmentHelper {
 		return null;
 	}
 
-	public static void setGeneratedRogueLootForPlayer(ServerLevel serverLevel, GeneratedRogueLoot generatedRogueLoot, Identifier localIdentifier, ServerPlayer serverPlayer) {
+	public static void setGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final GeneratedRogueLoot generatedRogueLoot, final Identifier localIdentifier, final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
 		Map<Identifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
 
@@ -48,7 +48,7 @@ public class DataAttachmentHelper {
 		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverLevel, new GeneratedRogueLootAttachedData(newGeneratedRogueLootData));
 	}
 
-	public static void removeGeneratedRogueLoot(ServerLevel serverLevel, Identifier localIdentifier, @Nullable ServerPlayer serverPlayer) {
+	public static void removeGeneratedRogueLoot(final ServerLevel serverLevel, final Identifier localIdentifier, @Nullable final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
 		Map<Identifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
 
@@ -62,11 +62,11 @@ public class DataAttachmentHelper {
 		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverLevel, new GeneratedRogueLootAttachedData(newGeneratedRogueLootData));
 	}
 
-	public static boolean isRogueLootEntryBanished(Player player, Identifier entryIdentifier) {
+	public static boolean isRogueLootEntryBanished(Player player, final Identifier entryIdentifier) {
 		return RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(player).banishedRogueLootEntries().contains(entryIdentifier);
 	}
 
-	public static void banishRogueLootEntries(ServerPlayer serverPlayer, List<Identifier> entryIdentifierList) {
+	public static void banishRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
 		BanishedRogueLootEntriesAttachedData newBanishedRogueLootEntriesAttachedData = BanishedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(serverPlayer));
 		Set<Identifier> newBanishedRogueLootEntrySet = new HashSet<>(newBanishedRogueLootEntriesAttachedData.banishedRogueLootEntries());
 
@@ -75,7 +75,7 @@ public class DataAttachmentHelper {
 		RogueLootDataAttachments.setBanishedRogueLootEntriesAttachedData(serverPlayer, new BanishedRogueLootEntriesAttachedData(new ArrayList<>(newBanishedRogueLootEntrySet)));
 	}
 
-	public static void banishRogueLootEntry(ServerPlayer serverPlayer, Identifier entryIdentifier) {
+	public static void banishRogueLootEntry(final ServerPlayer serverPlayer, final Identifier entryIdentifier) {
 		BanishedRogueLootEntriesAttachedData newBanishedRogueLootEntriesAttachedData = BanishedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(serverPlayer));
 		Set<Identifier> newBanishedRogueLootEntrySet = new HashSet<>(newBanishedRogueLootEntriesAttachedData.banishedRogueLootEntries());
 
@@ -84,7 +84,7 @@ public class DataAttachmentHelper {
 		RogueLootDataAttachments.setBanishedRogueLootEntriesAttachedData(serverPlayer, new BanishedRogueLootEntriesAttachedData(new ArrayList<>(newBanishedRogueLootEntrySet)));
 	}
 
-	public static void unbanishRogueLootEntries(ServerPlayer serverPlayer, List<Identifier> entryIdentifierList) {
+	public static void unbanishRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
 		BanishedRogueLootEntriesAttachedData newBanishedRogueLootEntriesAttachedData = BanishedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(serverPlayer));
 		Set<Identifier> newBanishedRogueLootEntrySet = new HashSet<>(newBanishedRogueLootEntriesAttachedData.banishedRogueLootEntries());
 
@@ -98,7 +98,7 @@ public class DataAttachmentHelper {
 	/**
 	 * Unbanishes all entries when entryIdentifier is null
 	 */
-	public static void unbanishRogueLootEntry(ServerPlayer serverPlayer, @Nullable Identifier entryIdentifier) {
+	public static void unbanishRogueLootEntry(final ServerPlayer serverPlayer, @Nullable final Identifier entryIdentifier) {
 		if (entryIdentifier != null) {
 			BanishedRogueLootEntriesAttachedData newBanishedRogueLootEntriesAttachedData = BanishedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(serverPlayer));
 			Set<Identifier> newBanishedRogueLootEntrySet = new HashSet<>(newBanishedRogueLootEntriesAttachedData.banishedRogueLootEntries());

@@ -28,11 +28,11 @@ public record RogueLootTable(
 	).apply(instance, RogueLootTable::new));
 
 	public RogueLootTable(
-			HolderSet<RogueLootTableEntry> rogueLootTableEntries,
-			Map<Identifier, Integer> rarityOverrides,
-			String rogueLootGuiSettingsIdString,
-			boolean enableEntryBanishing,
-			Optional<ItemStackTemplate> banishingCost
+			final HolderSet<RogueLootTableEntry> rogueLootTableEntries,
+			final Map<Identifier, Integer> rarityOverrides,
+			final String rogueLootGuiSettingsIdString,
+			final boolean enableEntryBanishing,
+			final Optional<ItemStackTemplate> banishingCost
 	) {
 		this.rogueLootTableEntries = rogueLootTableEntries;
 		this.rarityOverrides = rarityOverrides != null ? new HashMap<>(rarityOverrides) : Map.of();

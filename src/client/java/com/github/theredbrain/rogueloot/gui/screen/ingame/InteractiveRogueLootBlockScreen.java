@@ -42,7 +42,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 	private EditBox alreadyLootedMessageField;
 	private EditBox alreadyLootedSoundIdField;
 
-	public InteractiveRogueLootBlockScreen(InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+	public InteractiveRogueLootBlockScreen(final InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 		super(GameNarrator.NO_TITLE);
 		this.interactiveRogueLootBlockEntity = interactiveRogueLootBlockEntity;
 	}
@@ -255,7 +255,7 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 		return true;
 	}
 
-	public static int parseInt(String string) {
+	public static int parseInt(final String string) {
 		try {
 			return Integer.parseInt(string);
 		} catch (NumberFormatException numberFormatException) {

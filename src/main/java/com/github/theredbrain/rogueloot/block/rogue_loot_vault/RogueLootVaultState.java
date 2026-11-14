@@ -13,36 +13,36 @@ import net.minecraft.world.level.block.LevelEvent;
 public enum RogueLootVaultState implements StringRepresentable {
 	INACTIVE("inactive", Light.HALF_LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
 			sharedData.setDisplayItem(ItemStack.EMPTY);
-			world.levelEvent(LevelEvent.ANIMATION_VAULT_DEACTIVATE, pos, ominous ? 1 : 0);
+			serverLevel.levelEvent(LevelEvent.ANIMATION_VAULT_DEACTIVATE, pos, ominous ? 1 : 0);
 		}
 	},
 	ACTIVE("active", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
+		protected void onChangedTo(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
 			if (!sharedData.hasDisplayItem()) {
-				RogueLootVaultBlockEntity.Server.cycleDisplayItemFromLootTable(world, this, config, sharedData, pos);
+				RogueLootVaultBlockEntity.Server.cycleDisplayItemFromLootTable(serverLevel, this, config, sharedData, pos);
 			}
 
-			world.levelEvent(LevelEvent.ANIMATION_VAULT_ACTIVATE, pos, ominous ? 1 : 0);
+			serverLevel.levelEvent(LevelEvent.ANIMATION_VAULT_ACTIVATE, pos, ominous ? 1 : 0);
 		}
 	},
 	UNLOCKING("unlocking", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
-			world.playSound(null, pos, SoundEvents.VAULT_INSERT_ITEM, SoundSource.BLOCKS);
+		protected void onChangedTo(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
+			serverLevel.playSound(null, pos, SoundEvents.VAULT_INSERT_ITEM, SoundSource.BLOCKS);
 		}
 	},
 	EJECTING("ejecting", Light.LIT) {
 		@Override
-		protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
-			world.playSound(null, pos, SoundEvents.VAULT_OPEN_SHUTTER, SoundSource.BLOCKS);
+		protected void onChangedTo(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
+			serverLevel.playSound(null, pos, SoundEvents.VAULT_OPEN_SHUTTER, SoundSource.BLOCKS);
 		}
 
 		@Override
-		protected void onChangedFrom(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
-			world.playSound(null, pos, SoundEvents.VAULT_CLOSE_SHUTTER, SoundSource.BLOCKS);
+		protected void onChangedFrom(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData) {
+			serverLevel.playSound(null, pos, SoundEvents.VAULT_CLOSE_SHUTTER, SoundSource.BLOCKS);
 		}
 	};
 
@@ -63,44 +63,44 @@ public enum RogueLootVaultState implements StringRepresentable {
 		return this.light.luminance;
 	}
 
-	public RogueLootVaultState update(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData) {
+	public RogueLootVaultState update(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData) {
 		return switch (this) {
-			case INACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.activationRange());
-			case ACTIVE -> updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
+			case INACTIVE -> updateActiveState(serverLevel, pos, config, serverData, sharedData, config.activationRange());
+			case ACTIVE -> updateActiveState(serverLevel, pos, config, serverData, sharedData, config.deactivationRange());
 			case UNLOCKING -> {
-				serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
+				serverData.setStateUpdatingResumeTime(serverLevel.getGameTime() + 20L);
 				yield EJECTING;
 			}
 			case EJECTING -> {
-				this.ejectReward(world, pos);
-				serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
-				yield updateActiveState(world, pos, config, serverData, sharedData, config.deactivationRange());
+				this.ejectReward(serverLevel, pos);
+				serverData.setStateUpdatingResumeTime(serverLevel.getGameTime() + 20L);
+				yield updateActiveState(serverLevel, pos, config, serverData, sharedData, config.deactivationRange());
 			}
 		};
 	}
 
 	private static RogueLootVaultState updateActiveState(
-			ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData, double radius
+			final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData, final double radius
 	) {
-		sharedData.updateConnectedPlayers(world, pos, serverData, config, radius);
-		serverData.setStateUpdatingResumeTime(world.getGameTime() + 20L);
+		sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, radius);
+		serverData.setStateUpdatingResumeTime(serverLevel.getGameTime() + 20L);
 		return sharedData.hasConnectedPlayers() ? ACTIVE : INACTIVE;
 	}
 
-	public void onStateChange(ServerLevel world, BlockPos pos, RogueLootVaultState newState, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
-		this.onChangedFrom(world, pos, config, sharedData);
-		newState.onChangedTo(world, pos, config, sharedData, ominous);
+	public void onStateChange(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultState newState, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
+		this.onChangedFrom(serverLevel, pos, config, sharedData);
+		newState.onChangedTo(serverLevel, pos, config, sharedData, ominous);
 	}
 
-	protected void onChangedTo(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, boolean ominous) {
+	protected void onChangedTo(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final boolean ominous) {
 	}
 
-	protected void onChangedFrom(ServerLevel world, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
+	protected void onChangedFrom(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData) {
 	}
 
-	private void ejectReward(ServerLevel world, BlockPos pos) {
-		world.levelEvent(LevelEvent.ANIMATION_VAULT_EJECT_ITEM, pos, 0);
-		world.playSound(null, pos, SoundEvents.VAULT_EJECT_ITEM, SoundSource.BLOCKS, 1.0F, 0.8F + 0.4F);
+	private void ejectReward(final ServerLevel serverLevel, final BlockPos pos) {
+		serverLevel.levelEvent(LevelEvent.ANIMATION_VAULT_EJECT_ITEM, pos, 0);
+		serverLevel.playSound(null, pos, SoundEvents.VAULT_EJECT_ITEM, SoundSource.BLOCKS, 1.0F, 0.8F + 0.4F);
 	}
 
 	enum Light {

@@ -20,19 +20,19 @@ public class RogueLootDataAttachments {
 	}
 
 	// region getter/setter
-	public static GeneratedRogueLootAttachedData getGeneratedRogueLootAttachedData(ServerLevel serverLevel) {
+	public static GeneratedRogueLootAttachedData getGeneratedRogueLootAttachedData(final ServerLevel serverLevel) {
 		return serverLevel.getAttachedOrElse(GENERATED_ROGUE_LOOT_ATTACHED_DATA, GeneratedRogueLootAttachedData.DEFAULT);
 	}
 
-	public static void setGeneratedRogueLootAttachedData(ServerLevel serverLevel, GeneratedRogueLootAttachedData generatedRogueLootAttachedData) {
+	public static void setGeneratedRogueLootAttachedData(final ServerLevel serverLevel, final GeneratedRogueLootAttachedData generatedRogueLootAttachedData) {
 		serverLevel.setAttached(GENERATED_ROGUE_LOOT_ATTACHED_DATA, generatedRogueLootAttachedData);
 	}
 
-	public static BanishedRogueLootEntriesAttachedData getBanishedRogueLootEntriesAttachedData(Player player) {
+	public static BanishedRogueLootEntriesAttachedData getBanishedRogueLootEntriesAttachedData(final Player player) {
 		return player.getAttachedOrElse(BANISHED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA, BanishedRogueLootEntriesAttachedData.DEFAULT);
 	}
 
-	public static void setBanishedRogueLootEntriesAttachedData(Player player, BanishedRogueLootEntriesAttachedData banishedRogueLootEntriesAttachedData) {
+	public static void setBanishedRogueLootEntriesAttachedData(final Player player, final BanishedRogueLootEntriesAttachedData banishedRogueLootEntriesAttachedData) {
 		player.setAttached(BANISHED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA, banishedRogueLootEntriesAttachedData);
 	}
 	// endregion getter/setter

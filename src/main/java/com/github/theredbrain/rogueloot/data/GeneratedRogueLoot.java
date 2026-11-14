@@ -55,14 +55,14 @@ public record GeneratedRogueLoot(
 	);
 
 	public GeneratedRogueLoot(
-			String backgroundTexturePath,
-			List<ChatFormatting> requirementsNotMetFormatting,
-			List<ChatFormatting> requirementsMetFormatting,
-			List<VisibleRogueLootTableEntry> entryList,
-			int minChoices,
-			int maxChoices,
-			boolean enableEntryBanishing,
-			Optional<ItemStackTemplate> banishingCost
+			final String backgroundTexturePath,
+			final List<ChatFormatting> requirementsNotMetFormatting,
+			final List<ChatFormatting> requirementsMetFormatting,
+			final List<VisibleRogueLootTableEntry> entryList,
+			final int minChoices,
+			final int maxChoices,
+			final boolean enableEntryBanishing,
+			final Optional<ItemStackTemplate> banishingCost
 	) {
 		this.backgroundTexturePath = backgroundTexturePath != null ? backgroundTexturePath : "";
 		this.requirementsNotMetFormatting = requirementsNotMetFormatting != null ? requirementsNotMetFormatting : List.of();
@@ -74,7 +74,7 @@ public record GeneratedRogueLoot(
 		this.banishingCost = banishingCost;
 	}
 
-	public static GeneratedRogueLoot copy(GeneratedRogueLoot generatedRogueLoot) {
+	public static GeneratedRogueLoot copy(final GeneratedRogueLoot generatedRogueLoot) {
 		List<VisibleRogueLootTableEntry> newVisibleRogueLootTableEntryList = new ArrayList<>();
 		generatedRogueLoot.entryList().forEach((visibleRogueLootTableEntry -> {
 			newVisibleRogueLootTableEntryList.add(VisibleRogueLootTableEntry.copy(visibleRogueLootTableEntry));
@@ -129,13 +129,13 @@ public record GeneratedRogueLoot(
 		);
 
 		public VisibleRogueLootTableEntry(
-				String entryBackgroundTexturePathAddition,
-				Optional<ItemStackTemplate> displayStack,
-				Optional<Identifier> iconTextureIdentifier,
-				String labelText,
-				List<ChatFormatting> labelFormatting,
-				boolean allowBanishing,
-				Identifier parentRogueLootTableEntryId
+				final String entryBackgroundTexturePathAddition,
+				final Optional<ItemStackTemplate> displayStack,
+				final Optional<Identifier> iconTextureIdentifier,
+				final String labelText,
+				final List<ChatFormatting> labelFormatting,
+				final boolean allowBanishing,
+				final Identifier parentRogueLootTableEntryId
 		) {
 			this.entryBackgroundTexturePathAddition = entryBackgroundTexturePathAddition != null ? entryBackgroundTexturePathAddition : "";
 			this.displayStack = displayStack;
@@ -146,7 +146,7 @@ public record GeneratedRogueLoot(
 			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId;
 		}
 
-		public static VisibleRogueLootTableEntry copy(VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
+		public static VisibleRogueLootTableEntry copy(final VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
 			return new VisibleRogueLootTableEntry(
 					visibleRogueLootTableEntry.entryBackgroundTexturePathAddition(),
 					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),

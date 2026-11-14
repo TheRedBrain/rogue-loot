@@ -6,7 +6,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 public class OpenRogueLootScreenPacketReceiver implements ClientPlayNetworking.PlayPayloadHandler<OpenRogueLootScreenPacket> {
 
 	@Override
-	public void receive(OpenRogueLootScreenPacket payload, ClientPlayNetworking.Context context) {
+	public void receive(final OpenRogueLootScreenPacket payload, final ClientPlayNetworking.Context context) {
 		context.client().setScreen(new RogueLootGUIScreen(payload.generatedRogueLoot(), payload.localRogueLootTableIdentifier(), payload.banishingAttempts()));
 	}
 }

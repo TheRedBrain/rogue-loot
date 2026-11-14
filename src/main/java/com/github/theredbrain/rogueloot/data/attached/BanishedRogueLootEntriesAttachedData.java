@@ -21,7 +21,7 @@ public record BanishedRogueLootEntriesAttachedData(List<Identifier> banishedRogu
 			BanishedRogueLootEntriesAttachedData::new
 	);
 
-	public static BanishedRogueLootEntriesAttachedData copy(BanishedRogueLootEntriesAttachedData banishedRogueLootEntriesAttachedData) {
+	public static BanishedRogueLootEntriesAttachedData copy(final BanishedRogueLootEntriesAttachedData banishedRogueLootEntriesAttachedData) {
 		return new BanishedRogueLootEntriesAttachedData(new ArrayList<>(banishedRogueLootEntriesAttachedData.banishedRogueLootEntries()));
 	}
 }

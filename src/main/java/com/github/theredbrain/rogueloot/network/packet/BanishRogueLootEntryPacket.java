@@ -17,14 +17,14 @@ public record BanishRogueLootEntryPacket(
 	public static final Type<BanishRogueLootEntryPacket> PACKET_ID = new Type<>(RogueLoot.identifier("banish_rogue_loot_entry"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, BanishRogueLootEntryPacket> PACKET_CODEC = StreamCodec.ofMember(BanishRogueLootEntryPacket::write, BanishRogueLootEntryPacket::new);
 
-	public BanishRogueLootEntryPacket(RegistryFriendlyByteBuf registryByteBuf) {
+	public BanishRogueLootEntryPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				registryByteBuf.readIdentifier(),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
-	private void write(RegistryFriendlyByteBuf registryByteBuf) {
+	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		registryByteBuf.writeIdentifier(this.banishedRogueLootEntry);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.banishingCost);
 	}

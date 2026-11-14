@@ -23,7 +23,7 @@ public record UpdateInteractiveRogueLootBlockPacket(
 	public static final Type<UpdateInteractiveRogueLootBlockPacket> PACKET_ID = new Type<>(RogueLoot.identifier("update_interactive_rogue_loot_block"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, UpdateInteractiveRogueLootBlockPacket> PACKET_CODEC = StreamCodec.ofMember(UpdateInteractiveRogueLootBlockPacket::write, UpdateInteractiveRogueLootBlockPacket::new);
 
-	public UpdateInteractiveRogueLootBlockPacket(RegistryFriendlyByteBuf registryByteBuf) {
+	public UpdateInteractiveRogueLootBlockPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				registryByteBuf.readBlockPos(),
 				registryByteBuf.readUtf(),
@@ -39,7 +39,7 @@ public record UpdateInteractiveRogueLootBlockPacket(
 		);
 	}
 
-	private void write(RegistryFriendlyByteBuf registryByteBuf) {
+	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		registryByteBuf.writeBlockPos(this.interactiveRogueLootBlockPosition);
 		registryByteBuf.writeUtf(this.lootTableIdentifierString);
 		registryByteBuf.writeEnum(this.mode);

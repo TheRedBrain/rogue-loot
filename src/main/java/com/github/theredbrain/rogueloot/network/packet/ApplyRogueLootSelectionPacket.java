@@ -15,14 +15,14 @@ public record ApplyRogueLootSelectionPacket(
 	public static final Type<ApplyRogueLootSelectionPacket> PACKET_ID = new Type<>(RogueLoot.identifier("apply_rogue_loot_selection"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ApplyRogueLootSelectionPacket> PACKET_CODEC = StreamCodec.ofMember(ApplyRogueLootSelectionPacket::write, ApplyRogueLootSelectionPacket::new);
 
-	public ApplyRogueLootSelectionPacket(RegistryFriendlyByteBuf registryByteBuf) {
+	public ApplyRogueLootSelectionPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				registryByteBuf.readList(Identifier.STREAM_CODEC),
 				registryByteBuf.readIdentifier()
 		);
 	}
 
-	private void write(RegistryFriendlyByteBuf registryByteBuf) {
+	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		registryByteBuf.writeCollection(this.chosenRogueLootEntries, Identifier.STREAM_CODEC);
 		registryByteBuf.writeIdentifier(this.localRogueLootTableIdentifier);
 	}

@@ -31,7 +31,7 @@ public class RogueLootVaultSharedData {
 	private double connectedParticlesRange = RogueLootVaultConfig.DEFAULT.deactivationRange();
 	boolean dirty;
 
-	RogueLootVaultSharedData(ItemStack displayItem, Set<UUID> connectedPlayers, double connectedParticlesRange) {
+	RogueLootVaultSharedData(final ItemStack displayItem, final Set<UUID> connectedPlayers, final double connectedParticlesRange) {
 		this.displayItem = displayItem;
 		this.connectedPlayers.addAll(connectedPlayers);
 		this.connectedParticlesRange = connectedParticlesRange;
@@ -48,7 +48,7 @@ public class RogueLootVaultSharedData {
 		return !this.displayItem.isEmpty();
 	}
 
-	public void setDisplayItem(ItemStack stack) {
+	public void setDisplayItem(final ItemStack stack) {
 		if (!ItemStack.matches(this.displayItem, stack)) {
 			this.displayItem = stack.copy();
 			this.markDirty();
@@ -67,9 +67,9 @@ public class RogueLootVaultSharedData {
 		return this.connectedParticlesRange;
 	}
 
-	public void updateConnectedPlayers(ServerLevel world, BlockPos pos, RogueLootVaultServerData serverData, RogueLootVaultConfig config, double radius) {
+	public void updateConnectedPlayers(final ServerLevel serverLevel, final BlockPos pos, final RogueLootVaultServerData serverData, final RogueLootVaultConfig config, final double radius) {
 		Set<UUID> set = (Set<UUID>) PlayerDetector.INCLUDING_CREATIVE_PLAYERS
-				.detect(world, PlayerDetector.EntitySelector.SELECT_FROM_LEVEL, pos, radius, false)
+				.detect(serverLevel, PlayerDetector.EntitySelector.SELECT_FROM_LEVEL, pos, radius, false)
 				.stream()
 				.filter(uuid -> !serverData.getRewardedPlayers().contains(uuid))
 				.collect(Collectors.toSet());
@@ -91,7 +91,7 @@ public class RogueLootVaultSharedData {
 		this.dirty = false;
 	}
 
-	public void set(RogueLootVaultSharedData data) {
+	public void set(final RogueLootVaultSharedData data) {
 		this.displayItem = data.displayItem;
 		this.connectedPlayers = data.connectedPlayers;
 		this.connectedParticlesRange = data.connectedParticlesRange;

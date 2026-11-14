@@ -23,7 +23,7 @@ public record GeneratedRogueLootAttachedData(
 //			GeneratedRogueLootAttachedData::new
 //	);
 
-	public static GeneratedRogueLootAttachedData copy(GeneratedRogueLootAttachedData generatedRogueLootAttachedData) {
+	public static GeneratedRogueLootAttachedData copy(final GeneratedRogueLootAttachedData generatedRogueLootAttachedData) {
 		Map<Identifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = new HashMap<>();
 		generatedRogueLootAttachedData.generatedRogueLootData().forEach((identifier, map) -> {
 			Map<UUID, GeneratedRogueLoot> newMap = new HashMap<>();

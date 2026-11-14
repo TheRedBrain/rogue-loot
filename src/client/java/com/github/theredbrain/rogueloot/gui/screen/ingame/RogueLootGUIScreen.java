@@ -68,7 +68,7 @@ public class RogueLootGUIScreen extends Screen {
 
 	}
 
-	private void selectLootOption(Button button, int index) {
+	private void selectLootOption(final Button button, final int index) {
 		if (index >= MAX_OPTIONS_AMOUNT || index >= this.generatedRogueLoot.entryList().size()) {
 			return;
 		}
@@ -309,7 +309,7 @@ public class RogueLootGUIScreen extends Screen {
 		}
 	}
 
-	private int[][] getButtonPositions(int visibleOptionsAmount) {
+	private int[][] getButtonPositions(final int visibleOptionsAmount) {
 		return switch (visibleOptionsAmount) {
 			case 1 -> new int[][]{{this.width / 2 - 25, 78}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
 			case 2 -> new int[][]{{this.width / 2 - 53, 78}, {this.width / 2 + 3, 78}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
@@ -414,7 +414,7 @@ public class RogueLootGUIScreen extends Screen {
 		return true;
 	}
 
-	private void banishEntry(int index) {
+	private void banishEntry(final int index) {
 		if (this.generatedRogueLoot.enableEntryBanishing() && index < this.generatedRogueLoot.entryList().size()) {
 			Optional<ItemStack> optionalBanishingCost = Optional.empty();
 			if (this.generatedRogueLoot.banishingCost().isPresent()) {

@@ -20,22 +20,22 @@ public class LootOptionButton extends Button {
 	private Optional<ItemStackTemplate> displayStack = Optional.empty();
 	private boolean selected;
 
-	public LootOptionButton(int x, int y, int width, int height, Component message, OnPress onPress) {
+	public LootOptionButton(final int x, final int y, final int width, final int height, final Component message, final OnPress onPress) {
 		super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
 	}
 
-	public void setTextureIds(String string) {
+	public void setTextureIds(final String string) {
 		this.selectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected_highlighted");
 		this.selectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected");
 		this.unselectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "unselected_highlighted");
 		this.unselectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "unselected");
 	}
 
-	public void setIconTexture(Optional<Identifier> iconTexture) {
+	public void setIconTexture(final Optional<Identifier> iconTexture) {
 		this.iconTexture = iconTexture;
 	}
 
-	public void setDisplayStack(Optional<ItemStackTemplate> displayStack) {
+	public void setDisplayStack(final Optional<ItemStackTemplate> displayStack) {
 		this.displayStack = displayStack;
 	}
 
@@ -43,12 +43,12 @@ public class LootOptionButton extends Button {
 		return this.selected;
 	}
 
-	public void setSelected(boolean selected) {
+	public void setSelected(final boolean selected) {
 		this.selected = selected;
 	}
 
 	@Override
-	protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float a) {
+	protected void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
 
 		Identifier textureId;
 		if (this.isHoveredOrFocused()) {

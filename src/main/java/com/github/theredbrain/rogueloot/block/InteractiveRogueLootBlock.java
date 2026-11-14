@@ -3,7 +3,7 @@ package com.github.theredbrain.rogueloot.block;
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
-import com.github.theredbrain.rogueloot.entity.player.DuckPlayerEntityMixin;
+import com.github.theredbrain.rogueloot.entity.player.DuckPlayerMixin;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -37,7 +37,7 @@ import java.util.List;
 public class InteractiveRogueLootBlock extends BaseEntityBlock {
 	public static final MapCodec<InteractiveRogueLootBlock> CODEC = simpleCodec(InteractiveRogueLootBlock::new);
 
-	public InteractiveRogueLootBlock(Properties settings) {
+	public InteractiveRogueLootBlock(final Properties settings) {
 		super(settings);
 	}
 
@@ -47,51 +47,51 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 
 	@Nullable
 	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+	public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
 		return new InteractiveRogueLootBlockEntity(pos, state);
 	}
 
 	@Override
-	public RenderShape getRenderShape(BlockState state) {
+	public RenderShape getRenderShape(final BlockState state) {
 		return RenderShape.MODEL;
 	}
 
 	@Override
-	public InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+	public InteractionResult useWithoutItem(final BlockState state, final Level level, final BlockPos pos, final Player player, final BlockHitResult hit) {
 		if (state.is(this)) {
-			BlockEntity blockEntity = world.getBlockEntity(pos);
+			BlockEntity blockEntity = level.getBlockEntity(pos);
 			if (blockEntity instanceof InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 
 				if (player.canUseGameMasterBlocks()) {
-					((DuckPlayerEntityMixin) player).rogueloot$openInteractiveRogueLootBlockScreen(interactiveRogueLootBlockEntity);
+					((DuckPlayerMixin) player).rogueloot$openInteractiveRogueLootBlockScreen(interactiveRogueLootBlockEntity);
 					return InteractionResult.SUCCESS;
-				} else if (world instanceof ServerLevel serverWorld && !serverWorld.isClientSide() && player instanceof ServerPlayer serverPlayerEntity) {
-					if (interactiveRogueLootBlockEntity.isPlayerInSet(serverPlayerEntity)) {
+				} else if (level instanceof ServerLevel serverLevel && !serverLevel.isClientSide() && player instanceof ServerPlayer serverPlayer) {
+					if (interactiveRogueLootBlockEntity.isPlayerInSet(serverPlayer)) {
 						String alreadyLootedSoundId = interactiveRogueLootBlockEntity.getAlreadyLootedSoundId();
 						if (!alreadyLootedSoundId.isEmpty()) {
 							SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(Identifier.parse(alreadyLootedSoundId));
-							serverPlayerEntity.playSound(soundEvent, 1.0F, 1.0F);
+							serverPlayer.playSound(soundEvent, 1.0F, 1.0F);
 						}
 						String alreadyLootedMessage = interactiveRogueLootBlockEntity.getAlreadyLootedMessage();
 						if (!alreadyLootedMessage.isEmpty()) {
-							serverPlayerEntity.sendSystemMessage(Component.translatable(alreadyLootedMessage), true);
+							serverPlayer.sendSystemMessage(Component.translatable(alreadyLootedMessage), true);
 						}
 					} else {
 						Identifier identifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 						if (!interactiveRogueLootBlockEntity.getLootTableIdentifierString().isEmpty() && identifier != null) {
 							Vec3 lootPos = Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos());
 							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
-								RogueLoot.supplyLootableLoot(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), true, null);
+								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), true, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
-								RogueLoot.supplyLootableLoot(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
+								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
-								RogueLootTableHelper.supplyRogueLootTable(identifier, serverWorld, serverPlayerEntity, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), null);
+								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), null);
 							} else {
-								List<ItemStack> lootStacks = getLootItems(serverWorld, pos, player, interactiveRogueLootBlockEntity);
+								List<ItemStack> lootStacks = getLootItems(serverLevel, pos, player, interactiveRogueLootBlockEntity);
 								for (ItemStack itemStack : lootStacks) {
 									player.getInventory().placeItemBackInInventory(itemStack);
 								}
-								lootWasSupplied(serverPlayerEntity, interactiveRogueLootBlockEntity);
+								lootWasSupplied(serverPlayer, interactiveRogueLootBlockEntity);
 							}
 						}
 					}
@@ -110,27 +110,27 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 		}
 	}
 
-	public static void lootWasSupplied(ServerPlayer serverPlayerEntity, InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+	public static void lootWasSupplied(final ServerPlayer serverPlayer, final InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 		if (interactiveRogueLootBlockEntity.trackPlayers()) {
-			interactiveRogueLootBlockEntity.addPlayerToSet(serverPlayerEntity);
+			interactiveRogueLootBlockEntity.addPlayerToSet(serverPlayer);
 		}
 		String lootAcquiredSoundId = interactiveRogueLootBlockEntity.getLootAcquiredSoundId();
 		if (!lootAcquiredSoundId.isEmpty()) {
 			SoundEvent soundEvent = SoundEvent.createVariableRangeEvent(Identifier.parse(lootAcquiredSoundId));
-			serverPlayerEntity.playSound(soundEvent, 1.0F, 1.0F);
+			serverPlayer.playSound(soundEvent, 1.0F, 1.0F);
 		}
 		String lootAcquiredMessage = interactiveRogueLootBlockEntity.getLootAcquiredMessage();
 		if (!lootAcquiredMessage.isEmpty()) {
-			serverPlayerEntity.sendSystemMessage(Component.translatable(lootAcquiredMessage), true);
+			serverPlayer.sendSystemMessage(Component.translatable(lootAcquiredMessage), true);
 		}
 	}
 
-	private static List<ItemStack> getLootItems(ServerLevel serverWorld, BlockPos pos, Player player, InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+	private static List<ItemStack> getLootItems(final ServerLevel serverLevel, final BlockPos pos, final Player player, final InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 		List<ItemStack> list = new ArrayList<>();
 		Identifier lootTableIdentifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 		if (lootTableIdentifier != null) {
-			LootTable lootTable = serverWorld.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableIdentifier));
-			LootParams params = new LootParams.Builder(serverWorld).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.THIS_ENTITY, player).create(LootContextParamSets.VAULT);
+			LootTable lootTable = serverLevel.getServer().reloadableRegistries().getLootTable(ResourceKey.create(Registries.LOOT_TABLE, lootTableIdentifier));
+			LootParams params = new LootParams.Builder(serverLevel).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(pos)).withParameter(LootContextParams.THIS_ENTITY, player).create(LootContextParamSets.VAULT);
 			list = lootTable.getRandomItems(params);
 		}
 		return list;

@@ -33,7 +33,7 @@ public class BlockRegistry {
 	public static ResourceKey<Item> INTERACTIVE_ROGUE_LOOT_BLOCK_ITEM_KEY = ResourceKey.create(Registries.ITEM, RogueLoot.identifier("interactive_rogue_loot_block"));
 	public static final Block INTERACTIVE_ROGUE_LOOT_BLOCK = registerBlock(INTERACTIVE_ROGUE_LOOT_BLOCK_BLOCK_KEY, INTERACTIVE_ROGUE_LOOT_BLOCK_ITEM_KEY, new InteractiveRogueLootBlock(BlockBehaviour.Properties.of().setId(INTERACTIVE_ROGUE_LOOT_BLOCK_BLOCK_KEY).mapColor(MapColor.COLOR_LIGHT_GRAY).requiresCorrectToolForDrops().strength(-1.0f, 3600000.0f).noLootTable()), List.of(CreativeModeTabs.OP_BLOCKS));
 
-	private static Block registerBlock(ResourceKey<Block> block_key, ResourceKey<Item> item_key, Block block, List<ResourceKey<CreativeModeTab>> creativeModeTabList, Block... alternatives) {
+	private static Block registerBlock(final ResourceKey<Block> block_key, final ResourceKey<Item> item_key, final Block block, final List<ResourceKey<CreativeModeTab>> creativeModeTabList, final Block... alternatives) {
 		Item blockItem = Registry.register(BuiltInRegistries.ITEM, item_key, new BlockItem(block, new Item.Properties().setId(item_key)));
 		for (ResourceKey<CreativeModeTab> creativeModeTab : creativeModeTabList) {
 			CreativeModeTabEvents.modifyOutputEvent(creativeModeTab).register(content -> content.accept(block));
@@ -44,6 +44,6 @@ public class BlockRegistry {
 		return Registry.register(BuiltInRegistries.BLOCK, block_key, block);
 	}
 
-	public static void init() {
+	public static void bootstrap() {
 	}
 }

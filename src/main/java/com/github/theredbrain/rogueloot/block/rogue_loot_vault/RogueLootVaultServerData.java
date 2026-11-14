@@ -25,7 +25,7 @@ public class RogueLootVaultServerData {
 	private long lastFailedUnlockTime;
 	boolean dirty;
 
-	RogueLootVaultServerData(Set<UUID> rewardedPlayers, long stateUpdatingResumesAt) {
+	RogueLootVaultServerData(final Set<UUID> rewardedPlayers, final long stateUpdatingResumesAt) {
 		this.rewardedPlayers.addAll(rewardedPlayers);
 		this.stateUpdatingResumesAt = stateUpdatingResumesAt;
 	}
@@ -33,7 +33,7 @@ public class RogueLootVaultServerData {
 	public RogueLootVaultServerData() {
 	}
 
-	public void setLastFailedUnlockTime(long lastFailedUnlockTime) {
+	public void setLastFailedUnlockTime(final long lastFailedUnlockTime) {
 		this.lastFailedUnlockTime = lastFailedUnlockTime;
 	}
 
@@ -45,12 +45,12 @@ public class RogueLootVaultServerData {
 		return this.rewardedPlayers;
 	}
 
-	public boolean hasRewardedPlayer(Player player) {
+	public boolean hasRewardedPlayer(final Player player) {
 		return this.rewardedPlayers.contains(player.getUUID());
 	}
 
 	@VisibleForTesting
-	public void markPlayerAsRewarded(Player player) {
+	public void markPlayerAsRewarded(final Player player) {
 		this.rewardedPlayers.add(player.getUUID());
 		if (this.rewardedPlayers.size() > 128) {
 			Iterator<UUID> iterator = this.rewardedPlayers.iterator();
@@ -64,7 +64,7 @@ public class RogueLootVaultServerData {
 	}
 
 	@VisibleForTesting
-	public void unmarkPlayerAsRewarded(Player player) {
+	public void unmarkPlayerAsRewarded(final Player player) {
 		this.rewardedPlayers.remove(player.getUUID());
 
 		this.markDirty();
@@ -74,12 +74,12 @@ public class RogueLootVaultServerData {
 		return this.stateUpdatingResumesAt;
 	}
 
-	public void setStateUpdatingResumeTime(long stateUpdatingResumesAt) {
+	public void setStateUpdatingResumeTime(final long stateUpdatingResumesAt) {
 		this.stateUpdatingResumesAt = stateUpdatingResumesAt;
 		this.markDirty();
 	}
 
-	public void set(RogueLootVaultServerData data) {
+	public void set(final RogueLootVaultServerData data) {
 		this.stateUpdatingResumesAt = data.getStateUpdatingResumeTime();
 		this.rewardedPlayers.clear();
 		this.rewardedPlayers.addAll(data.rewardedPlayers);

@@ -31,13 +31,13 @@ public record RogueLootTableEntry(
 	).apply(instance, RogueLootTableEntry::new));
 
 	public RogueLootTableEntry(
-			Optional<ContextAwarePredicate> unlockPredicate,
-			List<RogueLootTableEntryComponent> rogueLootTableEntryComponents,
-			Optional<ItemStackTemplate> displayStack,
-			String iconTexturePath,
-			String labelText,
-			String rarityIdString,
-			boolean allowBanishing
+			final Optional<ContextAwarePredicate> unlockPredicate,
+			final List<RogueLootTableEntryComponent> rogueLootTableEntryComponents,
+			final Optional<ItemStackTemplate> displayStack,
+			final String iconTexturePath,
+			final String labelText,
+			final String rarityIdString,
+			final boolean allowBanishing
 	) {
 		this.unlockPredicate = unlockPredicate;
 		this.rogueLootTableEntryComponents = rogueLootTableEntryComponents != null ? rogueLootTableEntryComponents : List.of();

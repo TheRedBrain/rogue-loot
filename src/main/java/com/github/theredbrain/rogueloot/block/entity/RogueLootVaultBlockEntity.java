@@ -66,7 +66,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	private RogueLootVaultConfig config = null;
 	private String lootableVaultConfigIdentifier = "";
 
-	public RogueLootVaultBlockEntity(BlockPos pos, BlockState state) {
+	public RogueLootVaultBlockEntity(final BlockPos pos, final BlockState state) {
 		super(EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY, pos, state);
 	}
 
@@ -77,12 +77,12 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+	public CompoundTag getUpdateTag(final HolderLookup.Provider registries) {
 		return Util.make(new CompoundTag(), tag -> tag.store("shared_data", RogueLootVaultSharedData.CODEC, registries.createSerializationContext(NbtOps.INSTANCE), this.sharedData));
 	}
 
 	@Override
-	protected void saveAdditional(ValueOutput output) {
+	protected void saveAdditional(final ValueOutput output) {
 
 		output.putString("config_identifier", this.lootableVaultConfigIdentifier);
 
@@ -93,7 +93,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void loadAdditional(ValueInput input) {
+	protected void loadAdditional(final ValueInput input) {
 
 		input.read("shared_data", RogueLootVaultSharedData.CODEC).ifPresent(this.sharedData::set);
 
@@ -126,41 +126,41 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		return this.clientData;
 	}
 
-	public void markAsRewarded(ServerPlayer serverPlayerEntity, ItemStack itemStack) {
+	public void markAsRewarded(final ServerPlayer serverPlayer, final ItemStack itemStack) {
 		if (this.level instanceof ServerLevel serverWorld) {
 			RogueLootVaultServerData serverData = this.getServerData();
 			RogueLootVaultSharedData sharedData = this.getSharedData();
 			RogueLootVaultConfig config = this.getConfig(serverWorld);
 			if (serverData != null && sharedData != null) {
-				serverPlayerEntity.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
-				itemStack.consume(config.keyItem().create().getCount(), serverPlayerEntity);
+				serverPlayer.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
+				itemStack.consume(config.keyItem().create().getCount(), serverPlayer);
 				Server.unlock(serverWorld, serverWorld.getBlockState(this.worldPosition), this.worldPosition, config, serverData, sharedData);
-				serverData.markPlayerAsRewarded(serverPlayerEntity);
+				serverData.markPlayerAsRewarded(serverPlayer);
 				sharedData.updateConnectedPlayers(serverWorld, this.worldPosition, serverData, config, config.deactivationRange());
 			}
 		}
 	}
 
-	public void unmarkAsRewarded(ServerPlayer serverPlayerEntity) {
+	public void unmarkAsRewarded(final ServerPlayer serverPlayer) {
 		if (this.level instanceof ServerLevel serverWorld) {
 			RogueLootVaultServerData serverData = this.getServerData();
 			RogueLootVaultSharedData sharedData = this.getSharedData();
 			RogueLootVaultConfig config = this.getConfig(serverWorld);
 			if (serverData != null && sharedData != null) {
-				serverData.unmarkPlayerAsRewarded(serverPlayerEntity);
+				serverData.unmarkPlayerAsRewarded(serverPlayer);
 				sharedData.updateConnectedPlayers(serverWorld, this.worldPosition, serverData, config, config.deactivationRange());
 			}
-			this.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), serverPlayerEntity, config);
+			this.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), serverPlayer, config);
 		}
 	}
 
-	public RogueLootVaultConfig getConfig(Level world) {
+	public RogueLootVaultConfig getConfig(final Level level) {
 		if (this.config != null) {
 			return this.config;
 		}
 		Identifier identifier = Identifier.tryParse(this.lootableVaultConfigIdentifier);
-		Optional<Holder.Reference<Registry<RogueLootVaultConfig>>> optionalLootableVaultConfigRegistryReference = world.registryAccess().get(CustomDynamicRegistries.ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY);
-		if (optionalLootableVaultConfigRegistryReference.isPresent()) {
+		Optional<Holder.Reference<Registry<RogueLootVaultConfig>>> optionalLootableVaultConfigRegistryReference = level.registryAccess().get(CustomDynamicRegistries.ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY);
+		if (optionalLootableVaultConfigRegistryReference.isPresent() && identifier != null) {
 			Optional<Holder.Reference<RogueLootVaultConfig>> optionalLootableVaultConfigReference = optionalLootableVaultConfigRegistryReference.get().value().get(identifier);
 			if (optionalLootableVaultConfigReference.isPresent()) {
 				this.config = optionalLootableVaultConfigReference.get().value();
@@ -174,135 +174,135 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		return this.config;
 	}
 
-	private void removeLootableUses(ServerLevel serverWorld, Vec3 pos, @Nullable ServerPlayer serverPlayerEntity, RogueLootVaultConfig config) {
+	private void removeLootableUses(final ServerLevel serverLevel, final Vec3 pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-			RogueLootTableHelper.removeRogueLootTableUses(serverWorld, pos, config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayerEntity);
+			RogueLootTableHelper.removeRogueLootTableUses(serverLevel, pos, config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayer);
 		} else {
-			RogueLoot.removeLootableUses(serverWorld, pos, config.lootTableIdentifier(), serverPlayerEntity);
+			RogueLoot.removeLootableUses(serverLevel, pos, config.lootTableIdentifier(), serverPlayer);
 		}
 	}
 
 	public static final class Client {
 
-		public static void tick(Level world, BlockPos pos, BlockState state, RogueLootVaultClientData clientData, RogueLootVaultSharedData sharedData) {
+		public static void tick(final Level level, final BlockPos pos, final BlockState state, final RogueLootVaultClientData clientData, final RogueLootVaultSharedData sharedData) {
 			clientData.rotateDisplay();
-			if (world.getGameTime() % 20L == 0L) {
-				emitConnectionParticlesForNearbyPlayers(world, pos, state, sharedData);
+			if (level.getGameTime() % 20L == 0L) {
+				emitConnectionParticlesForNearbyPlayers(level, pos, state, sharedData);
 			}
 
-			emitIdleParticles(world, pos, sharedData, state.getValue(VaultBlock.OMINOUS) ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMALL_FLAME);
-			playIdleSounds(world, pos, sharedData);
+			emitIdleParticles(level, pos, sharedData, state.getValue(VaultBlock.OMINOUS) ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SMALL_FLAME);
+			playIdleSounds(level, pos, sharedData);
 		}
 
-		public static void emitActivationParticles(Level world, BlockPos pos, BlockState state, RogueLootVaultSharedData sharedData, ParticleOptions particle) {
-			emitConnectionParticlesForNearbyPlayers(world, pos, state, sharedData);
-			RandomSource random = world.getRandom();
+		public static void emitActivationParticles(final Level level, final BlockPos pos, final BlockState state, final RogueLootVaultSharedData sharedData, final ParticleOptions particle) {
+			emitConnectionParticlesForNearbyPlayers(level, pos, state, sharedData);
+			RandomSource random = level.getRandom();
 
 			for (int i = 0; i < 20; i++) {
 				Vec3 vec3d = randomPosInsideCage(pos, random);
-				world.addParticle(ParticleTypes.SMOKE, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
-				world.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
+				level.addParticle(ParticleTypes.SMOKE, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
+				level.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
 			}
 		}
 
-		public static void emitDeactivationParticles(Level world, BlockPos pos, ParticleOptions particle) {
-			RandomSource random = world.getRandom();
+		public static void emitDeactivationParticles(final Level level, final BlockPos pos, final ParticleOptions particle) {
+			RandomSource random = level.getRandom();
 
 			for (int i = 0; i < 20; i++) {
 				Vec3 vec3d = randomPosCenterOfCage(pos, random);
 				Vec3 vec3d2 = new Vec3(random.nextGaussian() * 0.02, random.nextGaussian() * 0.02, random.nextGaussian() * 0.02);
-				world.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), vec3d2.x(), vec3d2.y(), vec3d2.z());
+				level.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), vec3d2.x(), vec3d2.y(), vec3d2.z());
 			}
 		}
 
-		private static void emitIdleParticles(Level world, BlockPos pos, RogueLootVaultSharedData sharedData, ParticleOptions particle) {
-			RandomSource random = world.getRandom();
+		private static void emitIdleParticles(final Level level, final BlockPos pos, final RogueLootVaultSharedData sharedData, final ParticleOptions particle) {
+			RandomSource random = level.getRandom();
 			if (random.nextFloat() <= 0.5F) {
 				Vec3 vec3d = randomPosInsideCage(pos, random);
-				world.addParticle(ParticleTypes.SMOKE, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
+				level.addParticle(ParticleTypes.SMOKE, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
 				if (shouldDisplayActiveEffects(sharedData)) {
-					world.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
+					level.addParticle(particle, vec3d.x(), vec3d.y(), vec3d.z(), 0.0, 0.0, 0.0);
 				}
 			}
 		}
 
-		private static void emitConnectionParticlesForPlayer(Level world, Vec3 pos, Player player) {
-			RandomSource random = world.getRandom();
+		private static void emitConnectionParticlesForPlayer(final Level level, final Vec3 pos, final Player player) {
+			RandomSource random = level.getRandom();
 			Vec3 vec3d = pos.vectorTo(player.position().add(0.0, (double) (player.getBbHeight() / 2.0F), 0.0));
 			int i = Mth.nextInt(random, 2, 5);
 
 			for (int j = 0; j < i; j++) {
 				Vec3 vec3d2 = vec3d.offsetRandom(random, 1.0F);
-				world.addParticle(ParticleTypes.VAULT_CONNECTION, pos.x(), pos.y(), pos.z(), vec3d2.x(), vec3d2.y(), vec3d2.z());
+				level.addParticle(ParticleTypes.VAULT_CONNECTION, pos.x(), pos.y(), pos.z(), vec3d2.x(), vec3d2.y(), vec3d2.z());
 			}
 		}
 
-		private static void emitConnectionParticlesForNearbyPlayers(Level world, BlockPos pos, BlockState state, RogueLootVaultSharedData sharedData) {
+		private static void emitConnectionParticlesForNearbyPlayers(final Level level, final BlockPos pos, final BlockState state, final RogueLootVaultSharedData sharedData) {
 			Set<UUID> set = sharedData.getConnectedPlayers();
 			if (!set.isEmpty()) {
 				Vec3 vec3d = keyholePos(pos, state.getValue(VaultBlock.FACING));
 
 				for (UUID uUID : set) {
-					Player playerEntity = world.getPlayerByUUID(uUID);
+					Player playerEntity = level.getPlayerByUUID(uUID);
 					if (playerEntity != null && isWithinConnectionRange(pos, sharedData, playerEntity)) {
-						emitConnectionParticlesForPlayer(world, vec3d, playerEntity);
+						emitConnectionParticlesForPlayer(level, vec3d, playerEntity);
 					}
 				}
 			}
 		}
 
-		private static boolean isWithinConnectionRange(BlockPos pos, RogueLootVaultSharedData sharedData, Player player) {
+		private static boolean isWithinConnectionRange(final BlockPos pos, final RogueLootVaultSharedData sharedData, final Player player) {
 			return player.blockPosition().distSqr(pos) <= Mth.square(sharedData.getConnectedParticlesRange());
 		}
 
-		private static void playIdleSounds(Level world, BlockPos pos, RogueLootVaultSharedData sharedData) {
+		private static void playIdleSounds(final Level level, final BlockPos pos, final RogueLootVaultSharedData sharedData) {
 			if (shouldDisplayActiveEffects(sharedData)) {
-				RandomSource random = world.getRandom();
+				RandomSource random = level.getRandom();
 				if (random.nextFloat() <= 0.02F) {
-					world.playLocalSound(
+					level.playLocalSound(
 							pos, SoundEvents.VAULT_AMBIENT, SoundSource.BLOCKS, random.nextFloat() * 0.25F + 0.75F, random.nextFloat() + 0.5F, false
 					);
 				}
 			}
 		}
 
-		public static boolean shouldDisplayActiveEffects(RogueLootVaultSharedData sharedData) {
+		public static boolean shouldDisplayActiveEffects(final RogueLootVaultSharedData sharedData) {
 			return sharedData.hasDisplayItem();
 		}
 
-		private static Vec3 randomPosCenterOfCage(BlockPos pos, RandomSource random) {
+		private static Vec3 randomPosCenterOfCage(final BlockPos pos, final RandomSource random) {
 			return Vec3.atLowerCornerOf(pos).add(Mth.nextDouble(random, 0.4, 0.6), Mth.nextDouble(random, 0.4, 0.6), Mth.nextDouble(random, 0.4, 0.6));
 		}
 
-		private static Vec3 randomPosInsideCage(BlockPos pos, RandomSource random) {
+		private static Vec3 randomPosInsideCage(final BlockPos pos, final RandomSource random) {
 			return Vec3.atLowerCornerOf(pos).add(Mth.nextDouble(random, 0.1, 0.9), Mth.nextDouble(random, 0.25, 0.75), Mth.nextDouble(random, 0.1, 0.9));
 		}
 
-		private static Vec3 keyholePos(BlockPos pos, Direction direction) {
+		private static Vec3 keyholePos(final BlockPos pos, final Direction direction) {
 			return Vec3.atBottomCenterOf(pos).add((double) direction.getStepX() * 0.5, 1.75, (double) direction.getStepZ() * 0.5);
 		}
 	}
 
 	public static final class Server {
 
-		public static void tick(ServerLevel world, BlockPos pos, BlockState state, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData) {
+		public static void tick(final ServerLevel serverLevel, final BlockPos pos, final BlockState state, final RogueLootVaultConfig config, final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData) {
 			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
-			if (shouldCycleDisplayItem(world.getGameTime(), vaultState)) {
-				cycleDisplayItemFromLootTable(world, vaultState, config, sharedData, pos);
+			if (shouldCycleDisplayItem(serverLevel.getGameTime(), vaultState)) {
+				cycleDisplayItemFromLootTable(serverLevel, vaultState, config, sharedData, pos);
 			}
 
 			BlockState blockState = state;
-			if (world.getGameTime() >= serverData.getStateUpdatingResumeTime()) {
-				blockState = state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, vaultState.update(world, pos, config, serverData, sharedData));
+			if (serverLevel.getGameTime() >= serverData.getStateUpdatingResumeTime()) {
+				blockState = state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, vaultState.update(serverLevel, pos, config, serverData, sharedData));
 				if (!state.equals(blockState)) {
-					setVaultState(world, pos, state, blockState, config, sharedData);
+					setVaultState(serverLevel, pos, state, blockState, config, sharedData);
 				}
 			}
 
 			if (serverData.isDirty() || sharedData.isDirty()) {
-				RogueLootVaultBlockEntity.setChanged(world, pos, state);
+				RogueLootVaultBlockEntity.setChanged(serverLevel, pos, state);
 				if (sharedData.isDirty()) {
-					world.sendBlockUpdated(pos, state, blockState, Block.UPDATE_CLIENTS);
+					serverLevel.sendBlockUpdated(pos, state, blockState, Block.UPDATE_CLIENTS);
 				}
 
 				serverData.markClean();
@@ -311,54 +311,54 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		}
 
 		public static void tryInsertKey(
-				ServerLevel world,
-				BlockPos pos,
-				BlockState state,
-				RogueLootVaultConfig config,
-				RogueLootVaultServerData serverData,
-				RogueLootVaultSharedData sharedData,
-				Player player,
-				ItemStack stack
+				final ServerLevel serverLevel,
+				final BlockPos pos,
+				final BlockState state,
+				final RogueLootVaultConfig config,
+				final RogueLootVaultServerData serverData,
+				final RogueLootVaultSharedData sharedData,
+				final Player player,
+				final ItemStack stack
 		) {
 			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (canEjectReward(config, vaultState)) {
 				if (!isValidToInsert(config, stack)) {
 					RogueLoot.info("invalid key");
-					playInsertFailSound(world, serverData, pos, SoundEvents.VAULT_INSERT_ITEM_FAIL);
+					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_INSERT_ITEM_FAIL);
 				} else if (serverData.hasRewardedPlayer(player)) {
 					RogueLoot.info("player already rewarded");
-					playInsertFailSound(world, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
+					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
 				} else if (player instanceof ServerPlayer serverPlayerEntity) {
 					Identifier identifier = Identifier.tryParse(config.lootTableIdentifier());
 					if (identifier == null) {
-						playInsertFailSound(world, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
+						playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.maxChoices(), stack);
+						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.maxChoices(), stack);
 					} else {
-						RogueLoot.supplyLootableLoot(identifier, world, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
+						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 					}
 					serverData.markPlayerAsRewarded(player);
-					sharedData.updateConnectedPlayers(world, pos, serverData, config, config.deactivationRange());
+					sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
 				}
 			}
 		}
 
-		static void setVaultState(ServerLevel world, BlockPos pos, BlockState oldState, BlockState newState, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData) {
+		static void setVaultState(final ServerLevel serverLevel, final BlockPos pos, final BlockState oldState, final BlockState newState, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData) {
 			RogueLootVaultState vaultState = oldState.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			RogueLootVaultState vaultState2 = newState.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
-			world.setBlock(pos, newState, Block.UPDATE_ALL);
-			vaultState.onStateChange(world, pos, vaultState2, config, sharedData, (Boolean) newState.getValue(VaultBlock.OMINOUS));
+			serverLevel.setBlock(pos, newState, Block.UPDATE_ALL);
+			vaultState.onStateChange(serverLevel, pos, vaultState2, config, sharedData, (Boolean) newState.getValue(VaultBlock.OMINOUS));
 		}
 
-		public static void cycleDisplayItemFromLootTable(ServerLevel world, RogueLootVaultState state, RogueLootVaultConfig config, RogueLootVaultSharedData sharedData, BlockPos pos) {
+		public static void cycleDisplayItemFromLootTable(final ServerLevel serverLevel, final RogueLootVaultState state, final RogueLootVaultConfig config, final RogueLootVaultSharedData sharedData, final BlockPos pos) {
 			if (!canEjectReward(config, state)) {
 				sharedData.setDisplayItem(ItemStack.EMPTY);
 			} else {
 				ItemStack itemStack = ItemStack.EMPTY;
 				if (!config.displayLootTableIdentifier().isEmpty()) {
-					itemStack = getRandomDisplayItemFromLootTable(world, pos, ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(config.displayLootTableIdentifier())));
+					itemStack = getRandomDisplayItemFromLootTable(serverLevel, pos, ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(config.displayLootTableIdentifier())));
 				}
 				sharedData.setDisplayItem(itemStack);
 			}
@@ -372,17 +372,17 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		}
 
 		public static void unlock(
-				ServerLevel world, BlockState state, BlockPos pos, RogueLootVaultConfig config, RogueLootVaultServerData serverData, RogueLootVaultSharedData sharedData
+				final ServerLevel serverLevel, final BlockState state, final BlockPos pos, final RogueLootVaultConfig config, final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData
 		) {
 //			serverData.setItemsToEject(itemsToEject);
 			sharedData.setDisplayItem(ItemStack.EMPTY);
-			serverData.setStateUpdatingResumeTime(world.getGameTime() + 14L);
-			setVaultState(world, pos, state, state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, RogueLootVaultState.UNLOCKING), config, sharedData);
+			serverData.setStateUpdatingResumeTime(serverLevel.getGameTime() + 14L);
+			setVaultState(serverLevel, pos, state, state.setValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE, RogueLootVaultState.UNLOCKING), config, sharedData);
 		}
 
-//		private static List<ItemStack> generateLoot(ServerWorld world, LootableVaultConfig config, BlockPos pos, PlayerEntity player) {
-//			LootTable lootTable = world.getServer().getReloadableRegistries().getLootTable(config.lootTable());
-//			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(world)
+//		private static List<ItemStack> generateLoot(ServerWorld level, LootableVaultConfig config, BlockPos pos, PlayerEntity player) {
+//			LootTable lootTable = level.getServer().getReloadableRegistries().getLootTable(config.lootTable());
+//			LootContextParameterSet lootContextParameterSet = new LootContextParameterSet.Builder(level)
 //					.add(LootContextParameters.ORIGIN, Vec3d.ofCenter(pos))
 //					.luck(player.getLuck())
 //					.add(LootContextParameters.THIS_ENTITY, player)
@@ -390,22 +390,22 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 //			return lootTable.generateLoot(lootContextParameterSet);
 //		}
 
-		private static boolean canEjectReward(RogueLootVaultConfig config, RogueLootVaultState state) {
+		private static boolean canEjectReward(final RogueLootVaultConfig config, final RogueLootVaultState state) {
 			return !Objects.equals(config.lootTableIdentifier(), "") && !config.keyItem().create().isEmpty() && state != RogueLootVaultState.INACTIVE;
 		}
 
-		private static boolean isValidToInsert(RogueLootVaultConfig config, ItemStack stack) {
+		private static boolean isValidToInsert(final RogueLootVaultConfig config, final ItemStack stack) {
 			return ItemStack.isSameItemSameComponents(stack, config.keyItem().create()) && stack.getCount() >= config.keyItem().create().getCount();
 		}
 
-		private static boolean shouldCycleDisplayItem(long time, RogueLootVaultState state) {
+		private static boolean shouldCycleDisplayItem(final long time, final RogueLootVaultState state) {
 			return time % 20L == 0L && state == RogueLootVaultState.ACTIVE;
 		}
 
-		private static void playInsertFailSound(ServerLevel world, RogueLootVaultServerData serverData, BlockPos pos, SoundEvent sound) {
-			if (world.getGameTime() >= serverData.getLastFailedUnlockTime() + 15L) {
-				world.playSound(null, pos, sound, SoundSource.BLOCKS);
-				serverData.setLastFailedUnlockTime(world.getGameTime());
+		private static void playInsertFailSound(final ServerLevel serverLevel, final RogueLootVaultServerData serverData, final BlockPos pos, final SoundEvent sound) {
+			if (serverLevel.getGameTime() >= serverData.getLastFailedUnlockTime() + 15L) {
+				serverLevel.playSound(null, pos, sound, SoundSource.BLOCKS);
+				serverData.setLastFailedUnlockTime(serverLevel.getGameTime());
 			}
 		}
 	}

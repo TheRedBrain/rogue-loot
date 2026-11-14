@@ -17,6 +17,6 @@ public class EntityRegistry {
 			RogueLoot.identifier("interactive_rogue_loot_block"),
 			FabricBlockEntityTypeBuilder.create(InteractiveRogueLootBlockEntity::new, BlockRegistry.INTERACTIVE_ROGUE_LOOT_BLOCK).build());
 
-	public static void init() {
+	public static void bootstrap() {
 	}
 }

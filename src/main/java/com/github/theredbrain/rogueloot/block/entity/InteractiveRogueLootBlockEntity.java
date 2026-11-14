@@ -3,6 +3,7 @@ package com.github.theredbrain.rogueloot.block.entity;
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
@@ -37,94 +38,66 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	private String alreadyLootedMessage = "gui.interactive_loot_block.already_looted";
 	private String alreadyLootedSoundId = "block.chest.locked";
 
-	public InteractiveRogueLootBlockEntity(BlockPos pos, BlockState state) {
+	public InteractiveRogueLootBlockEntity(final BlockPos pos, final BlockState state) {
 		super(EntityRegistry.INTERACTIVE_ROGUE_LOOT_BLOCK_ENTITY, pos, state);
 	}
 
 	@Override
-	protected void saveAdditional(ValueOutput view) {
+	protected void saveAdditional(final ValueOutput output) {
 
-		ValueOutput.TypedOutputList<UUID> listAppender = view.list("uuidList", UUIDUtil.AUTHLIB_CODEC);
+		super.saveAdditional(output);
+
+		ValueOutput.TypedOutputList<UUID> listAppender = output.list("uuid_list", UUIDUtil.AUTHLIB_CODEC);
 		for (UUID uuid : this.playerSet) {
 			listAppender.add(uuid);
 		}
 
-		if (!this.lootTableIdentifierString.isEmpty()) {
-			view.putString("lootTableIdentifierString", this.lootTableIdentifierString);
-		} else {
-			view.discard("lootTableIdentifierString");
-		}
+		output.putString("loot_table_identifier_string", this.lootTableIdentifierString);
 
-		if (this.mode != Mode.VANILLA) {
-			view.putString("mode", this.mode.getSerializedName());
-		} else {
-			view.discard("mode");
-		}
+		output.store("mode", Mode.CODEC, this.mode);
 
-		if (this.rolls != 3) {
-			view.putInt("rolls", this.rolls);
-		} else {
-			view.discard("rolls");
-		}
+		output.putInt("rolls", this.rolls);
 
-		if (this.minChoices != 1) {
-			view.putInt("choices", this.minChoices);
-		} else {
-			view.discard("choices");
-		}
+		output.putInt("choices", this.minChoices);
 
-		view.putInt("max_choices", this.maxChoices);
+		output.putInt("max_choices", this.maxChoices);
 
-		if (this.trackPlayers) {
-			view.putBoolean("trackPlayers", true);
-		} else {
-			view.discard("trackPlayers");
-		}
+		output.putBoolean("track_players", true);
 
-		if (!this.lootAcquiredMessage.isEmpty()) {
-			view.putString("lootAcquiredMessage", this.lootAcquiredMessage);
-		} else {
-			view.discard("lootAcquiredMessage");
-		}
+		output.putString("loot_acquired_message", this.lootAcquiredMessage);
 
-		if (!this.lootAcquiredSoundId.isEmpty()) {
-			view.putString("lootAcquiredSoundId", this.lootAcquiredSoundId);
-		} else {
-			view.discard("lootAcquiredSoundId");
-		}
+		output.putString("loot_acquired_sound_id", this.lootAcquiredSoundId);
 
-		if (!this.alreadyLootedMessage.isEmpty()) {
-			view.putString("alreadyLootedMessage", this.alreadyLootedMessage);
-		} else {
-			view.discard("alreadyLootedMessage");
-		}
+		output.putString("already_looted_message", this.alreadyLootedMessage);
 
-		if (!this.alreadyLootedSoundId.isEmpty()) {
-			view.putString("alreadyLootedSoundId", this.alreadyLootedSoundId);
-		} else {
-			view.discard("alreadyLootedSoundId");
-		}
-
-		super.saveAdditional(view);
+		output.putString("already_looted_sound_id", this.alreadyLootedSoundId);
 	}
 
 	@Override
-	protected void loadAdditional(ValueInput view) {
+	protected void loadAdditional(final ValueInput input) {
+
+		super.loadAdditional(input);
 
 		this.playerSet.clear();
-		for (UUID uuid : view.listOrEmpty("uuidList", UUIDUtil.AUTHLIB_CODEC)) {
-			this.playerSet.add(uuid);
+		if (input.contains("uuidList")) {
+			for (UUID uuid : input.listOrEmpty("uuidList", UUIDUtil.AUTHLIB_CODEC)) {
+				this.playerSet.add(uuid);
+			}
+		} else {
+			for (UUID uuid : input.listOrEmpty("uuid_list", UUIDUtil.AUTHLIB_CODEC)) {
+				this.playerSet.add(uuid);
+			}
 		}
 
-		this.lootTableIdentifierString = view.getStringOr("lootTableIdentifierString", "");
+		this.lootTableIdentifierString = input.getStringOr("loot_table_identifier_string", input.getStringOr("lootTableIdentifierString", ""));
 
-		this.mode = Mode.byName(view.getStringOr("mode", "")).orElse(Mode.VANILLA);
+		this.mode = input.read("mode", Mode.CODEC).orElse(Mode.byName(input.getStringOr("mode", "")).orElse(Mode.VANILLA));
 
-		this.rolls = view.getIntOr("rolls", 3);
+		this.rolls = input.getIntOr("rolls", 3);
 
-		this.minChoices = view.getIntOr("choices", 1);
+		this.minChoices = input.getIntOr("min_choices", input.getIntOr("choices", 1));
 
-		this.maxChoices = view.getIntOr("max_choices", 1);
+		this.maxChoices = input.getIntOr("max_choices", 1);
 
 		if (this.minChoices > this.maxChoices) {
 			if (this.getLevel() != null) {
@@ -133,17 +106,15 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 			this.maxChoices = this.minChoices;
 		}
 
-		this.trackPlayers = view.getBooleanOr("trackPlayers", false);
+		this.trackPlayers = input.getBooleanOr("track_players", input.getBooleanOr("trackPlayers", false));
 
-		this.lootAcquiredMessage = view.getStringOr("lootAcquiredMessage", "");
+		this.lootAcquiredMessage = input.getStringOr("loot_acquired_message", input.getStringOr("lootAcquiredMessage", ""));
 
-		this.lootAcquiredSoundId = view.getStringOr("lootAcquiredSoundId", "");
+		this.lootAcquiredSoundId = input.getStringOr("loot_acquired_sound_id", input.getStringOr("lootAcquiredSoundId", ""));
 
-		this.alreadyLootedMessage = view.getStringOr("alreadyLootedMessage", "");
+		this.alreadyLootedMessage = input.getStringOr("already_looted_message", input.getStringOr("alreadyLootedMessage", ""));
 
-		this.alreadyLootedSoundId = view.getStringOr("alreadyLootedSoundId", "");
-
-		super.loadAdditional(view);
+		this.alreadyLootedSoundId = input.getStringOr("already_looted_sound_id", input.getStringOr("alreadyLootedSoundId", ""));
 	}
 
 	public ClientboundBlockEntityDataPacket getUpdatePacket() {
@@ -151,7 +122,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag(HolderLookup.Provider registryLookup) {
+	public CompoundTag getUpdateTag(final HolderLookup.Provider registryLookup) {
 		return this.saveCustomOnly(registryLookup);
 	}
 
@@ -172,7 +143,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.lootTableIdentifierString;
 	}
 
-	public void setLootTableIdentifierString(String lootTableIdentifierString) {
+	public void setLootTableIdentifierString(final String lootTableIdentifierString) {
 		this.lootTableIdentifierString = lootTableIdentifierString;
 	}
 
@@ -180,7 +151,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.mode;
 	}
 
-	public void setMode(Mode mode) {
+	public void setMode(final Mode mode) {
 		this.mode = mode;
 	}
 
@@ -188,7 +159,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.rolls;
 	}
 
-	public void setRolls(int rolls) {
+	public void setRolls(final int rolls) {
 		this.rolls = rolls;
 	}
 
@@ -196,7 +167,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.minChoices;
 	}
 
-	public void setMinChoices(int minChoices) {
+	public void setMinChoices(final int minChoices) {
 		this.minChoices = minChoices;
 	}
 
@@ -204,7 +175,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.maxChoices;
 	}
 
-	public void setMaxChoices(int maxChoices) {
+	public void setMaxChoices(final int maxChoices) {
 		this.maxChoices = maxChoices;
 	}
 
@@ -212,7 +183,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.trackPlayers;
 	}
 
-	public void setTrackPlayers(boolean trackPlayers) {
+	public void setTrackPlayers(final boolean trackPlayers) {
 		this.trackPlayers = trackPlayers;
 	}
 
@@ -220,7 +191,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.lootAcquiredMessage;
 	}
 
-	public void setLootAcquiredMessage(String lootAcquiredMessage) {
+	public void setLootAcquiredMessage(final String lootAcquiredMessage) {
 		this.lootAcquiredMessage = lootAcquiredMessage;
 	}
 
@@ -228,7 +199,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.lootAcquiredSoundId;
 	}
 
-	public void setLootAcquiredSoundId(String lootAcquiredSoundId) {
+	public void setLootAcquiredSoundId(final String lootAcquiredSoundId) {
 		this.lootAcquiredSoundId = lootAcquiredSoundId;
 	}
 
@@ -236,7 +207,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.alreadyLootedMessage;
 	}
 
-	public void setAlreadyLootedMessage(String alreadyLootedMessage) {
+	public void setAlreadyLootedMessage(final String alreadyLootedMessage) {
 		this.alreadyLootedMessage = alreadyLootedMessage;
 	}
 
@@ -244,19 +215,19 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		return this.alreadyLootedSoundId;
 	}
 
-	public void setAlreadyLootedSoundId(String alreadyLootedSoundId) {
+	public void setAlreadyLootedSoundId(final String alreadyLootedSoundId) {
 		this.alreadyLootedSoundId = alreadyLootedSoundId;
 	}
 
-	public boolean isPlayerInSet(Player playerEntity) {
+	public boolean isPlayerInSet(final Player playerEntity) {
 		return this.playerSet.contains(playerEntity.getUUID());
 	}
 
-	public void addPlayerToSet(Player playerEntity) {
+	public void addPlayerToSet(final Player playerEntity) {
 		this.playerSet.add(playerEntity.getUUID());
 	}
 
-	public void removePlayerFromSet(Player playerEntity) {
+	public void removePlayerFromSet(final Player playerEntity) {
 		this.playerSet.remove(playerEntity.getUUID());
 	}
 
@@ -278,9 +249,11 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		LOOTABLE_CHOICE("lootable_choice"),
 		LOOTABLE_RANDOM("lootable_random");
 
+		public static final Codec<Mode> CODEC = StringRepresentable.fromEnum(Mode::values);
+
 		private final String name;
 
-		Mode(String name) {
+		Mode(final String name) {
 			this.name = name;
 		}
 
@@ -289,7 +262,8 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 			return this.name;
 		}
 
-		public static Optional<Mode> byName(String name) {
+		@Deprecated
+		public static Optional<Mode> byName(final String name) {
 			return Arrays.stream(Mode.values()).filter(mode -> mode.getSerializedName().equals(name)).findFirst();
 		}
 

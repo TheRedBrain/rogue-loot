@@ -67,7 +67,7 @@ public record RogueLootVaultConfig(
 
 		private final String name;
 
-		Mode(String name) {
+		Mode(final String name) {
 			this.name = name;
 		}
 

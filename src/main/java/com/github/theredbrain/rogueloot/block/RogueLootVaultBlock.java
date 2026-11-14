@@ -39,7 +39,7 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 		return CODEC;
 	}
 
-	public RogueLootVaultBlock(Properties settings) {
+	public RogueLootVaultBlock(final Properties settings) {
 		super(settings);
 		this.registerDefaultState(
 				this.stateDefinition.any().setValue(HorizontalDirectionalBlock.FACING, Direction.NORTH).setValue(ROGUE_LOOT_VAULT_STATE, RogueLootVaultState.INACTIVE).setValue(BlockStateProperties.OMINOUS, Boolean.FALSE)
@@ -47,13 +47,13 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public InteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+	public InteractionResult useItemOn(final ItemStack stack, final BlockState state, final Level level, final BlockPos pos, final Player player, final InteractionHand hand, final BlockHitResult hit) {
 		if (stack.isEmpty() || state.getValue(ROGUE_LOOT_VAULT_STATE) != RogueLootVaultState.ACTIVE) {
 			return InteractionResult.TRY_WITH_EMPTY_HAND;
-		} else if (world instanceof ServerLevel serverWorld) {
+		} else if (level instanceof ServerLevel serverWorld) {
 			if (serverWorld.getBlockEntity(pos) instanceof RogueLootVaultBlockEntity rogueLootVaultBlockEntity) {
 				RogueLootVaultBlockEntity.Server.tryInsertKey(
-						serverWorld, pos, state, rogueLootVaultBlockEntity.getConfig(world), rogueLootVaultBlockEntity.getServerData(), rogueLootVaultBlockEntity.getSharedData(), player, stack
+						serverWorld, pos, state, rogueLootVaultBlockEntity.getConfig(level), rogueLootVaultBlockEntity.getServerData(), rogueLootVaultBlockEntity.getSharedData(), player, stack
 				);
 				return InteractionResult.SUCCESS;
 			} else {
@@ -66,18 +66,18 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 
 	@Nullable
 	@Override
-	public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+	public BlockEntity newBlockEntity(final BlockPos pos, final BlockState state) {
 		return new RogueLootVaultBlockEntity(pos, state);
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+	protected void createBlockStateDefinition(final StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(HorizontalDirectionalBlock.FACING, ROGUE_LOOT_VAULT_STATE, BlockStateProperties.OMINOUS);
 	}
 
 	@Nullable
 	@Override
-	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level world, BlockState state, BlockEntityType<T> type) {
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(final Level world, final BlockState state, final BlockEntityType<T> type) {
 		return world instanceof ServerLevel serverWorld
 				? createTickerHelper(
 				type,
@@ -94,22 +94,22 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 	}
 
 	@Override
-	public BlockState getStateForPlacement(BlockPlaceContext ctx) {
+	public BlockState getStateForPlacement(final BlockPlaceContext ctx) {
 		return this.defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, ctx.getHorizontalDirection().getOpposite());
 	}
 
 	@Override
-	public BlockState rotate(BlockState state, Rotation rotation) {
+	public BlockState rotate(final BlockState state, final Rotation rotation) {
 		return state.setValue(HorizontalDirectionalBlock.FACING, rotation.rotate(state.getValue(HorizontalDirectionalBlock.FACING)));
 	}
 
 	@Override
-	public BlockState mirror(BlockState state, Mirror mirror) {
+	public BlockState mirror(final BlockState state, final Mirror mirror) {
 		return state.rotate(mirror.getRotation(state.getValue(HorizontalDirectionalBlock.FACING)));
 	}
 
 	@Override
-	public RenderShape getRenderShape(BlockState state) {
+	public RenderShape getRenderShape(final BlockState state) {
 		return RenderShape.MODEL;
 	}
 }

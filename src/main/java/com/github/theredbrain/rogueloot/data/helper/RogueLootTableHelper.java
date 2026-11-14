@@ -20,8 +20,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -33,34 +31,34 @@ import java.util.Optional;
 
 public class RogueLootTableHelper {
 
-	public static void supplyRogueLootTable(Identifier identifier, ServerLevel serverLevel, ServerPlayer serverPlayerEntity, Vec3 pos, int rolls, int minChoices, int maxChoices, @Nullable ItemStack itemStack) {
+	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Vec3 pos, final int rolls, final int minChoices, final int maxChoices, @Nullable final ItemStack itemStack) {
 		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), identifier);
 		if (rogueLootTable == null) {
 			return;
 		}
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
-		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, localIdentifier, serverPlayerEntity);
+		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, localIdentifier, serverPlayer);
 		if (generatedRogueLoot == null) {
-			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayerEntity, rolls, minChoices, maxChoices);
+			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, rolls, minChoices, maxChoices);
 		}
 		if (generatedRogueLoot != null) {
-			DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayerEntity);
-			int banishingAttempts = calculateBanishingAttempts(serverPlayerEntity, generatedRogueLoot);
-			ServerPlayNetworking.send(serverPlayerEntity, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts));
+			DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayer);
+			int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
+			ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts));
 		}
 
 	}
 
-	public static void removeRogueLootTableUses(ServerLevel serverLevel, Vec3 pos, String identifierString, int rolls, int minChoices, int maxChoices, @Nullable ServerPlayer serverPlayerEntity) {
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Vec3 pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
 		Identifier identifier = Identifier.tryParse(identifierString);
 		if (identifier != null) {
-			removeRogueLootTableUses(serverLevel, pos, identifier, rolls, minChoices, maxChoices, serverPlayerEntity);
+			removeRogueLootTableUses(serverLevel, pos, identifier, rolls, minChoices, maxChoices, serverPlayer);
 		}
 	}
 
-	public static void removeRogueLootTableUses(ServerLevel serverLevel, Vec3 pos, Identifier identifier, int rolls, int minChoices, int maxChoices, @Nullable ServerPlayer serverPlayerEntity) {
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Vec3 pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
-		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayerEntity);
+		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayer);
 	}
 
 	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
@@ -77,7 +75,7 @@ public class RogueLootTableHelper {
 	}
 
 	@Nullable
-	public static GeneratedRogueLoot generateRogueLoot(ServerLevel serverLevel, RogueLootTable rogueLootTable, ServerPlayer serverPlayerEntity, int rolls, int minChoices, int maxChoices) {
+	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final ServerPlayer serverPlayer, final int rolls, final int minChoices, final int maxChoices) {
 
 		String backgroundTexturePath = "";
 		String entriesAssetPathAddition = "";
@@ -106,12 +104,12 @@ public class RogueLootTableHelper {
 				continue;
 			}
 			Identifier entryIdentifier = optionalResourceKey.get().identifier();
-			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayerEntity, entryIdentifier)) {
+			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayer, entryIdentifier)) {
 				continue;
 			}
 
 			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
-			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayerEntity, serverPlayerEntity))) {
+			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
 				continue;
 			}
 
@@ -185,12 +183,12 @@ public class RogueLootTableHelper {
 		);
 	}
 
-	public static Identifier getLocalRogueLootTableId(ServerLevel serverLevel, Identifier identifier, Vec3 pos, int rolls, int minChoices, int maxChoices) {
+	public static Identifier getLocalRogueLootTableId(final ServerLevel serverLevel, final Identifier identifier, final Vec3 pos, final int rolls, final int minChoices, final int maxChoices) {
 		return RogueLoot.identifier(serverLevel.dimension().identifier().toLanguageKey() + "_" + identifier.toLanguageKey() + "_" + pos.x() + "_" + pos.y() + "_" + pos.z() + "_" + rolls + "_" + minChoices + "_" + maxChoices);
 	}
 
 	@Nullable
-	public static RogueLootTable getRogueLootTable(RegistryAccess registryAccess, Identifier identifier) {
+	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTable rogueLootTable = null;
 		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
 		if (optionalRogueLootTableRegistry.isPresent()) {
@@ -203,7 +201,7 @@ public class RogueLootTableHelper {
 	}
 
 	@Nullable
-	public static RogueLootTableEntry getRogueLootTableEntry(RegistryAccess registryAccess, Identifier identifier) {
+	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntry rogueLootTableEntry = null;
 		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRegistry.isPresent()) {
@@ -216,7 +214,7 @@ public class RogueLootTableHelper {
 	}
 
 	@Nullable
-	public static RogueLootTableEntryRarity getRogueLootTableEntryRarity(RegistryAccess registryAccess, Identifier identifier) {
+	public static RogueLootTableEntryRarity getRogueLootTableEntryRarity(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntryRarity rogueLootTableEntryRarity = null;
 		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRarityRegistry.isPresent()) {
@@ -229,7 +227,7 @@ public class RogueLootTableHelper {
 	}
 
 	@Nullable
-	public static RogueLootGuiSettings getRogueLootGuiSettings(RegistryAccess registryAccess, Identifier identifier) {
+	public static RogueLootGuiSettings getRogueLootGuiSettings(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootGuiSettings rogueLootTableEntryRarity = null;
 		Optional<Registry<RogueLootGuiSettings>> optionalRogueLootGuiSettingsRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY);
 		if (optionalRogueLootGuiSettingsRegistry.isPresent()) {

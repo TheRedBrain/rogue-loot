@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.mixin.client.network;
 
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
-import com.github.theredbrain.rogueloot.entity.player.DuckPlayerEntityMixin;
+import com.github.theredbrain.rogueloot.entity.player.DuckPlayerMixin;
 import com.github.theredbrain.rogueloot.gui.screen.ingame.InteractiveRogueLootBlockScreen;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
@@ -16,18 +16,18 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Environment(EnvType.CLIENT)
 @Mixin(LocalPlayer.class)
-public abstract class ClientPlayerEntityMixin extends AbstractClientPlayer implements DuckPlayerEntityMixin {
+public abstract class LocalPlayerMixin extends AbstractClientPlayer implements DuckPlayerMixin {
 
 	@Shadow
 	@Final
 	protected Minecraft minecraft;
 
-	public ClientPlayerEntityMixin(ClientLevel world, GameProfile profile) {
-		super(world, profile);
+	public LocalPlayerMixin(final ClientLevel clientLevel, final GameProfile profile) {
+		super(clientLevel, profile);
 	}
 
 	@Override
-	public void rogueloot$openInteractiveRogueLootBlockScreen(InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+	public void rogueloot$openInteractiveRogueLootBlockScreen(final InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 		this.minecraft.setScreen(new InteractiveRogueLootBlockScreen(interactiveRogueLootBlockEntity));
 	}
 

@@ -24,46 +24,44 @@ public class RogueLoot implements ModInitializer {
 
 	public static final boolean isLootablesLoaded = FabricLoader.getInstance().isModLoaded("lootables");
 
-	public static void supplyLootableLoot(Identifier identifier, ServerLevel world, ServerPlayer serverPlayerEntity, Vec3 pos, int rolls, int choices, boolean withChoice, @Nullable ItemStack itemStack) {
+	public static void supplyLootableLoot(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Vec3 pos, final int rolls, final int choices, final boolean withChoice, @Nullable final ItemStack itemStack) {
 		if (isLootablesLoaded) {
-			LootablesCompat.supplyLootableLoot(identifier, world, serverPlayerEntity, pos, rolls, choices, withChoice, itemStack);
+			LootablesCompat.supplyLootableLoot(identifier, serverLevel, serverPlayer, pos, rolls, choices, withChoice, itemStack);
 		} else {
 			info("Tried to supply loot via Lootables, but the mod is not installed!");
 		}
 	}
 
-	public static void removeLootableUses(ServerLevel world, Vec3 pos, String identifierString, @Nullable ServerPlayer serverPlayerEntity) {
+	public static void removeLootableUses(final ServerLevel serverLevel, final Vec3 pos, final String identifierString, @Nullable final ServerPlayer serverPlayer) {
 		if (isLootablesLoaded) {
-			LootablesCompat.removeLootableUses(world, pos, identifierString, serverPlayerEntity);
+			LootablesCompat.removeLootableUses(serverLevel, pos, identifierString, serverPlayer);
 		}
 	}
 
-	public static void removeLootableUses(ServerLevel world, Vec3 pos, Identifier identifier, @Nullable ServerPlayer serverPlayerEntity) {
+	public static void removeLootableUses(final ServerLevel serverLevel, final Vec3 pos, final Identifier identifier, @Nullable final ServerPlayer serverPlayer) {
 		if (isLootablesLoaded) {
-			LootablesCompat.removeLootableUses(world, pos, identifier, serverPlayerEntity);
+			LootablesCompat.removeLootableUses(serverLevel, pos, identifier, serverPlayer);
 		}
 	}
 
 	@Override
 	public void onInitialize() {
-		LOGGER.info("Lootables supplied by blocks!");
+		LOGGER.info("Rogue Like Loot!");
 
-		// Packets
 		ServerPacketRegistry.init();
-
-		// Registry
-		RogueLootDataAttachments.bootstrap();
-		BlockRegistry.init();
 		CustomDynamicRegistries.init();
-		EntityRegistry.init();
 		RogueLootServerEvents.initializeEvents();
+
+		RogueLootDataAttachments.bootstrap();
+		BlockRegistry.bootstrap();
+		EntityRegistry.bootstrap();
 	}
 
-	public static Identifier identifier(String path) {
+	public static Identifier identifier(final String path) {
 		return Identifier.fromNamespaceAndPath(MOD_ID, path);
 	}
 
-	public static void info(String message) {
+	public static void info(final String message) {
 		LOGGER.info("[" + MOD_ID + "] [info]: " + message);
 	}
 

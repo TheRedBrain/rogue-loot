@@ -17,7 +17,7 @@ import java.util.Optional;
 public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<ApplyRogueLootSelectionPacket> {
 
 	@Override
-	public void receive(ApplyRogueLootSelectionPacket payload, ServerPlayNetworking.Context context) {
+	public void receive(final ApplyRogueLootSelectionPacket payload, final ServerPlayNetworking.Context context) {
 
 		ServerPlayer serverPlayer = context.player();
 		ServerLevel serverLevel = serverPlayer.level();

@@ -18,9 +18,9 @@ public record RogueLootTableEntryRarity(
 	).apply(instance, RogueLootTableEntryRarity::new));
 
 	public RogueLootTableEntryRarity(
-			String assetPathAddition,
-			int defaultWeight,
-			List<ChatFormatting> labelFormatting
+			final String assetPathAddition,
+			final int defaultWeight,
+			final List<ChatFormatting> labelFormatting
 	) {
 		this.assetPathAddition = assetPathAddition != null ? assetPathAddition : "";
 		this.defaultWeight = defaultWeight;

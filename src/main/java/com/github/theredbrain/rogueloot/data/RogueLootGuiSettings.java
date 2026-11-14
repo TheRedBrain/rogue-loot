@@ -21,10 +21,10 @@ public record RogueLootGuiSettings(
 	).apply(instance, RogueLootGuiSettings::new));
 
 	public RogueLootGuiSettings(
-			String backgroundTexturePath,
-			String entriesAssetPathAddition,
-			List<ChatFormatting> requirementsNotMetFormatting,
-			List<ChatFormatting> requirementsMetFormatting
+			final String backgroundTexturePath,
+			final String entriesAssetPathAddition,
+			final List<ChatFormatting> requirementsNotMetFormatting,
+			final List<ChatFormatting> requirementsMetFormatting
 	) {
 		this.backgroundTexturePath = backgroundTexturePath != null ? backgroundTexturePath : "";
 		this.entriesAssetPathAddition = entriesAssetPathAddition != null ? entriesAssetPathAddition : "";
