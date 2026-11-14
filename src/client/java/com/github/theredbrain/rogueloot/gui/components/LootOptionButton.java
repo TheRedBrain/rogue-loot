@@ -12,6 +12,8 @@ import java.util.Optional;
 
 public class LootOptionButton extends Button {
 
+	private Identifier disabledHighlightedTextureId;
+	private Identifier disabledTextureId;
 	private Identifier selectedHighlightedTextureId;
 	private Identifier selectedTextureId;
 	private Identifier unselectedHighlightedTextureId;
@@ -22,9 +24,12 @@ public class LootOptionButton extends Button {
 
 	public LootOptionButton(final int x, final int y, final int width, final int height, final Component message, final OnPress onPress) {
 		super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
+		setTextureIds("");
 	}
 
 	public void setTextureIds(final String string) {
+		this.disabledHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "disabled_highlighted");
+		this.disabledTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "disabled");
 		this.selectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected_highlighted");
 		this.selectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected");
 		this.unselectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "unselected_highlighted");
@@ -52,9 +57,9 @@ public class LootOptionButton extends Button {
 
 		Identifier textureId;
 		if (this.isHoveredOrFocused()) {
-			textureId = this.selected ? this.selectedHighlightedTextureId : this.unselectedHighlightedTextureId;
+			textureId = this.active ? this.selected ? this.selectedHighlightedTextureId : this.unselectedHighlightedTextureId : this.disabledHighlightedTextureId;
 		} else {
-			textureId = this.selected ? this.selectedTextureId : this.unselectedTextureId;
+			textureId = this.active ? this.selected ? this.selectedTextureId : this.unselectedTextureId : this.disabledTextureId;
 		}
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);

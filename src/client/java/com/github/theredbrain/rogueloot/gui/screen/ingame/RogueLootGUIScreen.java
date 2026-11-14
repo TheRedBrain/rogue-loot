@@ -1,10 +1,12 @@
 package com.github.theredbrain.rogueloot.gui.screen.ingame;
 
+import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacket;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacket;
+import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -79,11 +81,11 @@ public class RogueLootGUIScreen extends Screen {
 					this.selectedOptions[index] = false;
 				}
 				this.banishingEnabled = false;
-				button.visible = false;
-				if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId())) {
-					this.banishedOptions[index] = true;
-					this.banishEntry(index);
-				}
+				this.toggleBanishingButton.setValue(false);
+				button.active = false;
+				button.visible = RogueLootConfigs.CLIENT_CONFIG.show_banished_loot_options.get();
+				this.banishedOptions[index] = true;
+				this.banishEntry(index);
 				this.updateWidgets();
 			}
 		} else {
@@ -163,6 +165,8 @@ public class RogueLootGUIScreen extends Screen {
 
 	private void initWidgets() {
 
+		ClientConfig clientConfig = RogueLootConfigs.CLIENT_CONFIG;
+
 		this.requirementsNotMetLabelFormatting = new ChatFormatting[this.generatedRogueLoot.requirementsNotMetFormatting().size()];
 		for (int i = 0; i < this.generatedRogueLoot.requirementsNotMetFormatting().size(); i++) {
 			this.requirementsNotMetLabelFormatting[i] = this.generatedRogueLoot.requirementsNotMetFormatting().get(i);
@@ -197,114 +201,132 @@ public class RogueLootGUIScreen extends Screen {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry0 = this.generatedRogueLoot.entryList().get(0);
 
+			((LootOptionButton) this.selectLootOption0Button).setTextureIds(entry0.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption0Button).setDisplayStack(entry0.displayStack());
+			((LootOptionButton) this.selectLootOption0Button).setIconTexture(entry0.iconTextureIdentifier());
+			if (!entry0.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting0 = new ChatFormatting[entry0.labelFormatting().size()];
+				for (int i = 0; i < entry0.labelFormatting().size(); i++) {
+					labelFormatting0[i] = entry0.labelFormatting().get(i);
+				}
+				this.selectLootOption0Button.setMessage(Component.translatable(entry0.labelText()).withStyle(labelFormatting0));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry0.parentRogueLootTableEntryId())) {
 				this.selectLootOption0Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption0Button).setTextureIds(entry0.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption0Button).setDisplayStack(entry0.displayStack());
-				((LootOptionButton) this.selectLootOption0Button).setIconTexture(entry0.iconTextureIdentifier());
-				if (!entry0.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting0 = new ChatFormatting[entry0.labelFormatting().size()];
-					for (int i = 0; i < entry0.labelFormatting().size(); i++) {
-						labelFormatting0[i] = entry0.labelFormatting().get(i);
-					}
-					this.selectLootOption0Button.setMessage(Component.translatable(entry0.labelText()).withStyle(labelFormatting0));
-				}
+			} else {
+				this.selectLootOption0Button.active = false;
+				this.selectLootOption0Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 		if (visibleOptionsAmount >= 2) {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry1 = this.generatedRogueLoot.entryList().get(1);
 
+			((LootOptionButton) this.selectLootOption1Button).setTextureIds(entry1.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption1Button).setDisplayStack(entry1.displayStack());
+			((LootOptionButton) this.selectLootOption1Button).setIconTexture(entry1.iconTextureIdentifier());
+			if (!entry1.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting1 = new ChatFormatting[entry1.labelFormatting().size()];
+				for (int i = 0; i < entry1.labelFormatting().size(); i++) {
+					labelFormatting1[i] = entry1.labelFormatting().get(i);
+				}
+				this.selectLootOption1Button.setMessage(Component.translatable(entry1.labelText()).withStyle(labelFormatting1));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry1.parentRogueLootTableEntryId())) {
 				this.selectLootOption1Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption1Button).setTextureIds(entry1.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption1Button).setDisplayStack(entry1.displayStack());
-				((LootOptionButton) this.selectLootOption1Button).setIconTexture(entry1.iconTextureIdentifier());
-				if (!entry1.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting1 = new ChatFormatting[entry1.labelFormatting().size()];
-					for (int i = 0; i < entry1.labelFormatting().size(); i++) {
-						labelFormatting1[i] = entry1.labelFormatting().get(i);
-					}
-					this.selectLootOption1Button.setMessage(Component.translatable(entry1.labelText()).withStyle(labelFormatting1));
-				}
+			} else {
+				this.selectLootOption1Button.active = false;
+				this.selectLootOption1Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 		if (visibleOptionsAmount >= 3) {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry2 = this.generatedRogueLoot.entryList().get(2);
 
+			((LootOptionButton) this.selectLootOption2Button).setTextureIds(entry2.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption2Button).setDisplayStack(entry2.displayStack());
+			((LootOptionButton) this.selectLootOption2Button).setIconTexture(entry2.iconTextureIdentifier());
+			if (!entry2.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting2 = new ChatFormatting[entry2.labelFormatting().size()];
+				for (int i = 0; i < entry2.labelFormatting().size(); i++) {
+					labelFormatting2[i] = entry2.labelFormatting().get(i);
+				}
+				this.selectLootOption2Button.setMessage(Component.translatable(entry2.labelText()).withStyle(labelFormatting2));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry2.parentRogueLootTableEntryId())) {
 				this.selectLootOption2Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption2Button).setTextureIds(entry2.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption2Button).setDisplayStack(entry2.displayStack());
-				((LootOptionButton) this.selectLootOption2Button).setIconTexture(entry2.iconTextureIdentifier());
-				if (!entry2.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting2 = new ChatFormatting[entry2.labelFormatting().size()];
-					for (int i = 0; i < entry2.labelFormatting().size(); i++) {
-						labelFormatting2[i] = entry2.labelFormatting().get(i);
-					}
-					this.selectLootOption2Button.setMessage(Component.translatable(entry2.labelText()).withStyle(labelFormatting2));
-				}
+			} else {
+				this.selectLootOption2Button.active = false;
+				this.selectLootOption2Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 		if (visibleOptionsAmount >= 4) {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry3 = this.generatedRogueLoot.entryList().get(3);
 
+			((LootOptionButton) this.selectLootOption3Button).setTextureIds(entry3.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption3Button).setDisplayStack(entry3.displayStack());
+			((LootOptionButton) this.selectLootOption3Button).setIconTexture(entry3.iconTextureIdentifier());
+			if (!entry3.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting3 = new ChatFormatting[entry3.labelFormatting().size()];
+				for (int i = 0; i < entry3.labelFormatting().size(); i++) {
+					labelFormatting3[i] = entry3.labelFormatting().get(i);
+				}
+				this.selectLootOption3Button.setMessage(Component.translatable(entry3.labelText()).withStyle(labelFormatting3));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry3.parentRogueLootTableEntryId())) {
 				this.selectLootOption3Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption3Button).setTextureIds(entry3.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption3Button).setDisplayStack(entry3.displayStack());
-				((LootOptionButton) this.selectLootOption3Button).setIconTexture(entry3.iconTextureIdentifier());
-				if (!entry3.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting3 = new ChatFormatting[entry3.labelFormatting().size()];
-					for (int i = 0; i < entry3.labelFormatting().size(); i++) {
-						labelFormatting3[i] = entry3.labelFormatting().get(i);
-					}
-					this.selectLootOption3Button.setMessage(Component.translatable(entry3.labelText()).withStyle(labelFormatting3));
-				}
+			} else {
+				this.selectLootOption3Button.active = false;
+				this.selectLootOption3Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 		if (visibleOptionsAmount >= 5) {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry4 = this.generatedRogueLoot.entryList().get(4);
 
+			((LootOptionButton) this.selectLootOption4Button).setTextureIds(entry4.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption4Button).setDisplayStack(entry4.displayStack());
+			((LootOptionButton) this.selectLootOption4Button).setIconTexture(entry4.iconTextureIdentifier());
+			if (!entry4.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting4 = new ChatFormatting[entry4.labelFormatting().size()];
+				for (int i = 0; i < entry4.labelFormatting().size(); i++) {
+					labelFormatting4[i] = entry4.labelFormatting().get(i);
+				}
+				this.selectLootOption4Button.setMessage(Component.translatable(entry4.labelText()).withStyle(labelFormatting4));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry4.parentRogueLootTableEntryId())) {
 				this.selectLootOption4Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption4Button).setTextureIds(entry4.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption4Button).setDisplayStack(entry4.displayStack());
-				((LootOptionButton) this.selectLootOption4Button).setIconTexture(entry4.iconTextureIdentifier());
-				if (!entry4.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting4 = new ChatFormatting[entry4.labelFormatting().size()];
-					for (int i = 0; i < entry4.labelFormatting().size(); i++) {
-						labelFormatting4[i] = entry4.labelFormatting().get(i);
-					}
-					this.selectLootOption4Button.setMessage(Component.translatable(entry4.labelText()).withStyle(labelFormatting4));
-				}
+			} else {
+				this.selectLootOption4Button.active = false;
+				this.selectLootOption4Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 		if (visibleOptionsAmount >= 6) {
 
 			GeneratedRogueLoot.VisibleRogueLootTableEntry entry5 = this.generatedRogueLoot.entryList().get(5);
 
+			((LootOptionButton) this.selectLootOption5Button).setTextureIds(entry5.entryBackgroundTexturePathAddition());
+			((LootOptionButton) this.selectLootOption5Button).setDisplayStack(entry5.displayStack());
+			((LootOptionButton) this.selectLootOption5Button).setIconTexture(entry5.iconTextureIdentifier());
+			if (!entry5.labelText().isEmpty()) {
+				ChatFormatting[] labelFormatting5 = new ChatFormatting[entry5.labelFormatting().size()];
+				for (int i = 0; i < entry5.labelFormatting().size(); i++) {
+					labelFormatting5[i] = entry5.labelFormatting().get(i);
+				}
+				this.selectLootOption5Button.setMessage(Component.translatable(entry5.labelText()).withStyle(labelFormatting5));
+			}
+
 			if (!DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, entry5.parentRogueLootTableEntryId())) {
 				this.selectLootOption5Button.visible = true;
-
-				((LootOptionButton) this.selectLootOption5Button).setTextureIds(entry5.entryBackgroundTexturePathAddition());
-				((LootOptionButton) this.selectLootOption5Button).setDisplayStack(entry5.displayStack());
-				((LootOptionButton) this.selectLootOption5Button).setIconTexture(entry5.iconTextureIdentifier());
-				if (!entry5.labelText().isEmpty()) {
-					ChatFormatting[] labelFormatting5 = new ChatFormatting[entry5.labelFormatting().size()];
-					for (int i = 0; i < entry5.labelFormatting().size(); i++) {
-						labelFormatting5[i] = entry5.labelFormatting().get(i);
-					}
-					this.selectLootOption5Button.setMessage(Component.translatable(entry5.labelText()).withStyle(labelFormatting5));
-				}
+			} else {
+				this.selectLootOption5Button.active = false;
+				this.selectLootOption5Button.visible = clientConfig.show_banished_loot_options.get();
 			}
 		}
 	}

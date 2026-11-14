@@ -62,8 +62,8 @@ public class DataAttachmentHelper {
 		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverLevel, new GeneratedRogueLootAttachedData(newGeneratedRogueLootData));
 	}
 
-	public static boolean isRogueLootEntryBanished(Player player, final Identifier entryIdentifier) {
-		return RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(player).banishedRogueLootEntries().contains(entryIdentifier);
+	public static boolean isRogueLootEntryBanished(@Nullable Player player, final Identifier entryIdentifier) {
+		return player != null && RogueLootDataAttachments.getBanishedRogueLootEntriesAttachedData(player).banishedRogueLootEntries().contains(entryIdentifier);
 	}
 
 	public static void banishRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {

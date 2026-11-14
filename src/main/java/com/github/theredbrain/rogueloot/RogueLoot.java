@@ -4,6 +4,7 @@ import com.github.theredbrain.rogueloot.compat.LootablesCompat;
 import com.github.theredbrain.rogueloot.registry.BlockRegistry;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerEvents;
 import com.github.theredbrain.rogueloot.registry.ServerPacketRegistry;
@@ -52,6 +53,7 @@ public class RogueLoot implements ModInitializer {
 		CustomDynamicRegistries.init();
 		RogueLootServerEvents.initializeEvents();
 
+		RogueLootConfigs.bootstrap();
 		RogueLootDataAttachments.bootstrap();
 		BlockRegistry.bootstrap();
 		EntityRegistry.bootstrap();
