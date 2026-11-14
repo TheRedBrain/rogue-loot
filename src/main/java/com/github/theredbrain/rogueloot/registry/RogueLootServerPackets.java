@@ -9,7 +9,7 @@ import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveRogueLoo
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 
-public class ServerPacketRegistry {
+public class RogueLootServerPackets {
 
 	public static void init() {
 

@@ -1,6 +1,6 @@
 package com.github.theredbrain.rogueloot.data;
 
-import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderSet;
@@ -20,7 +20,7 @@ public record RogueLootTable(
 		Optional<ItemStackTemplate> banishingCost
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			RegistryCodecs.homogeneousList(CustomDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
+			RegistryCodecs.homogeneousList(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
 			Codec.unboundedMap(Identifier.CODEC, Codec.INT).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
 			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
 			Codec.BOOL.optionalFieldOf("enable_entry_banishing", false).forGetter(x -> x.enableEntryBanishing),

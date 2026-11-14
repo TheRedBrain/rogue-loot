@@ -8,8 +8,8 @@ import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultSha
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
-import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
-import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.mojang.logging.LogUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -67,7 +67,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	private String lootableVaultConfigIdentifier = "";
 
 	public RogueLootVaultBlockEntity(final BlockPos pos, final BlockState state) {
-		super(EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY, pos, state);
+		super(RogueLootEntities.ROGUE_LOOT_VAULT_BLOCK_ENTITY, pos, state);
 	}
 
 	@Nullable
@@ -159,7 +159,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 			return this.config;
 		}
 		Identifier identifier = Identifier.tryParse(this.lootableVaultConfigIdentifier);
-		Optional<Holder.Reference<Registry<RogueLootVaultConfig>>> optionalLootableVaultConfigRegistryReference = level.registryAccess().get(CustomDynamicRegistries.ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY);
+		Optional<Holder.Reference<Registry<RogueLootVaultConfig>>> optionalLootableVaultConfigRegistryReference = level.registryAccess().get(RogueLootDynamicRegistries.ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY);
 		if (optionalLootableVaultConfigRegistryReference.isPresent() && identifier != null) {
 			Optional<Holder.Reference<RogueLootVaultConfig>> optionalLootableVaultConfigReference = optionalLootableVaultConfigRegistryReference.get().value().get(identifier);
 			if (optionalLootableVaultConfigReference.isPresent()) {

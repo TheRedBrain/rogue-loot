@@ -8,7 +8,7 @@ import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
-import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
@@ -190,7 +190,7 @@ public class RogueLootTableHelper {
 	@Nullable
 	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTable rogueLootTable = null;
-		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
+		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
 		if (optionalRogueLootTableRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTable>> optionalRogueLootTableReference = optionalRogueLootTableRegistry.get().get(identifier);
 			if (optionalRogueLootTableReference.isPresent()) {
@@ -203,7 +203,7 @@ public class RogueLootTableHelper {
 	@Nullable
 	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntry rogueLootTableEntry = null;
-		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
+		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTableEntry>> optionalRogueLootTableEntryReference = optionalRogueLootTableEntryRegistry.get().get(identifier);
 			if (optionalRogueLootTableEntryReference.isPresent()) {
@@ -216,7 +216,7 @@ public class RogueLootTableHelper {
 	@Nullable
 	public static RogueLootTableEntryRarity getRogueLootTableEntryRarity(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntryRarity rogueLootTableEntryRarity = null;
-		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
+		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRarityRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityReference = optionalRogueLootTableEntryRarityRegistry.get().get(identifier);
 			if (optionalRogueLootTableEntryRarityReference.isPresent()) {
@@ -229,7 +229,7 @@ public class RogueLootTableHelper {
 	@Nullable
 	public static RogueLootGuiSettings getRogueLootGuiSettings(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootGuiSettings rogueLootTableEntryRarity = null;
-		Optional<Registry<RogueLootGuiSettings>> optionalRogueLootGuiSettingsRegistry = registryAccess.lookup(CustomDynamicRegistries.ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY);
+		Optional<Registry<RogueLootGuiSettings>> optionalRogueLootGuiSettingsRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY);
 		if (optionalRogueLootGuiSettingsRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootGuiSettings>> optionalRogueLootGuiSettingsReference = optionalRogueLootGuiSettingsRegistry.get().get(identifier);
 			if (optionalRogueLootGuiSettingsReference.isPresent()) {

@@ -2,7 +2,7 @@ package com.github.theredbrain.rogueloot.block;
 
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
-import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -81,14 +81,14 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 		return world instanceof ServerLevel serverWorld
 				? createTickerHelper(
 				type,
-				EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
+				RogueLootEntities.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
 				(worldx, pos, statex, blockEntity) -> RogueLootVaultBlockEntity.Server.tick(
 						serverWorld, pos, statex, blockEntity.getConfig(world), blockEntity.getServerData(), blockEntity.getSharedData()
 				)
 		)
 				: createTickerHelper(
 				type,
-				EntityRegistry.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
+				RogueLootEntities.ROGUE_LOOT_VAULT_BLOCK_ENTITY,
 				(worldx, pos, statex, blockEntity) -> RogueLootVaultBlockEntity.Client.tick(worldx, pos, statex, blockEntity.getClientData(), blockEntity.getSharedData())
 		);
 	}

@@ -21,7 +21,7 @@ import net.minecraft.world.level.material.MapColor;
 
 import java.util.List;
 
-public class BlockRegistry {
+public class RogueLootBlocks {
 
 	public static ResourceKey<Block> ROGUE_LOOT_VAULT_BLOCK_BLOCK_KEY = ResourceKey.create(Registries.BLOCK, RogueLoot.identifier("rogue_loot_vault_block"));
 	public static ResourceKey<Item> ROGUE_LOOT_VAULT_BLOCK_ITEM_KEY = ResourceKey.create(Registries.ITEM, RogueLoot.identifier("rogue_loot_vault_block"));

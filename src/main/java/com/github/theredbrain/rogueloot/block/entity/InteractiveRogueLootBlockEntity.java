@@ -2,7 +2,7 @@ package com.github.theredbrain.rogueloot.block.entity;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
-import com.github.theredbrain.rogueloot.registry.EntityRegistry;
+import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
@@ -39,7 +39,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	private String alreadyLootedSoundId = "block.chest.locked";
 
 	public InteractiveRogueLootBlockEntity(final BlockPos pos, final BlockState state) {
-		super(EntityRegistry.INTERACTIVE_ROGUE_LOOT_BLOCK_ENTITY, pos, state);
+		super(RogueLootEntities.INTERACTIVE_ROGUE_LOOT_BLOCK_ENTITY, pos, state);
 	}
 
 	@Override

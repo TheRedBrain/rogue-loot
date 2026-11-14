@@ -10,7 +10,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 
-public class CustomDynamicRegistries {
+public class RogueLootDynamicRegistries {
 
 	public static final ResourceKey<Registry<RogueLootGuiSettings>> ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_gui_settings"));
 	public static final ResourceKey<Registry<RogueLootTable>> ROGUE_LOOT_TABLE_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_table"));
