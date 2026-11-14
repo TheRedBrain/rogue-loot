@@ -5,7 +5,7 @@ import com.github.theredbrain.rogueloot.registry.BlockRegistry;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.EntityRegistry;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
-import com.github.theredbrain.rogueloot.registry.RogueLootMenuTypes;
+import com.github.theredbrain.rogueloot.registry.RogueLootServerEvents;
 import com.github.theredbrain.rogueloot.registry.ServerPacketRegistry;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -56,7 +56,7 @@ public class RogueLoot implements ModInitializer {
 		BlockRegistry.init();
 		CustomDynamicRegistries.init();
 		EntityRegistry.init();
-		RogueLootMenuTypes.init();
+		RogueLootServerEvents.initializeEvents();
 	}
 
 	public static Identifier identifier(String path) {

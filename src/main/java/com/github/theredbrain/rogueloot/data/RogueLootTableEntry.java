@@ -17,7 +17,8 @@ public record RogueLootTableEntry(
 		Optional<ItemStackTemplate> displayStack,
 		String iconTexturePath,
 		String labelText,
-		String rarityIdString
+		String rarityIdString,
+		boolean allowBanishing
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
@@ -25,7 +26,8 @@ public record RogueLootTableEntry(
 			ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
-			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString)
+			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString),
+			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing)
 	).apply(instance, RogueLootTableEntry::new));
 
 	public RogueLootTableEntry(
@@ -34,7 +36,8 @@ public record RogueLootTableEntry(
 			Optional<ItemStackTemplate> displayStack,
 			String iconTexturePath,
 			String labelText,
-			String rarityIdString
+			String rarityIdString,
+			boolean allowBanishing
 	) {
 		this.unlockPredicate = unlockPredicate;
 		this.rogueLootTableEntryComponents = rogueLootTableEntryComponents != null ? rogueLootTableEntryComponents : List.of();
@@ -42,6 +45,7 @@ public record RogueLootTableEntry(
 		this.iconTexturePath = iconTexturePath != null ? iconTexturePath : "";
 		this.labelText = labelText != null ? labelText : "";
 		this.rarityIdString = rarityIdString;
+		this.allowBanishing = allowBanishing;
 	}
 
 	public record RogueLootTableEntryComponent(

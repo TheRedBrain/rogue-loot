@@ -1,8 +1,8 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
+import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
@@ -22,33 +22,30 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 		ServerPlayer serverPlayer = context.player();
 		ServerLevel serverLevel = serverPlayer.level();
 
-		List<String> chosenRogueLootEntries = payload.chosenRogueLootEntries();
+		List<Identifier> chosenRogueLootEntries = payload.chosenRogueLootEntries();
 		Identifier localRogueLootTableIdentifier = payload.localRogueLootTableIdentifier();
 
 		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localRogueLootTableIdentifier, serverPlayer);
 
-		for (String entry : chosenRogueLootEntries) {
-			Identifier identifier = Identifier.tryParse(entry);
-			if (!entry.isEmpty() && identifier != null) {
-				RogueLootTableEntry rogueLootTableEntry = RogueLootTableHelper.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
-				if (rogueLootTableEntry != null) {
-					for (RogueLootTableEntry.RogueLootTableEntryComponent component : rogueLootTableEntry.rogueLootTableEntryComponents()) {
-						if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ITEM_STACK) {
-							RogueLoot.info("offer item stack");
-							Optional<ItemStackTemplate> optionalItemStackTemplate = component.itemStackTemplate();
-							if (optionalItemStackTemplate.isPresent()) {
-								serverPlayer.getInventory().placeItemBackInInventory(optionalItemStackTemplate.get().create());
-							}
-						} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ADVANCEMENT) {
-							RogueLoot.info("offer advancement");
-						} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.LOOT_TABLE) {
-							RogueLoot.info("offer loot table");
-						} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.MOB_EFFECT_INSTANCE) {
-							RogueLoot.info("offer mob effect");
-							Optional<MobEffectInstance> optionalMobEffectInstance = component.mobEffectInstance();
-							if (optionalMobEffectInstance.isPresent()) {
-								serverPlayer.addEffect(new MobEffectInstance(optionalMobEffectInstance.get()));
-							}
+		for (Identifier identifier : chosenRogueLootEntries) {
+			RogueLootTableEntry rogueLootTableEntry = RogueLootTableHelper.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
+			if (rogueLootTableEntry != null) {
+				for (RogueLootTableEntry.RogueLootTableEntryComponent component : rogueLootTableEntry.rogueLootTableEntryComponents()) {
+					if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ITEM_STACK) {
+						RogueLoot.info("offer item stack");
+						Optional<ItemStackTemplate> optionalItemStackTemplate = component.itemStackTemplate();
+						if (optionalItemStackTemplate.isPresent()) {
+							serverPlayer.getInventory().placeItemBackInInventory(optionalItemStackTemplate.get().create());
+						}
+					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ADVANCEMENT) {
+						RogueLoot.info("offer advancement");
+					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.LOOT_TABLE) {
+						RogueLoot.info("offer loot table");
+					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.MOB_EFFECT_INSTANCE) {
+						RogueLoot.info("offer mob effect");
+						Optional<MobEffectInstance> optionalMobEffectInstance = component.mobEffectInstance();
+						if (optionalMobEffectInstance.isPresent()) {
+							serverPlayer.addEffect(new MobEffectInstance(optionalMobEffectInstance.get()));
 						}
 					}
 				}

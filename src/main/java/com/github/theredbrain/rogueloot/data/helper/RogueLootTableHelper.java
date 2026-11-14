@@ -6,24 +6,23 @@ import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
 import com.github.theredbrain.rogueloot.data.RogueLootTable;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
+import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
+import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
 import com.github.theredbrain.rogueloot.registry.CustomDynamicRegistries;
-import com.github.theredbrain.rogueloot.world.inventory.RogueLootGuiMenu;
-import net.fabricmc.fabric.api.menu.v1.ExtendedMenuProvider;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.jspecify.annotations.Nullable;
@@ -46,41 +45,10 @@ public class RogueLootTableHelper {
 		}
 		if (generatedRogueLoot != null) {
 			DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayerEntity);
-			serverPlayerEntity.openMenu(createRogueLootMenuProvider(serverLevel, generatedRogueLoot, localIdentifier));
+			int banishingAttempts = calculateBanishingAttempts(serverPlayerEntity, generatedRogueLoot);
+			ServerPlayNetworking.send(serverPlayerEntity, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts));
 		}
 
-	}
-
-	static MenuProvider createRogueLootMenuProvider(
-			Level level,
-			GeneratedRogueLoot generatedRogueLoot,
-			Identifier localRogueLootTableIdentifier
-	) {
-
-		return new ExtendedMenuProvider<>() {
-			@Override
-			public RogueLootGuiMenu.RogueLootGuiData getScreenOpeningData(ServerPlayer player) {
-				return new RogueLootGuiMenu.RogueLootGuiData(
-						generatedRogueLoot,
-						localRogueLootTableIdentifier
-				);
-			}
-
-			@Override
-			public Component getDisplayName() {
-				return Component.empty();
-			}
-
-			@Override
-			public RogueLootGuiMenu createMenu(int syncId, Inventory playerInventory, Player player) {
-				return new RogueLootGuiMenu(
-						syncId,
-						playerInventory,
-						generatedRogueLoot,
-						localRogueLootTableIdentifier
-				);
-			}
-		};
 	}
 
 	public static void removeRogueLootTableUses(ServerLevel serverLevel, Vec3 pos, String identifierString, int rolls, int minChoices, int maxChoices, @Nullable ServerPlayer serverPlayerEntity) {
@@ -93,6 +61,19 @@ public class RogueLootTableHelper {
 	public static void removeRogueLootTableUses(ServerLevel serverLevel, Vec3 pos, Identifier identifier, int rolls, int minChoices, int maxChoices, @Nullable ServerPlayer serverPlayerEntity) {
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
 		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayerEntity);
+	}
+
+	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
+
+		int banishingAttempts = -1;
+		if (generatedRogueLoot.enableEntryBanishing() && generatedRogueLoot.banishingCost().isPresent()) {
+			ItemStack banishingCostStack = generatedRogueLoot.banishingCost().get().create();
+
+			if (!banishingCostStack.isEmpty()) {
+				banishingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, banishingCostStack);
+			}
+		}
+		return banishingAttempts;
 	}
 
 	@Nullable
@@ -120,6 +101,14 @@ public class RogueLootTableHelper {
 		int totalWeight = 0;
 		for (Holder<RogueLootTableEntry> entry : rogueLootTable.rogueLootTableEntries()) {
 			RogueLootTableEntry rogueLootTableEntry = entry.value();
+			Optional<ResourceKey<RogueLootTableEntry>> optionalResourceKey = entry.unwrapKey();
+			if (optionalResourceKey.isEmpty()) {
+				continue;
+			}
+			Identifier entryIdentifier = optionalResourceKey.get().identifier();
+			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayerEntity, entryIdentifier)) {
+				continue;
+			}
 
 			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
 			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayerEntity, serverPlayerEntity))) {
@@ -151,7 +140,8 @@ public class RogueLootTableHelper {
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
 					labelFormatting,
-					entry.getRegisteredName()
+					rogueLootTableEntry.allowBanishing(),
+					entryIdentifier
 			)));
 			totalWeight = totalWeight + weight;
 		}
@@ -165,7 +155,7 @@ public class RogueLootTableHelper {
 		int chosenWeight;
 		int index;
 		int weightCounter;
-		for (int i = 0; i < rolls; i++) {
+		for (int i = 0; i < Math.min(tempList.size(), rolls); i++) {
 			chosenWeight = serverLevel.getRandom().nextInt(totalWeight);
 			index = -1;
 			weightCounter = 0;
@@ -189,7 +179,9 @@ public class RogueLootTableHelper {
 				requirementsMetFormatting,
 				visibleRogueLootTableEntries,
 				minChoices,
-				maxChoices
+				maxChoices,
+				rogueLootTable.enableEntryBanishing(),
+				rogueLootTable.banishingCost()
 		);
 	}
 

@@ -19,7 +19,9 @@ public record GeneratedRogueLoot(
 		List<ChatFormatting> requirementsMetFormatting,
 		List<VisibleRogueLootTableEntry> entryList,
 		int minChoices,
-		int maxChoices
+		int maxChoices,
+		boolean enableEntryBanishing,
+		Optional<ItemStackTemplate> banishingCost
 ) {
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.fieldOf("background_texture_path").forGetter(x -> x.backgroundTexturePath),
@@ -27,7 +29,9 @@ public record GeneratedRogueLoot(
 			ChatFormatting.CODEC.listOf().fieldOf("requirements_met_formatting").forGetter(x -> x.requirementsMetFormatting),
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
 			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
-			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices)
+			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices),
+			Codec.BOOL.fieldOf("enable_entry_banishing").forGetter(x -> x.enableEntryBanishing),
+			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost)
 	).apply(instance, GeneratedRogueLoot::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.composite(
@@ -43,6 +47,10 @@ public record GeneratedRogueLoot(
 			GeneratedRogueLoot::minChoices,
 			ByteBufCodecs.INT,
 			GeneratedRogueLoot::maxChoices,
+			ByteBufCodecs.BOOL,
+			GeneratedRogueLoot::enableEntryBanishing,
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
+			GeneratedRogueLoot::banishingCost,
 			GeneratedRogueLoot::new
 	);
 
@@ -52,7 +60,9 @@ public record GeneratedRogueLoot(
 			List<ChatFormatting> requirementsMetFormatting,
 			List<VisibleRogueLootTableEntry> entryList,
 			int minChoices,
-			int maxChoices
+			int maxChoices,
+			boolean enableEntryBanishing,
+			Optional<ItemStackTemplate> banishingCost
 	) {
 		this.backgroundTexturePath = backgroundTexturePath != null ? backgroundTexturePath : "";
 		this.requirementsNotMetFormatting = requirementsNotMetFormatting != null ? requirementsNotMetFormatting : List.of();
@@ -60,6 +70,8 @@ public record GeneratedRogueLoot(
 		this.entryList = entryList != null ? entryList : List.of();
 		this.minChoices = minChoices;
 		this.maxChoices = maxChoices;
+		this.enableEntryBanishing = enableEntryBanishing;
+		this.banishingCost = banishingCost;
 	}
 
 	public static GeneratedRogueLoot copy(GeneratedRogueLoot generatedRogueLoot) {
@@ -73,7 +85,9 @@ public record GeneratedRogueLoot(
 				new ArrayList<>(generatedRogueLoot.requirementsMetFormatting()),
 				newVisibleRogueLootTableEntryList,
 				generatedRogueLoot.minChoices(),
-				generatedRogueLoot.maxChoices()
+				generatedRogueLoot.maxChoices(),
+				generatedRogueLoot.enableEntryBanishing(),
+				generatedRogueLoot.banishingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.banishingCost().get().create())) : Optional.empty()
 		);
 	}
 
@@ -83,7 +97,8 @@ public record GeneratedRogueLoot(
 			Optional<Identifier> iconTextureIdentifier,
 			String labelText,
 			List<ChatFormatting> labelFormatting,
-			String parentRogueLootTableEntryId
+			boolean allowBanishing,
+			Identifier parentRogueLootTableEntryId
 	) {
 		public static final Codec<VisibleRogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 				Codec.STRING.fieldOf("entry_background_texture_path_addition").forGetter(x -> x.entryBackgroundTexturePathAddition),
@@ -91,7 +106,8 @@ public record GeneratedRogueLoot(
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
 				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
 				ChatFormatting.CODEC.listOf().fieldOf("label_formatting").forGetter(x -> x.labelFormatting),
-				Codec.STRING.fieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
+				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
+				Identifier.CODEC.fieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, VisibleRogueLootTableEntry> STREAM_CODEC = StreamCodec.composite(
@@ -105,7 +121,9 @@ public record GeneratedRogueLoot(
 				VisibleRogueLootTableEntry::labelText,
 				ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
 				VisibleRogueLootTableEntry::labelFormatting,
-				ByteBufCodecs.STRING_UTF8,
+				ByteBufCodecs.BOOL,
+				VisibleRogueLootTableEntry::allowBanishing,
+				Identifier.STREAM_CODEC,
 				VisibleRogueLootTableEntry::parentRogueLootTableEntryId,
 				VisibleRogueLootTableEntry::new
 		);
@@ -116,14 +134,16 @@ public record GeneratedRogueLoot(
 				Optional<Identifier> iconTextureIdentifier,
 				String labelText,
 				List<ChatFormatting> labelFormatting,
-				String parentRogueLootTableEntryId
+				boolean allowBanishing,
+				Identifier parentRogueLootTableEntryId
 		) {
 			this.entryBackgroundTexturePathAddition = entryBackgroundTexturePathAddition != null ? entryBackgroundTexturePathAddition : "";
 			this.displayStack = displayStack;
 			this.iconTextureIdentifier = iconTextureIdentifier;
 			this.labelText = labelText != null ? labelText : "";
 			this.labelFormatting = labelFormatting != null ? labelFormatting : List.of();
-			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId != null ? parentRogueLootTableEntryId : "";
+			this.allowBanishing = allowBanishing;
+			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId;
 		}
 
 		public static VisibleRogueLootTableEntry copy(VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
@@ -133,6 +153,7 @@ public record GeneratedRogueLoot(
 					visibleRogueLootTableEntry.iconTextureIdentifier(),
 					visibleRogueLootTableEntry.labelText(),
 					new ArrayList<>(visibleRogueLootTableEntry.labelFormatting()),
+					visibleRogueLootTableEntry.allowBanishing(),
 					visibleRogueLootTableEntry.parentRogueLootTableEntryId()
 			);
 		}
