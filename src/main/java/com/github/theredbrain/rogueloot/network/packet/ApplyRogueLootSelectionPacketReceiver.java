@@ -1,15 +1,21 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.block.InteractiveRogueLootBlock;
+import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
+import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,8 +30,20 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 
 		List<Identifier> chosenRogueLootEntries = payload.chosenRogueLootEntries();
 		Identifier localRogueLootTableIdentifier = payload.localRogueLootTableIdentifier();
+		Optional<BlockPos> lootProviderBlockPos = payload.lootProviderBlockPos();
+		Optional<ItemStack> itemStack = payload.itemStack();
 
 		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localRogueLootTableIdentifier, serverPlayer);
+
+		if (lootProviderBlockPos.isPresent()) {
+			BlockEntity blockEntity = serverLevel.getBlockEntity(lootProviderBlockPos.get());
+			if (blockEntity instanceof InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
+				InteractiveRogueLootBlock.lootWasSupplied(serverPlayer, interactiveRogueLootBlockEntity);
+			}
+			if (blockEntity instanceof RogueLootVaultBlockEntity rogueLootVaultBlockEntity) {
+				rogueLootVaultBlockEntity.markAsRewarded(serverPlayer, itemStack.orElse(ItemStack.EMPTY));
+			}
+		}
 
 		for (Identifier identifier : chosenRogueLootEntries) {
 			RogueLootTableEntry rogueLootTableEntry = RogueLootTableHelper.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);

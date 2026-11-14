@@ -2,15 +2,22 @@ package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.ItemStack;
+
+import java.util.Optional;
 
 public record OpenRogueLootScreenPacket(
 		GeneratedRogueLoot generatedRogueLoot,
 		Identifier localRogueLootTableIdentifier,
-		int banishingAttempts
+		int banishingAttempts,
+		Optional<BlockPos> lootProviderBlockPos,
+		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, OpenRogueLootScreenPacket> PACKET_CODEC = StreamCodec.ofMember(OpenRogueLootScreenPacket::write, OpenRogueLootScreenPacket::new);
@@ -19,7 +26,9 @@ public record OpenRogueLootScreenPacket(
 		this(
 				GeneratedRogueLoot.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readIdentifier(),
-				registryByteBuf.readInt()
+				registryByteBuf.readInt(),
+				ByteBufCodecs.optional(BlockPos.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
@@ -27,6 +36,8 @@ public record OpenRogueLootScreenPacket(
 		GeneratedRogueLoot.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLoot);
 		registryByteBuf.writeIdentifier(this.localRogueLootTableIdentifier);
 		registryByteBuf.writeInt(this.banishingAttempts);
+		ByteBufCodecs.optional(BlockPos.STREAM_CODEC).encode(registryByteBuf, this.lootProviderBlockPos);
+		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}
 
 	@Override

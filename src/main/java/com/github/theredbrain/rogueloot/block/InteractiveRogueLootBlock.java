@@ -79,13 +79,12 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 					} else {
 						Identifier identifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 						if (!interactiveRogueLootBlockEntity.getLootTableIdentifierString().isEmpty() && identifier != null) {
-							Vec3 lootPos = Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos());
 							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
-								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), true, null);
+								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), true, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
-								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
+								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
-								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, lootPos, interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), null);
+								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, interactiveRogueLootBlockEntity.getBlockPos(), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), null);
 							} else {
 								List<ItemStack> lootStacks = getLootItems(serverLevel, pos, player, interactiveRogueLootBlockEntity);
 								for (ItemStack itemStack : lootStacks) {

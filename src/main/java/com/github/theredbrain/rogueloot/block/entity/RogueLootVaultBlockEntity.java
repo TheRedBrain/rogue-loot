@@ -11,6 +11,7 @@ import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.mojang.logging.LogUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -21,6 +22,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -63,6 +65,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	private final RogueLootVaultServerData serverData = new RogueLootVaultServerData();
 	private final RogueLootVaultSharedData sharedData = new RogueLootVaultSharedData();
 	private final RogueLootVaultClientData clientData = new RogueLootVaultClientData();
+	@Nullable
 	private RogueLootVaultConfig config = null;
 	private String lootableVaultConfigIdentifier = "";
 
@@ -108,7 +111,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	@Override
 	public void setRemoved() {
 		if (this.level instanceof ServerLevel serverWorld) {
-			this.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), null, this.getConfig(serverWorld));
+			this.removeLootableUses(serverWorld, this.worldPosition, null, this.getConfig(serverWorld));
 		}
 		super.setRemoved();
 	}
@@ -131,7 +134,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 			RogueLootVaultServerData serverData = this.getServerData();
 			RogueLootVaultSharedData sharedData = this.getSharedData();
 			RogueLootVaultConfig config = this.getConfig(serverWorld);
-			if (serverData != null && sharedData != null) {
+			if (serverData != null) {
 				serverPlayer.awardStat(Stats.ITEM_USED.get(itemStack.getItem()));
 				itemStack.consume(config.keyItem().create().getCount(), serverPlayer);
 				Server.unlock(serverWorld, serverWorld.getBlockState(this.worldPosition), this.worldPosition, config, serverData, sharedData);
@@ -146,11 +149,11 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 			RogueLootVaultServerData serverData = this.getServerData();
 			RogueLootVaultSharedData sharedData = this.getSharedData();
 			RogueLootVaultConfig config = this.getConfig(serverWorld);
-			if (serverData != null && sharedData != null) {
+			if (serverData != null) {
 				serverData.unmarkPlayerAsRewarded(serverPlayer);
 				sharedData.updateConnectedPlayers(serverWorld, this.worldPosition, serverData, config, config.deactivationRange());
 			}
-			this.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), serverPlayer, config);
+			this.removeLootableUses(serverWorld, this.worldPosition, serverPlayer, config);
 		}
 	}
 
@@ -174,11 +177,11 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		return this.config;
 	}
 
-	private void removeLootableUses(final ServerLevel serverLevel, final Vec3 pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
+	private void removeLootableUses(final ServerLevel serverLevel, final BlockPos pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
 			RogueLootTableHelper.removeRogueLootTableUses(serverLevel, pos, config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayer);
 		} else {
-			RogueLoot.removeLootableUses(serverLevel, pos, config.lootTableIdentifier(), serverPlayer);
+			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(pos), config.lootTableIdentifier(), serverPlayer);
 		}
 	}
 
@@ -323,24 +326,22 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (canEjectReward(config, vaultState)) {
 				if (!isValidToInsert(config, stack)) {
-					RogueLoot.info("invalid key");
 					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_INSERT_ITEM_FAIL);
 				} else if (serverData.hasRewardedPlayer(player)) {
-					RogueLoot.info("player already rewarded");
 					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
 				} else if (player instanceof ServerPlayer serverPlayerEntity) {
 					Identifier identifier = Identifier.tryParse(config.lootTableIdentifier());
 					if (identifier == null) {
-						playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
+						serverPlayerEntity.sendSystemMessage(Component.translatable("hud.message.rogue_loot_vault_block.invalid_loot_table_id").withStyle(ChatFormatting.RED), true);
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.maxChoices(), stack);
+						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, pos, config.rolls(), config.minChoices(), config.maxChoices(), stack);
 					} else {
 						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
+						serverData.markPlayerAsRewarded(player);
+						sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
 					}
-					serverData.markPlayerAsRewarded(player);
-					sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
 				}
 			}
 		}

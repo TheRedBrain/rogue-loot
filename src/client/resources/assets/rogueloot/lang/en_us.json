@@ -16,8 +16,8 @@
 	"gui.interactive_rogue_loot_block.already_looted_message_placeholder": "Already Looted Message",
 	"gui.interactive_rogue_loot_block.already_looted_sound_id_placeholder": "Already Looted Sound Id",
 
-	"gui.interactive_rogue_loot_block.mode.lootable_choice": "Choice Lootable",
-	"gui.interactive_rogue_loot_block.mode.lootable_random": "Random Lootable",
+	"gui.interactive_rogue_loot_block.mode.lootable_choice": "Choice Lootable (Disabled)",
+	"gui.interactive_rogue_loot_block.mode.lootable_random": "Random Lootable (Disabled)",
 	"gui.interactive_rogue_loot_block.mode.rogue_loot": "Rogue Loot Table",
 	"gui.interactive_rogue_loot_block.mode.vanilla": "Vanilla Loot Table",
 
@@ -33,6 +33,8 @@
 
 	"hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices": "Max Choices was smaller than Min Choices. This has been corrected.",
 	"hud.message.rogue_loot.update_successful": "Update successful!",
+
+	"hud.message.rogue_loot_vault_block.invalid_loot_table_id": "Invalid Loot Table Id",
 
 
 	"item.rogueloot.interactive_rogue_loot_block": "Interactive Rogue Loot Block",

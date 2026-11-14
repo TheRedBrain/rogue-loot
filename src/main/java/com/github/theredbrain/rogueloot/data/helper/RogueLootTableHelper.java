@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -31,7 +32,7 @@ import java.util.Optional;
 
 public class RogueLootTableHelper {
 
-	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Vec3 pos, final int rolls, final int minChoices, final int maxChoices, @Nullable final ItemStack itemStack) {
+	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final BlockPos pos, final int rolls, final int minChoices, final int maxChoices, @Nullable final ItemStack itemStack) {
 		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), identifier);
 		if (rogueLootTable == null) {
 			return;
@@ -41,22 +42,20 @@ public class RogueLootTableHelper {
 		if (generatedRogueLoot == null) {
 			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, rolls, minChoices, maxChoices);
 		}
-		if (generatedRogueLoot != null) {
-			DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayer);
-			int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-			ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts));
-		}
+		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayer);
+		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts, Optional.of(pos), itemStack != null ? Optional.of(itemStack) : Optional.empty()));
 
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Vec3 pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final BlockPos pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
 		Identifier identifier = Identifier.tryParse(identifierString);
 		if (identifier != null) {
 			removeRogueLootTableUses(serverLevel, pos, identifier, rolls, minChoices, maxChoices, serverPlayer);
 		}
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Vec3 pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final BlockPos pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
 		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
 		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayer);
 	}
@@ -74,7 +73,6 @@ public class RogueLootTableHelper {
 		return banishingAttempts;
 	}
 
-	@Nullable
 	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final ServerPlayer serverPlayer, final int rolls, final int minChoices, final int maxChoices) {
 
 		String backgroundTexturePath = "";
@@ -183,8 +181,8 @@ public class RogueLootTableHelper {
 		);
 	}
 
-	public static Identifier getLocalRogueLootTableId(final ServerLevel serverLevel, final Identifier identifier, final Vec3 pos, final int rolls, final int minChoices, final int maxChoices) {
-		return RogueLoot.identifier(serverLevel.dimension().identifier().toLanguageKey() + "_" + identifier.toLanguageKey() + "_" + pos.x() + "_" + pos.y() + "_" + pos.z() + "_" + rolls + "_" + minChoices + "_" + maxChoices);
+	public static Identifier getLocalRogueLootTableId(final ServerLevel serverLevel, final Identifier identifier, final BlockPos pos, final int rolls, final int minChoices, final int maxChoices) {
+		return RogueLoot.identifier(serverLevel.dimension().identifier().toLanguageKey() + "_" + identifier.toLanguageKey() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ() + "_" + rolls + "_" + minChoices + "_" + maxChoices);
 	}
 
 	@Nullable

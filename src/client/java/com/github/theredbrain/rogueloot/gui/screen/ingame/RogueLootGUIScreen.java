@@ -17,6 +17,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -35,6 +36,8 @@ public class RogueLootGUIScreen extends Screen {
 	private final GeneratedRogueLoot generatedRogueLoot;
 	private final Identifier localRogueLootTableIdentifier;
 	private final int banishingAttempts;
+	private final Optional<BlockPos> lootProviderBlockPos;
+	private final Optional<ItemStack> itemStack;
 
 	private Button selectLootOption0Button;
 	private Button selectLootOption1Button;
@@ -60,11 +63,13 @@ public class RogueLootGUIScreen extends Screen {
 	private int currentBanishingAttemptsLabelX = 0;
 	private int currentBanishingAttemptsLabelY = 0;
 
-	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final Identifier localRogueLootTableIdentifier, int banishingAttempts) {
+	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final Identifier localRogueLootTableIdentifier, final int banishingAttempts, final Optional<BlockPos> lootProviderBlockPos, final Optional<ItemStack> itemStack) {
 		super(GameNarrator.NO_TITLE);
 		this.generatedRogueLoot = generatedRogueLoot;
 		this.localRogueLootTableIdentifier = localRogueLootTableIdentifier;
 		this.banishingAttempts = banishingAttempts;
+		this.lootProviderBlockPos = lootProviderBlockPos;
+		this.itemStack = itemStack;
 		Arrays.fill(this.selectedOptions, false);
 		Arrays.fill(this.banishedOptions, false);
 
@@ -452,7 +457,9 @@ public class RogueLootGUIScreen extends Screen {
 	private void applySelection() {
 		ClientPlayNetworking.send(new ApplyRogueLootSelectionPacket(
 				getChosenRogueLootEntries(),
-				this.localRogueLootTableIdentifier
+				this.localRogueLootTableIdentifier,
+				this.lootProviderBlockPos,
+				this.itemStack
 		));
 	}
 
