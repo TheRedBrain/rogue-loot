@@ -13,5 +13,5 @@
     "id": "minecraft:wheat"
   },
   "label_text": "Wheat",
-  "rarity": "rogueloot:uncommon"
+  "rarity": "rogueloot_test:uncommon"
 }

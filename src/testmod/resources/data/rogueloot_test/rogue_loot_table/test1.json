@@ -1,4 +1,4 @@
 {
   "rogue_loot_table_entries": "#rogueloot_test:test",
-  "gui_settings_id": "rogueloot:default"
+  "enable_entry_banishing": true
 }

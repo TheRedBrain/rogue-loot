@@ -11,5 +11,5 @@
     "id": "minecraft:diamond"
   },
   "label_text": "Diamond",
-  "rarity": "rogueloot:epic"
+  "rarity": "rogueloot_test:epic"
 }

@@ -11,5 +11,5 @@
     "id": "minecraft:shield"
   },
   "label_text": "Shield",
-  "rarity": "rogueloot:rare"
+  "rarity": "rogueloot_test:rare"
 }

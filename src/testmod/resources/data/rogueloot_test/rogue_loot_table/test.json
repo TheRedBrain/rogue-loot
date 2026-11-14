@@ -1,16 +1,7 @@
 {
-  "rogue_loot_table_entries": [
-    "rogueloot_test:test",
-    "rogueloot_test:test1",
-    "rogueloot_test:test2",
-    "rogueloot_test:test3",
-    "rogueloot_test:test4",
-    "rogueloot_test:test5",
-    "rogueloot_test:test6",
-    "rogueloot_test:test7"
-  ],
-  "rarity_overrides": {
-    "rogueloot_test:test": 2
-  },
-  "gui_settings_id": "rogueloot_test:test1"
+  "rogue_loot_table_entries": "#rogueloot_test:test",
+  "enable_entry_banishing": true,
+  "banishing_cost": {
+    "id": "minecraft:emerald"
+  }
 }

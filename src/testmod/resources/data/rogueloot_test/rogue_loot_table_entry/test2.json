@@ -8,5 +8,5 @@
     }
   ],
   "icon_texture_path": "minecraft:textures/item/stick.png",
-  "rarity": "rogueloot:common"
+  "rarity": "rogueloot_test:common"
 }

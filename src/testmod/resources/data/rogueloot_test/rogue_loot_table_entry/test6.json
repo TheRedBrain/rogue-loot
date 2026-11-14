@@ -11,5 +11,5 @@
     "id": "minecraft:stone"
   },
   "label_text": "Stone",
-  "rarity": "rogueloot:common"
+  "rarity": "rogueloot_test:common"
 }
