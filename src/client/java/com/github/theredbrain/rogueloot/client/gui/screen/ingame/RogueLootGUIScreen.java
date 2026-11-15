@@ -79,19 +79,21 @@ public class RogueLootGUIScreen extends Screen {
 		if (index >= MAX_OPTIONS_AMOUNT || index >= this.generatedRogueLoot.entryList().size()) {
 			return;
 		}
-		if (this.banishingEnabled && this.generatedRogueLoot.enableEntryBanishing()) { // TODO keep redundant check?
-			if (this.banishingAttempts < 0 || (this.banishingAttempts > 0 && this.banishedOptionsAmount <= this.banishingAttempts)) {
-				if (((LootOptionButton) button).isSelected()) { // TODO can selected options be banished?
-					((LootOptionButton) button).setSelected(false);
-					this.selectedOptions[index] = false;
+		ClientConfig clientConfig = RogueLootConfigs.CLIENT_CONFIG;
+		if (this.banishingEnabled && this.generatedRogueLoot.enableEntryBanishing()) {
+			if (this.generatedRogueLoot.entryList().get(index).allowBanishing()) {
+				if (this.banishingAttempts < 0 || (this.banishingAttempts > 0 && this.banishedOptionsAmount <= this.banishingAttempts)) {
+					if (((LootOptionButton) button).isSelected() && clientConfig.enable_banishing_for_selected_options.get()) {
+						((LootOptionButton) button).setSelected(false);
+						this.selectedOptions[index] = false;
+					}
+					this.banishingEnabled = false;
+					this.toggleBanishingButton.setValue(false);
+					button.active = false;
+					this.banishedOptions[index] = true;
+					this.banishEntry(index);
+					this.updateWidgets();
 				}
-				this.banishingEnabled = false;
-				this.toggleBanishingButton.setValue(false);
-				button.active = false;
-				button.visible = RogueLootConfigs.CLIENT_CONFIG.show_banished_loot_options.get();
-				this.banishedOptions[index] = true;
-				this.banishEntry(index);
-				this.updateWidgets();
 			}
 		} else {
 			if (((LootOptionButton) button).isSelected()) {

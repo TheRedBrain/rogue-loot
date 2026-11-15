@@ -11,4 +11,5 @@ public class ClientConfig extends Config {
 	}
 
 	public ValidatedBoolean show_banished_loot_options = new ValidatedBoolean(true);
+	public ValidatedBoolean enable_banishing_for_selected_options = new ValidatedBoolean(false);
 }
