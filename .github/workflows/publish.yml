@@ -10,35 +10,97 @@ name: Publish
 on:
   workflow_dispatch:
     inputs:
+      fabric:
+        type: boolean
+        description: 'Loader: Fabric'
+        default: true
+      #      neoforge:
+      #        type: boolean
+      #        description: 'Loader: NeoForge'
+      #        default: true
       release_type:
         type: choice
         description: Release type
         options:
-          - alpha
-          - beta
           - release
+          - beta
+          - alpha
+      curseforge:
+        type: boolean
+        description: 'Platform: CurseForge'
+        default: true
+      modrinth:
+        type: boolean
+        description: 'Platform: Modrinth'
+        default: true
+      github:
+        type: boolean
+        description: 'Platform: GitHub Release'
+        default: true
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
+  # Separate job because an empty matrix would silently run zero jobs.
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      loaders: ${{ steps.plan.outputs.loaders }}
+      destinations: ${{ steps.plan.outputs.destinations }}
+    steps:
+      - name: Resolve build plan
+        id: plan
+        # `if` blocks, not `&&` chains: `${{ inputs.x }}` is a bare `false`, which aborts under `set -e`.
+        run: |
+          set -euo pipefail
 
+          loaders=""
+          if [ "${{ inputs.fabric }}"   = "true" ]; then loaders="$loaders fabric";   fi
+
+          destinations=""
+          if [ "${{ inputs.curseforge }}" = "true" ]; then destinations="$destinations publishCurseforge"; fi
+          if [ "${{ inputs.modrinth }}"   = "true" ]; then destinations="$destinations publishModrinth";   fi
+          if [ "${{ inputs.github }}"     = "true" ]; then destinations="$destinations publishGithub";     fi
+
+          loaders="${loaders# }"
+          destinations="${destinations# }"
+
+          if [ -z "$loaders" ]; then
+            echo "::error::No loader selected - tick at least one of Fabric."
+            exit 1
+          fi
+          if [ -z "$destinations" ]; then
+            echo "::error::No platform selected - tick at least one of CurseForge / Modrinth / GitHub Release."
+            exit 1
+          fi
+
+          json=""
+          for l in $loaders; do json="$json${json:+,}\"$l\""; done
+
+          echo "loaders=[$json]" >> "$GITHUB_OUTPUT"
+          echo "destinations=$destinations" >> "$GITHUB_OUTPUT"
+          echo "Loaders: $loaders | Platforms: $destinations | Release: ${{ inputs.release_type }}"
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false   # never cancel a sibling mid-upload
+      matrix:
+        loader: ${{ fromJSON(needs.plan.outputs.loaders) }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 22
+      - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          java-version: '22'
-          distribution: 'temurin'
+          java-version: '25'
+          distribution: 'microsoft'
       - name: make gradle wrapper executable
         run: chmod +x ./gradlew
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
         with:
-          arguments: publishMod -Prelease_type=${{ inputs.release_type }}
+          arguments: publishMods -Prelease_type=${{ inputs.release_type }}
         env:
           CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_KEY }}
           CURSEFORGE_PROJECT_ID: ${{ vars.CURSEFORGE_PROJECT_ID }}
