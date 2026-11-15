@@ -1,4 +1,4 @@
-package com.github.theredbrain.rogueloot.gui.components;
+package com.github.theredbrain.rogueloot.client.gui.components;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

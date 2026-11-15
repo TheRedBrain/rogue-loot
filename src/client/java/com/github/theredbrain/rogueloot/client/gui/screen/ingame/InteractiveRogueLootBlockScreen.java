@@ -1,4 +1,4 @@
-package com.github.theredbrain.rogueloot.gui.screen.ingame;
+package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveRogueLootBlockPacket;

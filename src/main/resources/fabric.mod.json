@@ -21,7 +21,7 @@
 			"com.github.theredbrain.rogueloot.RogueLoot"
 		],
 		"client": [
-			"com.github.theredbrain.rogueloot.RogueLootClient"
+			"com.github.theredbrain.rogueloot.client.RogueLootClient"
 		]
 	},
 	"mixins": [

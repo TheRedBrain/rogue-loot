@@ -2,7 +2,7 @@ package com.github.theredbrain.rogueloot.mixin.client.network;
 
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.entity.player.DuckPlayerMixin;
-import com.github.theredbrain.rogueloot.gui.screen.ingame.InteractiveRogueLootBlockScreen;
+import com.github.theredbrain.rogueloot.client.gui.screen.ingame.InteractiveRogueLootBlockScreen;
 import com.mojang.authlib.GameProfile;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;

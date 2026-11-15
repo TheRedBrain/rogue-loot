@@ -1,4 +1,4 @@
-package com.github.theredbrain.rogueloot.renderer.blockentity.state;
+package com.github.theredbrain.rogueloot.client.renderer.blockentity.state;
 
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.entity.state.ItemClusterRenderState;

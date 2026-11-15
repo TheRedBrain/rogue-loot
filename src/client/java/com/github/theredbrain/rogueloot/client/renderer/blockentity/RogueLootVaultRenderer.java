@@ -1,8 +1,8 @@
-package com.github.theredbrain.rogueloot.renderer.blockentity;
+package com.github.theredbrain.rogueloot.client.renderer.blockentity;
 
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultClientData;
-import com.github.theredbrain.rogueloot.renderer.blockentity.state.RogueLootVaultRenderState;
+import com.github.theredbrain.rogueloot.client.renderer.blockentity.state.RogueLootVaultRenderState;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;

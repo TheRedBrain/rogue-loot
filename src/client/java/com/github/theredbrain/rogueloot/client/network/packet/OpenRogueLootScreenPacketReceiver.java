@@ -1,6 +1,7 @@
-package com.github.theredbrain.rogueloot.network.packet;
+package com.github.theredbrain.rogueloot.client.network.packet;
 
-import com.github.theredbrain.rogueloot.gui.screen.ingame.RogueLootGUIScreen;
+import com.github.theredbrain.rogueloot.client.gui.screen.ingame.RogueLootGUIScreen;
+import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public class OpenRogueLootScreenPacketReceiver implements ClientPlayNetworking.PlayPayloadHandler<OpenRogueLootScreenPacket> {

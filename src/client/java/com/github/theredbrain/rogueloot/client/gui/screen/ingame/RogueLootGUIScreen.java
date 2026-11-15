@@ -1,9 +1,9 @@
-package com.github.theredbrain.rogueloot.gui.screen.ingame;
+package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
-import com.github.theredbrain.rogueloot.gui.components.LootOptionButton;
+import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacket;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacket;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;

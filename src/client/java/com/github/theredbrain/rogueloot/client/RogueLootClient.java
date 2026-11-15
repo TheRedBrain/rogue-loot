@@ -1,9 +1,9 @@
-package com.github.theredbrain.rogueloot;
+package com.github.theredbrain.rogueloot.client;
 
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
-import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacketReceiver;
+import com.github.theredbrain.rogueloot.client.network.packet.OpenRogueLootScreenPacketReceiver;
 import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
-import com.github.theredbrain.rogueloot.renderer.blockentity.RogueLootVaultRenderer;
+import com.github.theredbrain.rogueloot.client.renderer.blockentity.RogueLootVaultRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
