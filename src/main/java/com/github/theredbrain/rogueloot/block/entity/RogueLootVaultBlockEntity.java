@@ -179,7 +179,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 
 	private void removeLootableUses(final ServerLevel serverLevel, final BlockPos pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-			RogueLootTableHelper.removeRogueLootTableUses(serverLevel, pos, config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayer);
+			RogueLootTableHelper.removeRogueLootTableUses(serverLevel, Optional.of(pos), config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayer);
 		} else {
 			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(pos), config.lootTableIdentifier(), serverPlayer);
 		}
@@ -288,7 +288,10 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 
 	public static final class Server {
 
-		public static void tick(final ServerLevel serverLevel, final BlockPos pos, final BlockState state, final RogueLootVaultConfig config, final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData) {
+		public static void tick(final ServerLevel serverLevel, final BlockPos pos, final BlockState state, final RogueLootVaultConfig config, @Nullable final RogueLootVaultServerData serverData, final RogueLootVaultSharedData sharedData) {
+			if (serverData == null) {
+				return;
+			}
 			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (shouldCycleDisplayItem(serverLevel.getGameTime(), vaultState)) {
 				cycleDisplayItemFromLootTable(serverLevel, vaultState, config, sharedData, pos);
@@ -336,7 +339,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, pos, config.rolls(), config.minChoices(), config.maxChoices(), stack);
+						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices(), Optional.of(stack));
 					} else {
 						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 						serverData.markPlayerAsRewarded(player);

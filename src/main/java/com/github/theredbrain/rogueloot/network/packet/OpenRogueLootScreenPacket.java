@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -14,9 +15,8 @@ import java.util.Optional;
 
 public record OpenRogueLootScreenPacket(
 		GeneratedRogueLoot generatedRogueLoot,
-		Identifier localRogueLootTableIdentifier,
+		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		int banishingAttempts,
-		Optional<BlockPos> lootProviderBlockPos,
 		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
@@ -25,18 +25,16 @@ public record OpenRogueLootScreenPacket(
 	public OpenRogueLootScreenPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				GeneratedRogueLoot.STREAM_CODEC.decode(registryByteBuf),
-				registryByteBuf.readIdentifier(),
+				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readInt(),
-				ByteBufCodecs.optional(BlockPos.STREAM_CODEC).decode(registryByteBuf),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		GeneratedRogueLoot.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLoot);
-		registryByteBuf.writeIdentifier(this.localRogueLootTableIdentifier);
+		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		registryByteBuf.writeInt(this.banishingAttempts);
-		ByteBufCodecs.optional(BlockPos.STREAM_CODEC).encode(registryByteBuf, this.lootProviderBlockPos);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}
 

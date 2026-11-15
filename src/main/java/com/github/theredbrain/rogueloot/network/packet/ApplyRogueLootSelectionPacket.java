@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import net.minecraft.core.BlockPos;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,8 +14,7 @@ import java.util.Optional;
 
 public record ApplyRogueLootSelectionPacket(
 		List<Identifier> chosenRogueLootEntries,
-		Identifier localRogueLootTableIdentifier,
-		Optional<BlockPos> lootProviderBlockPos,
+		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
 	public static final Type<ApplyRogueLootSelectionPacket> PACKET_ID = new Type<>(RogueLoot.identifier("apply_rogue_loot_selection"));
@@ -24,16 +23,14 @@ public record ApplyRogueLootSelectionPacket(
 	public ApplyRogueLootSelectionPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				registryByteBuf.readList(Identifier.STREAM_CODEC),
-				registryByteBuf.readIdentifier(),
-				ByteBufCodecs.optional(BlockPos.STREAM_CODEC).decode(registryByteBuf),
+				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		registryByteBuf.writeCollection(this.chosenRogueLootEntries, Identifier.STREAM_CODEC);
-		registryByteBuf.writeIdentifier(this.localRogueLootTableIdentifier);
-		ByteBufCodecs.optional(BlockPos.STREAM_CODEC).encode(registryByteBuf, this.lootProviderBlockPos);
+		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}
 

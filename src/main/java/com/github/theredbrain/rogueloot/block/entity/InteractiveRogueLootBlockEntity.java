@@ -130,7 +130,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 	public void setRemoved() {
 		if (this.level instanceof ServerLevel serverWorld) {
 			if (this.mode == Mode.ROGUE_LOOT) {
-				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, this.worldPosition, this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
+				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, Optional.of(this.worldPosition), this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
 			} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
 				RogueLoot.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
 			}
@@ -234,7 +234,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity {
 		this.playerSet.clear();
 		if (this.level instanceof ServerLevel serverWorld) {
 			if (this.mode == Mode.ROGUE_LOOT) {
-				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, this.worldPosition, this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
+				RogueLootTableHelper.removeRogueLootTableUses(serverWorld, Optional.of(this.worldPosition), this.lootTableIdentifierString, this.rolls, this.minChoices, this.maxChoices, null);
 			} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
 				RogueLoot.removeLootableUses(serverWorld, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
 			}

@@ -4,11 +4,11 @@ import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.InteractiveRogueLootBlock;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -29,14 +29,13 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 		ServerLevel serverLevel = serverPlayer.level();
 
 		List<Identifier> chosenRogueLootEntries = payload.chosenRogueLootEntries();
-		Identifier localRogueLootTableIdentifier = payload.localRogueLootTableIdentifier();
-		Optional<BlockPos> lootProviderBlockPos = payload.lootProviderBlockPos();
+		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier = payload.generatedRogueLootTableIdentifier();
 		Optional<ItemStack> itemStack = payload.itemStack();
 
-		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localRogueLootTableIdentifier, serverPlayer);
+		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
 
-		if (lootProviderBlockPos.isPresent()) {
-			BlockEntity blockEntity = serverLevel.getBlockEntity(lootProviderBlockPos.get());
+		if (generatedRogueLootTableIdentifier.optionalBlockPos().isPresent()) {
+			BlockEntity blockEntity = serverLevel.getBlockEntity(generatedRogueLootTableIdentifier.optionalBlockPos().get());
 			if (blockEntity instanceof InteractiveRogueLootBlockEntity interactiveRogueLootBlockEntity) {
 				InteractiveRogueLootBlock.lootWasSupplied(serverPlayer, interactiveRogueLootBlockEntity);
 			}

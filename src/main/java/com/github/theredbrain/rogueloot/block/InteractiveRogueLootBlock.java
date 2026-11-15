@@ -33,6 +33,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InteractiveRogueLootBlock extends BaseEntityBlock {
 	public static final MapCodec<InteractiveRogueLootBlock> CODEC = simpleCodec(InteractiveRogueLootBlock::new);
@@ -84,7 +85,7 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
 								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
-								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, interactiveRogueLootBlockEntity.getBlockPos(), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), null);
+								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, Optional.of(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), Optional.empty());
 							} else {
 								List<ItemStack> lootStacks = getLootItems(serverLevel, pos, player, interactiveRogueLootBlockEntity);
 								for (ItemStack itemStack : lootStacks) {

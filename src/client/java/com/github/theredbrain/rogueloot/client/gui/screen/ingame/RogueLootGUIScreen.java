@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacket;
@@ -34,9 +35,8 @@ public class RogueLootGUIScreen extends Screen {
 	private static final Component BANISHING_LABEL_TEXT = Component.translatable("gui.rogue_loot_screen.banishing_label");
 	private static final int MAX_OPTIONS_AMOUNT = 6;
 	private final GeneratedRogueLoot generatedRogueLoot;
-	private final Identifier localRogueLootTableIdentifier;
+	private final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier;
 	private final int banishingAttempts;
-	private final Optional<BlockPos> lootProviderBlockPos;
 	private final Optional<ItemStack> itemStack;
 
 	private Button selectLootOption0Button;
@@ -63,12 +63,11 @@ public class RogueLootGUIScreen extends Screen {
 	private int currentBanishingAttemptsLabelX = 0;
 	private int currentBanishingAttemptsLabelY = 0;
 
-	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final Identifier localRogueLootTableIdentifier, final int banishingAttempts, final Optional<BlockPos> lootProviderBlockPos, final Optional<ItemStack> itemStack) {
+	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int banishingAttempts, final Optional<ItemStack> itemStack) {
 		super(GameNarrator.NO_TITLE);
 		this.generatedRogueLoot = generatedRogueLoot;
-		this.localRogueLootTableIdentifier = localRogueLootTableIdentifier;
+		this.generatedRogueLootTableIdentifier = generatedRogueLootTableIdentifier;
 		this.banishingAttempts = banishingAttempts;
-		this.lootProviderBlockPos = lootProviderBlockPos;
 		this.itemStack = itemStack;
 		Arrays.fill(this.selectedOptions, false);
 		Arrays.fill(this.banishedOptions, false);
@@ -90,6 +89,7 @@ public class RogueLootGUIScreen extends Screen {
 					this.banishingEnabled = false;
 					this.toggleBanishingButton.setValue(false);
 					button.active = false;
+					button.visible = clientConfig.show_banished_loot_options.get();
 					this.banishedOptions[index] = true;
 					this.banishEntry(index);
 					this.updateWidgets();
@@ -459,8 +459,7 @@ public class RogueLootGUIScreen extends Screen {
 	private void applySelection() {
 		ClientPlayNetworking.send(new ApplyRogueLootSelectionPacket(
 				getChosenRogueLootEntries(),
-				this.localRogueLootTableIdentifier,
-				this.lootProviderBlockPos,
+				this.generatedRogueLootTableIdentifier,
 				this.itemStack
 		));
 	}

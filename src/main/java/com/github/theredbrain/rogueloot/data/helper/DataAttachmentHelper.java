@@ -1,6 +1,7 @@
 package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.attached.BanishedRogueLootEntriesAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.GeneratedRogueLootAttachedData;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
@@ -21,10 +22,10 @@ import java.util.UUID;
 public class DataAttachmentHelper {
 
 	@Nullable
-	public static GeneratedRogueLoot getGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final Identifier localIdentifier, final ServerPlayer serverPlayer) {
+	public static GeneratedRogueLoot getGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData generatedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
-		if (generatedRogueLootAttachedData.generatedRogueLootData().containsKey(localIdentifier)) {
-			Map<UUID, GeneratedRogueLoot> map = generatedRogueLootAttachedData.generatedRogueLootData().get(localIdentifier);
+		if (generatedRogueLootAttachedData.generatedRogueLootData().containsKey(generatedRogueLootTableIdentifier)) {
+			Map<UUID, GeneratedRogueLoot> map = generatedRogueLootAttachedData.generatedRogueLootData().get(generatedRogueLootTableIdentifier);
 			if (map.containsKey(serverPlayer.getUUID())) {
 				return map.get(serverPlayer.getUUID());
 			}
@@ -32,31 +33,31 @@ public class DataAttachmentHelper {
 		return null;
 	}
 
-	public static void setGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final GeneratedRogueLoot generatedRogueLoot, final Identifier localIdentifier, final ServerPlayer serverPlayer) {
+	public static void setGeneratedRogueLootForPlayer(final ServerLevel serverLevel, final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
-		Map<Identifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
+		Map<GeneratedRogueLootTableIdentifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
 
-		if (newGeneratedRogueLootData.containsKey(localIdentifier)) {
-			Map<UUID, GeneratedRogueLoot> map = newGeneratedRogueLootData.get(localIdentifier);
+		if (newGeneratedRogueLootData.containsKey(generatedRogueLootTableIdentifier)) {
+			Map<UUID, GeneratedRogueLoot> map = newGeneratedRogueLootData.get(generatedRogueLootTableIdentifier);
 			map.put(serverPlayer.getUUID(), generatedRogueLoot);
 		} else {
 			Map<UUID, GeneratedRogueLoot> map = new HashMap<>();
 			map.put(serverPlayer.getUUID(), generatedRogueLoot);
-			newGeneratedRogueLootData.put(localIdentifier, map);
+			newGeneratedRogueLootData.put(generatedRogueLootTableIdentifier, map);
 		}
 
 		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverLevel, new GeneratedRogueLootAttachedData(newGeneratedRogueLootData));
 	}
 
-	public static void removeGeneratedRogueLoot(final ServerLevel serverLevel, final Identifier localIdentifier, @Nullable final ServerPlayer serverPlayer) {
+	public static void removeGeneratedRogueLoot(final ServerLevel serverLevel, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, @Nullable final ServerPlayer serverPlayer) {
 		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverLevel));
-		Map<Identifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
+		Map<GeneratedRogueLootTableIdentifier, Map<UUID, GeneratedRogueLoot>> newGeneratedRogueLootData = newGeneratedRogueLootAttachedData.generatedRogueLootData();
 
 		if (serverPlayer != null) {
-			Map<UUID, GeneratedRogueLoot> map = newGeneratedRogueLootData.get(localIdentifier);
+			Map<UUID, GeneratedRogueLoot> map = newGeneratedRogueLootData.get(generatedRogueLootTableIdentifier);
 			map.remove(serverPlayer.getUUID());
 		} else {
-			newGeneratedRogueLootData.remove(localIdentifier);
+			newGeneratedRogueLootData.remove(generatedRogueLootTableIdentifier);
 		}
 
 		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverLevel, new GeneratedRogueLootAttachedData(newGeneratedRogueLootData));

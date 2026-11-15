@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
 import com.github.theredbrain.rogueloot.data.RogueLootTable;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
@@ -32,32 +33,46 @@ import java.util.Optional;
 
 public class RogueLootTableHelper {
 
-	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final BlockPos pos, final int rolls, final int minChoices, final int maxChoices, @Nullable final ItemStack itemStack) {
+	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Optional<BlockPos> pos, final int rolls, final int minChoices, final int maxChoices, final Optional<ItemStack> itemStack) {
 		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), identifier);
 		if (rogueLootTable == null) {
 			return;
 		}
-		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
-		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, localIdentifier, serverPlayer);
+		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier = new GeneratedRogueLootTableIdentifier(identifier, pos, rolls, minChoices, maxChoices);
+		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
 		if (generatedRogueLoot == null) {
 			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, rolls, minChoices, maxChoices);
 		}
-		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, localIdentifier, serverPlayer);
+		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
 		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, localIdentifier, banishingAttempts, Optional.of(pos), itemStack != null ? Optional.of(itemStack) : Optional.empty()));
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, banishingAttempts, itemStack));
 
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final BlockPos pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
+	public static void supplyRogueLootTable(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final Optional<ItemStack> itemStack) {
+		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.identifier());
+		if (rogueLootTable == null) {
+			return;
+		}
+		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
+		if (generatedRogueLoot == null) {
+			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls(), generatedRogueLootTableIdentifier.minChoices(), generatedRogueLootTableIdentifier.maxChoices());
+		}
+		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
+		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, banishingAttempts, itemStack));
+
+	}
+
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Optional<BlockPos> pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
 		Identifier identifier = Identifier.tryParse(identifierString);
 		if (identifier != null) {
 			removeRogueLootTableUses(serverLevel, pos, identifier, rolls, minChoices, maxChoices, serverPlayer);
 		}
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final BlockPos pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
-		Identifier localIdentifier = getLocalRogueLootTableId(serverLevel, identifier, pos, rolls, minChoices, maxChoices);
-		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, localIdentifier, serverPlayer);
+	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Optional<BlockPos> pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
+		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, new GeneratedRogueLootTableIdentifier(identifier, pos, rolls, minChoices, maxChoices), serverPlayer);
 	}
 
 	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
