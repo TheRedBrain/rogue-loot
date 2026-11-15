@@ -23,7 +23,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.jspecify.annotations.Nullable;
 
@@ -44,8 +43,9 @@ public class RogueLootTableHelper {
 			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, rolls, minChoices, maxChoices);
 		}
 		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
+		int rerollAttempts = calculateRerollAttempts(serverPlayer, generatedRogueLoot);
 		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, banishingAttempts, itemStack));
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, rerollAttempts, banishingAttempts, itemStack));
 
 	}
 
@@ -59,8 +59,9 @@ public class RogueLootTableHelper {
 			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls(), generatedRogueLootTableIdentifier.minChoices(), generatedRogueLootTableIdentifier.maxChoices());
 		}
 		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
+		int rerollAttempts = calculateRerollAttempts(serverPlayer, generatedRogueLoot);
 		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, banishingAttempts, itemStack));
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, rerollAttempts, banishingAttempts, itemStack));
 
 	}
 
@@ -75,6 +76,19 @@ public class RogueLootTableHelper {
 		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, new GeneratedRogueLootTableIdentifier(identifier, pos, rolls, minChoices, maxChoices), serverPlayer);
 	}
 
+	private static int calculateRerollAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
+
+		int rerollAttempts = -1;
+		if (generatedRogueLoot.enableRerolling() && generatedRogueLoot.rerollCost().isPresent()) {
+			ItemStack rerollCostStack = generatedRogueLoot.rerollCost().get().create();
+
+			if (!rerollCostStack.isEmpty()) {
+				rerollAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, rerollCostStack);
+			}
+		}
+		return rerollAttempts;
+	}
+
 	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
 
 		int banishingAttempts = -1;
@@ -85,6 +99,7 @@ public class RogueLootTableHelper {
 				banishingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, banishingCostStack);
 			}
 		}
+		RogueLoot.info("calculateBanishingAttempts banishingAttempts: " + banishingAttempts);
 		return banishingAttempts;
 	}
 
@@ -117,7 +132,7 @@ public class RogueLootTableHelper {
 				continue;
 			}
 			Identifier entryIdentifier = optionalResourceKey.get().identifier();
-			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayer, entryIdentifier)) {
+			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayer, Optional.of(entryIdentifier))) {
 				continue;
 			}
 
@@ -152,7 +167,7 @@ public class RogueLootTableHelper {
 					rogueLootTableEntry.labelText(),
 					labelFormatting,
 					rogueLootTableEntry.allowBanishing(),
-					entryIdentifier
+					Optional.of(entryIdentifier)
 			)));
 			totalWeight = totalWeight + weight;
 		}
@@ -166,7 +181,8 @@ public class RogueLootTableHelper {
 		int chosenWeight;
 		int index;
 		int weightCounter;
-		for (int i = 0; i < Math.min(tempList.size(), rolls); i++) {
+		int initialTempListSize = tempList.size();
+		for (int i = 0; i < Math.min(initialTempListSize, rolls); i++) {
 			chosenWeight = serverLevel.getRandom().nextInt(totalWeight);
 			index = -1;
 			weightCounter = 0;
@@ -191,6 +207,8 @@ public class RogueLootTableHelper {
 				visibleRogueLootTableEntries,
 				minChoices,
 				maxChoices,
+				rogueLootTable.enableRerolling(),
+				rogueLootTable.rerollCost(),
 				rogueLootTable.enableEntryBanishing(),
 				rogueLootTable.banishingCost()
 		);

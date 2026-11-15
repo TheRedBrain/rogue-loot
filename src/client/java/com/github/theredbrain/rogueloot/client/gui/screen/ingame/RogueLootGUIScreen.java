@@ -1,12 +1,13 @@
 package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
+import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
-import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacket;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacket;
+import com.github.theredbrain.rogueloot.network.packet.RerollRogueLootScreenPacket;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,7 +19,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
@@ -32,11 +32,11 @@ import java.util.Optional;
 @Environment(value = EnvType.CLIENT)
 public class RogueLootGUIScreen extends Screen {
 
-	private static final Component BANISHING_LABEL_TEXT = Component.translatable("gui.rogue_loot_screen.banishing_label");
 	private static final int MAX_OPTIONS_AMOUNT = 6;
 	private final GeneratedRogueLoot generatedRogueLoot;
 	private final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier;
 	private final int banishingAttempts;
+	private final int rerollAttempts;
 	private final Optional<ItemStack> itemStack;
 
 	private Button selectLootOption0Button;
@@ -45,6 +45,7 @@ public class RogueLootGUIScreen extends Screen {
 	private Button selectLootOption3Button;
 	private Button selectLootOption4Button;
 	private Button selectLootOption5Button;
+	private Button rerollButton;
 	private Button confirmButton;
 	private CycleButton<Boolean> toggleBanishingButton;
 
@@ -52,21 +53,15 @@ public class RogueLootGUIScreen extends Screen {
 	private final boolean[] banishedOptions = new boolean[MAX_OPTIONS_AMOUNT];
 
 	private int selectedOptionsAmount;
-	private int banishedOptionsAmount;
 	private boolean banishingEnabled = false;
-	private MutableComponent currentChoicesLabel = Component.empty();
-	private MutableComponent currentBanishingAttemptsLabel = Component.empty();
 	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[]{};
 	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[]{};
-	private int currentChoicesLabelX = 0;
-	private int currentChoicesLabelY = 0;
-	private int currentBanishingAttemptsLabelX = 0;
-	private int currentBanishingAttemptsLabelY = 0;
 
-	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int banishingAttempts, final Optional<ItemStack> itemStack) {
+	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int rerollAttempts, final int banishingAttempts, final Optional<ItemStack> itemStack) {
 		super(GameNarrator.NO_TITLE);
 		this.generatedRogueLoot = generatedRogueLoot;
 		this.generatedRogueLootTableIdentifier = generatedRogueLootTableIdentifier;
+		this.rerollAttempts = rerollAttempts;
 		this.banishingAttempts = banishingAttempts;
 		this.itemStack = itemStack;
 		Arrays.fill(this.selectedOptions, false);
@@ -80,30 +75,33 @@ public class RogueLootGUIScreen extends Screen {
 		}
 		ClientConfig clientConfig = RogueLootConfigs.CLIENT_CONFIG;
 		if (this.banishingEnabled && this.generatedRogueLoot.enableEntryBanishing()) {
-			if (this.generatedRogueLoot.entryList().get(index).allowBanishing()) {
-				if (this.banishingAttempts < 0 || (this.banishingAttempts > 0 && this.banishedOptionsAmount <= this.banishingAttempts)) {
-					if (((LootOptionButton) button).isSelected() && clientConfig.enable_banishing_for_selected_options.get()) {
-						((LootOptionButton) button).setSelected(false);
-						this.selectedOptions[index] = false;
-					}
-					this.banishingEnabled = false;
-					this.toggleBanishingButton.setValue(false);
-					button.active = false;
-					button.visible = clientConfig.show_banished_loot_options.get();
-					this.banishedOptions[index] = true;
-					this.banishEntry(index);
-					this.updateWidgets();
+			if (this.generatedRogueLoot.entryList().get(index).allowBanishing() && this.banishingAttempts != 1) {
+				if (((LootOptionButton) button).isSelected() && clientConfig.enable_banishing_for_selected_options.get()) {
+					((LootOptionButton) button).setSelected(false);
+					this.selectedOptions[index] = false;
 				}
+				this.banishingEnabled = false;
+				this.toggleBanishingButton.setValue(false);
+				button.active = false;
+				button.visible = clientConfig.show_banished_loot_options.get();
+				this.banishedOptions[index] = true;
+				this.banishEntry(index);
+				// TODO play sound?
+				this.updateWidgets();
+			} else {
+				// TODO play sound?
 			}
 		} else {
 			if (((LootOptionButton) button).isSelected()) {
 				((LootOptionButton) button).setSelected(false);
 				this.selectedOptions[index] = false;
+				// TODO play sound?
 				this.updateWidgets();
 			} else {
 				if (this.selectedOptionsAmount < this.generatedRogueLoot.maxChoices()) {
 					((LootOptionButton) button).setSelected(true);
 					this.selectedOptions[index] = true;
+					// TODO play sound?
 					this.updateWidgets();
 				}
 			}
@@ -114,16 +112,6 @@ public class RogueLootGUIScreen extends Screen {
 		int amount = 0;
 		for (int i = 0; i < MAX_OPTIONS_AMOUNT; i++) {
 			if (this.selectedOptions[i]) {
-				amount++;
-			}
-		}
-		return amount;
-	}
-
-	private int countBanishedOptions() {
-		int amount = 0;
-		for (int i = 0; i < MAX_OPTIONS_AMOUNT; i++) {
-			if (this.banishedOptions[i]) {
 				amount++;
 			}
 		}
@@ -147,10 +135,10 @@ public class RogueLootGUIScreen extends Screen {
 		this.selectLootOption4Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 - 25, 106, 50, 50, Component.empty(), button -> this.selectLootOption(button, 4)));
 		this.selectLootOption5Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 + 31, 106, 50, 50, Component.empty(), button -> this.selectLootOption(button, 5)));
 
-		this.confirmButton = this.addRenderableWidget(Button.builder(Component.translatable("gui.rogue_loot_screen.confirm"), button -> this.done()).bounds(this.width / 2 - 75, 210, 150, 20).build());
+		this.rerollButton = this.addRenderableWidget(Button.builder(this.rerollAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.reroll.simple") : this.rerollAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.reroll.singular", this.rerollAttempts) : Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts), button -> this.reroll()).bounds(this.width / 2 - 229, 210, 150, 20).build());
+		this.confirmButton = this.addRenderableWidget(Button.builder(Component.empty(), button -> this.done()).bounds(this.width / 2 - 75, 210, 150, 20).build());
 
-		int labelWidth = 10 + this.font.width(BANISHING_LABEL_TEXT) + 4;
-		this.toggleBanishingButton = this.addRenderableWidget(CycleButton.onOffBuilder(this.banishingEnabled).displayOnlyValue().create(this.width / 2 + 79 + labelWidth, 210, 150 - labelWidth, 20, Component.empty(), (button, banishingEnabled) -> {
+		this.toggleBanishingButton = this.addRenderableWidget(CycleButton.booleanBuilder(Component.translatable("gui.rogue_loot_screen.banish.stop"), this.banishingAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.banish.simple") : this.banishingAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.banish.singular", this.banishingAttempts) : Component.translatable("gui.rogue_loot_screen.banish.plural", this.banishingAttempts), this.banishingEnabled).displayOnlyValue().create(this.width / 2 + 79, 210, 150, 20, Component.empty(), (button, banishingEnabled) -> {
 			this.banishingEnabled = banishingEnabled;
 			this.updateWidgets();
 		}));
@@ -182,6 +170,9 @@ public class RogueLootGUIScreen extends Screen {
 		for (int i = 0; i < this.generatedRogueLoot.requirementsMetFormatting().size(); i++) {
 			this.requirementsMetLabelFormatting[i] = this.generatedRogueLoot.requirementsMetFormatting().get(i);
 		}
+
+		this.rerollButton.visible = this.generatedRogueLoot.enableRerolling();
+		this.rerollButton.active = this.rerollAttempts != 0;
 
 		this.toggleBanishingButton.visible = this.generatedRogueLoot.enableEntryBanishing();
 		this.toggleBanishingButton.active = this.banishingAttempts != 0;
@@ -357,34 +348,26 @@ public class RogueLootGUIScreen extends Screen {
 
 		this.selectedOptionsAmount = countSelectedOptions();
 
-		if (this.banishingAttempts >= 0) {
-			this.banishedOptionsAmount = countBanishedOptions();
-			this.currentBanishingAttemptsLabel = Component.translatable(this.banishingAttempts == 1 ? "gui.rogue_loot_screen.banishing_attempts.singular" : "gui.rogue_loot_screen.banishing_attempts.plural", this.banishedOptionsAmount, this.banishingAttempts);
-		} else {
-			this.banishedOptionsAmount = -1;
-			this.currentBanishingAttemptsLabel = Component.empty();
-		}
+		this.confirmButton.setMessage(getConfirmChoicesButonLabel());
 
-		this.currentBanishingAttemptsLabelX = this.width / 2 + 154 - this.font.width(this.currentBanishingAttemptsLabel) / 2;
+		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLoot.maxChoices() && this.selectedOptionsAmount >= this.generatedRogueLoot.minChoices() && !this.banishingEnabled;
+
+	}
+
+	private Component getConfirmChoicesButonLabel() {
+		MutableComponent confirmChoicesButtonLabel = Component.empty();
 
 		int minChoices = this.generatedRogueLoot.minChoices();
 		int maxChoices = this.generatedRogueLoot.maxChoices();
-		if (minChoices < maxChoices) {
-			this.currentChoicesLabel = Component.translatable("gui.rogue_loot_screen.choices.range", this.selectedOptionsAmount, minChoices, maxChoices);
-		} else if (minChoices == maxChoices) {
-			this.currentChoicesLabel = Component.translatable(minChoices == 1 ? "gui.rogue_loot_screen.choices.simple.singular" : "gui.rogue_loot_screen.choices.simple.plural", this.selectedOptionsAmount, minChoices);
+		if (minChoices > maxChoices) {
+			return confirmChoicesButtonLabel;
 		}
+		confirmChoicesButtonLabel = minChoices < maxChoices ? Component.translatable("gui.rogue_loot_screen.confirm_choices.range", this.selectedOptionsAmount, minChoices, maxChoices) :
+				Component.translatable(minChoices == 1 ? "gui.rogue_loot_screen.confirm_choices.singular" : "gui.rogue_loot_screen.confirm_choices.plural", this.selectedOptionsAmount, minChoices);
 
-		if (this.selectedOptionsAmount < minChoices) {
-			this.currentChoicesLabel.withStyle(this.requirementsNotMetLabelFormatting);
-		} else {
-			this.currentChoicesLabel.withStyle(this.requirementsMetLabelFormatting);
-		}
+		confirmChoicesButtonLabel.withStyle(this.selectedOptionsAmount < minChoices ? this.requirementsNotMetLabelFormatting : this.requirementsMetLabelFormatting);
 
-		this.currentChoicesLabelX = (this.width - this.font.width(this.currentChoicesLabel)) / 2;
-
-		this.confirmButton.active = this.selectedOptionsAmount <= maxChoices && this.selectedOptionsAmount >= minChoices && !this.banishingEnabled;
-
+		return confirmChoicesButtonLabel;
 	}
 
 	@Override
@@ -420,20 +403,6 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	@Override
-	public void extractRenderState(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
-		super.extractRenderState(graphics, mouseX, mouseY, a);
-		if (!this.currentBanishingAttemptsLabel.equals(Component.empty())) {
-			graphics.textRenderer().accept(this.currentBanishingAttemptsLabelX, 200, this.currentBanishingAttemptsLabel);
-		}
-		if (!this.currentChoicesLabel.equals(Component.empty())) {
-			graphics.textRenderer().accept(this.currentChoicesLabelX, 200, this.currentChoicesLabel);
-		}
-		if (this.generatedRogueLoot.enableEntryBanishing()) {
-			graphics.textRenderer().accept(this.width / 2 + 79 + 10, 216, BANISHING_LABEL_TEXT);
-		}
-	}
-
-	@Override
 	public boolean isPauseScreen() {
 		return false;
 	}
@@ -449,9 +418,29 @@ public class RogueLootGUIScreen extends Screen {
 			if (this.generatedRogueLoot.banishingCost().isPresent()) {
 				optionalBanishingCost = Optional.of(this.generatedRogueLoot.banishingCost().get().create());
 			}
-			ClientPlayNetworking.send(new BanishRogueLootEntryPacket(
-					this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId(),
-					optionalBanishingCost
+			Optional<Identifier> optionalIdentifier = this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId();
+			if (optionalIdentifier.isPresent()) {
+				ClientPlayNetworking.send(new BanishRogueLootEntryPacket(
+						this.generatedRogueLootTableIdentifier,
+						this.itemStack,
+						optionalIdentifier.get(),
+						optionalBanishingCost
+				));
+			}
+		}
+	}
+
+	private void reroll() {
+		if (this.generatedRogueLoot.enableRerolling() && this.rerollAttempts != 0) {
+			// TODO play sound?
+			Optional<ItemStack> optionalRerollCost = Optional.empty();
+			if (this.generatedRogueLoot.rerollCost().isPresent()) {
+				optionalRerollCost = Optional.of(this.generatedRogueLoot.rerollCost().get().create());
+			}
+			ClientPlayNetworking.send(new RerollRogueLootScreenPacket(
+					this.generatedRogueLootTableIdentifier,
+					this.itemStack,
+					optionalRerollCost
 			));
 		}
 	}
@@ -470,7 +459,10 @@ public class RogueLootGUIScreen extends Screen {
 
 		for (int i = 0; i < Math.min(6, visibleRogueLootTableEntryList.size()); i++) {
 			if (this.selectedOptions[i]) {
-				list.add(visibleRogueLootTableEntryList.get(i).parentRogueLootTableEntryId());
+				Optional<Identifier> optionalIdentifier = visibleRogueLootTableEntryList.get(i).parentRogueLootTableEntryId();
+				if (optionalIdentifier.isPresent()) {
+					list.add(optionalIdentifier.get());
+				}
 			}
 		}
 		return list;

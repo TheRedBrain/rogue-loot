@@ -22,13 +22,16 @@
 	"gui.interactive_rogue_loot_block.mode.vanilla": "Vanilla Loot Table",
 
 
-	"gui.rogue_loot_screen.confirm": "Confirm",
-	"gui.rogue_loot_screen.choices.simple.singular": "%s/%s Choice",
-	"gui.rogue_loot_screen.choices.simple.plural": "%s/%s Choices",
-	"gui.rogue_loot_screen.choices.range": "%s out of %s to %s choices",
-	"gui.rogue_loot_screen.banishing_label": "Entry Banishing:",
-	"gui.rogue_loot_screen.banishing_attempts.singular": "%s/%s Banishment",
-	"gui.rogue_loot_screen.banishing_attempts.plural": "%s/%s Banishments",
+	"gui.rogue_loot_screen.reroll.simple": "Reroll",
+	"gui.rogue_loot_screen.reroll.singular": "Reroll (%s Attempt)",
+	"gui.rogue_loot_screen.reroll.plural": "Reroll (%s Attempts)",
+	"gui.rogue_loot_screen.confirm_choices.singular": "Confirm %s/%s Choice",
+	"gui.rogue_loot_screen.confirm_choices.plural": "Confirm %s/%s Choices",
+	"gui.rogue_loot_screen.confirm_choices.range": "Confirm %s Out Of %s To %s Choices",
+	"gui.rogue_loot_screen.banish.simple": "Banish",
+	"gui.rogue_loot_screen.banish.singular": "Banish (%s %Attempt)",
+	"gui.rogue_loot_screen.banish.plural": "Banish (%s %Attempts)",
+	"gui.rogue_loot_screen.banish.stop": "Stop Banishing",
 
 
 	"hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices": "Max Choices was smaller than Min Choices. This has been corrected.",

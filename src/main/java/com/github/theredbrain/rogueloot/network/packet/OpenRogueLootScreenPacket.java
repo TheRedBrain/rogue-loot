@@ -16,6 +16,7 @@ import java.util.Optional;
 public record OpenRogueLootScreenPacket(
 		GeneratedRogueLoot generatedRogueLoot,
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
+		int rerollAttempts,
 		int banishingAttempts,
 		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
@@ -27,6 +28,7 @@ public record OpenRogueLootScreenPacket(
 				GeneratedRogueLoot.STREAM_CODEC.decode(registryByteBuf),
 				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readInt(),
+				registryByteBuf.readInt(),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
@@ -34,6 +36,7 @@ public record OpenRogueLootScreenPacket(
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		GeneratedRogueLoot.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLoot);
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
+		registryByteBuf.writeInt(this.rerollAttempts);
 		registryByteBuf.writeInt(this.banishingAttempts);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}

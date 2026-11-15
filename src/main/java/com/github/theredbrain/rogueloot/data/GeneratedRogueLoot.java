@@ -20,6 +20,8 @@ public record GeneratedRogueLoot(
 		List<VisibleRogueLootTableEntry> entryList,
 		int minChoices,
 		int maxChoices,
+		boolean enableRerolling,
+		Optional<ItemStackTemplate> rerollCost,
 		boolean enableEntryBanishing,
 		Optional<ItemStackTemplate> banishingCost
 ) {
@@ -30,6 +32,8 @@ public record GeneratedRogueLoot(
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
 			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
 			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices),
+			Codec.BOOL.fieldOf("enable_rerolling").forGetter(x -> x.enableRerolling),
+			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
 			Codec.BOOL.fieldOf("enable_entry_banishing").forGetter(x -> x.enableEntryBanishing),
 			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost)
 	).apply(instance, GeneratedRogueLoot::new));
@@ -48,6 +52,10 @@ public record GeneratedRogueLoot(
 			ByteBufCodecs.INT,
 			GeneratedRogueLoot::maxChoices,
 			ByteBufCodecs.BOOL,
+			GeneratedRogueLoot::enableRerolling,
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
+			GeneratedRogueLoot::rerollCost,
+			ByteBufCodecs.BOOL,
 			GeneratedRogueLoot::enableEntryBanishing,
 			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
 			GeneratedRogueLoot::banishingCost,
@@ -61,6 +69,8 @@ public record GeneratedRogueLoot(
 			final List<VisibleRogueLootTableEntry> entryList,
 			final int minChoices,
 			final int maxChoices,
+			boolean enableRerolling,
+			Optional<ItemStackTemplate> rerollCost,
 			final boolean enableEntryBanishing,
 			final Optional<ItemStackTemplate> banishingCost
 	) {
@@ -70,6 +80,8 @@ public record GeneratedRogueLoot(
 		this.entryList = entryList != null ? entryList : List.of();
 		this.minChoices = minChoices;
 		this.maxChoices = maxChoices;
+		this.enableRerolling = enableRerolling;
+		this.rerollCost = rerollCost;
 		this.enableEntryBanishing = enableEntryBanishing;
 		this.banishingCost = banishingCost;
 	}
@@ -86,6 +98,8 @@ public record GeneratedRogueLoot(
 				newVisibleRogueLootTableEntryList,
 				generatedRogueLoot.minChoices(),
 				generatedRogueLoot.maxChoices(),
+				generatedRogueLoot.enableRerolling(),
+				generatedRogueLoot.rerollCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.rerollCost().get().create())) : Optional.empty(),
 				generatedRogueLoot.enableEntryBanishing(),
 				generatedRogueLoot.banishingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.banishingCost().get().create())) : Optional.empty()
 		);
@@ -98,16 +112,16 @@ public record GeneratedRogueLoot(
 			String labelText,
 			List<ChatFormatting> labelFormatting,
 			boolean allowBanishing,
-			Identifier parentRogueLootTableEntryId
+			Optional<Identifier> parentRogueLootTableEntryId
 	) {
 		public static final Codec<VisibleRogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Codec.STRING.fieldOf("entry_background_texture_path_addition").forGetter(x -> x.entryBackgroundTexturePathAddition),
+				Codec.STRING.optionalFieldOf("entry_background_texture_path_addition", "").forGetter(x -> x.entryBackgroundTexturePathAddition),
 				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
-				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
-				ChatFormatting.CODEC.listOf().fieldOf("label_formatting").forGetter(x -> x.labelFormatting),
-				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
-				Identifier.CODEC.fieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
+				Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
+				ChatFormatting.CODEC.listOf().optionalFieldOf("label_formatting", List.of()).forGetter(x -> x.labelFormatting),
+				Codec.BOOL.optionalFieldOf("allow_banishing", false).forGetter(x -> x.allowBanishing),
+				Identifier.CODEC.optionalFieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, VisibleRogueLootTableEntry> STREAM_CODEC = StreamCodec.composite(
@@ -123,7 +137,7 @@ public record GeneratedRogueLoot(
 				VisibleRogueLootTableEntry::labelFormatting,
 				ByteBufCodecs.BOOL,
 				VisibleRogueLootTableEntry::allowBanishing,
-				Identifier.STREAM_CODEC,
+				ByteBufCodecs.optional(Identifier.STREAM_CODEC),
 				VisibleRogueLootTableEntry::parentRogueLootTableEntryId,
 				VisibleRogueLootTableEntry::new
 		);
@@ -135,13 +149,13 @@ public record GeneratedRogueLoot(
 				final String labelText,
 				final List<ChatFormatting> labelFormatting,
 				final boolean allowBanishing,
-				final Identifier parentRogueLootTableEntryId
+				final Optional<Identifier> parentRogueLootTableEntryId
 		) {
-			this.entryBackgroundTexturePathAddition = entryBackgroundTexturePathAddition != null ? entryBackgroundTexturePathAddition : "";
+			this.entryBackgroundTexturePathAddition = entryBackgroundTexturePathAddition;
 			this.displayStack = displayStack;
 			this.iconTextureIdentifier = iconTextureIdentifier;
-			this.labelText = labelText != null ? labelText : "";
-			this.labelFormatting = labelFormatting != null ? labelFormatting : List.of();
+			this.labelText = labelText;
+			this.labelFormatting = labelFormatting;
 			this.allowBanishing = allowBanishing;
 			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId;
 		}

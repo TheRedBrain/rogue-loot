@@ -4,6 +4,8 @@ import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPa
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacketReceiver;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacket;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacketReceiver;
+import com.github.theredbrain.rogueloot.network.packet.RerollRogueLootScreenPacket;
+import com.github.theredbrain.rogueloot.network.packet.RerollRogueLootScreenPacketReceiver;
 import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveRogueLootBlockPacket;
 import com.github.theredbrain.rogueloot.network.packet.UpdateInteractiveRogueLootBlockPacketReceiver;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -18,6 +20,9 @@ public class RogueLootServerPackets {
 
 		PayloadTypeRegistry.serverboundPlay().register(BanishRogueLootEntryPacket.PACKET_ID, BanishRogueLootEntryPacket.PACKET_CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(BanishRogueLootEntryPacket.PACKET_ID, new BanishRogueLootEntryPacketReceiver());
+
+		PayloadTypeRegistry.serverboundPlay().register(RerollRogueLootScreenPacket.PACKET_ID, RerollRogueLootScreenPacket.PACKET_CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(RerollRogueLootScreenPacket.PACKET_ID, new RerollRogueLootScreenPacketReceiver());
 
 		PayloadTypeRegistry.serverboundPlay().register(UpdateInteractiveRogueLootBlockPacket.PACKET_ID, UpdateInteractiveRogueLootBlockPacket.PACKET_CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(UpdateInteractiveRogueLootBlockPacket.PACKET_ID, new UpdateInteractiveRogueLootBlockPacketReceiver());
