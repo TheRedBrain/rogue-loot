@@ -18,13 +18,19 @@ public class LootOptionButton extends Button {
 	private Identifier selectedTextureId;
 	private Identifier unselectedHighlightedTextureId;
 	private Identifier unselectedTextureId;
+	private Component banishedMessage;
+	private Component defaultMessage;
+	private Component selectedMessage;
 	private Optional<Identifier> iconTexture = Optional.empty();
 	private Optional<ItemStackTemplate> displayStack = Optional.empty();
 	private boolean selected;
 
-	public LootOptionButton(final int x, final int y, final int width, final int height, final Component message, final OnPress onPress) {
-		super(x, y, width, height, message, onPress, Button.DEFAULT_NARRATION);
+	public LootOptionButton(final int x, final int y, final int width, final int height, final OnPress onPress) {
+		super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 		setTextureIds("");
+		this.banishedMessage = Component.empty();
+		this.defaultMessage = Component.empty();
+		this.selectedMessage = Component.empty();
 	}
 
 	public void setTextureIds(final String string) {
@@ -52,6 +58,23 @@ public class LootOptionButton extends Button {
 		this.selected = selected;
 	}
 
+	public void setBanishedMessage(Component banishedMessage) {
+		this.banishedMessage = banishedMessage;
+	}
+
+	public void setDefaultMessage(Component defaultMessage) {
+		this.defaultMessage = defaultMessage;
+	}
+
+	public void setSelectedMessage(Component selectedMessage) {
+		this.selectedMessage = selectedMessage;
+	}
+
+	@Override
+	public Component getMessage() {
+		return this.active ? this.selected ? this.selectedMessage : this.defaultMessage : this.banishedMessage;
+	}
+
 	@Override
 	protected void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
 
@@ -64,12 +87,12 @@ public class LootOptionButton extends Button {
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);
 
-		boolean hasMessage = !this.message.equals(Component.empty());
+		boolean hasMessage = !this.getMessage().equals(Component.empty());
 		if (this.displayStack.isPresent()) {
 			if (hasMessage) {
 				graphics.item(this.displayStack.get().create(), this.getX() + 17, this.getY() + 7);
 				// TODO wrap message
-				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.message);
+				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.getMessage());
 			} else {
 				graphics.item(this.displayStack.get().create(), this.getX() + 17, this.getY() + 17);
 			}
@@ -77,13 +100,13 @@ public class LootOptionButton extends Button {
 			if (hasMessage) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, this.iconTexture.get(), this.getX() + 17, this.getY() + 7, 0.0F, 0.0F, 16, 16, 16, 16);
 				// TODO wrap message
-				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.message);
+				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.getMessage());
 			} else {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, this.iconTexture.get(), this.getX() + 9, this.getY() + 9, 0.0F, 0.0F, 32, 32, 32, 32);
 			}
 		} else if (hasMessage) {
 			// TODO wrap message
-			graphics.textRenderer().accept(this.getX() + 7, this.getY() + 20, this.message);
+			graphics.textRenderer().accept(this.getX() + 7, this.getY() + 20, this.getMessage());
 		}
 
 	}

@@ -11,7 +11,6 @@ import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
@@ -176,21 +175,13 @@ public class RogueLootTableHelper {
 
 	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final List<Identifier> unlockedEntries, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier) {
 
-		String backgroundTexturePath = "";
-		String entriesAssetPathAddition = "";
-		List<ChatFormatting> requirementsNotMetFormatting = List.of();
-		List<ChatFormatting> requirementsMetFormatting = List.of();
+		RogueLootGuiSettings rogueLootGuiSettings = RogueLootGuiSettings.DEFAULT;
 
 		Identifier rogueLootGuiSettingsIdentifier = Identifier.tryParse(rogueLootTable.rogueLootGuiSettingsIdString());
 		if (!rogueLootTable.rogueLootGuiSettingsIdString().isEmpty() && rogueLootGuiSettingsIdentifier != null) {
-			RogueLootGuiSettings rogueLootGuiSettings = RogueLootGuiSettings.getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootGuiSettingsIdentifier);
-			if (rogueLootGuiSettings != null) {
-				backgroundTexturePath = rogueLootGuiSettings.backgroundTexturePath();
-				if (!rogueLootGuiSettings.entriesAssetPathAddition().isEmpty()) {
-					entriesAssetPathAddition = rogueLootGuiSettings.entriesAssetPathAddition() + "/";
-				}
-				requirementsNotMetFormatting = new ArrayList<>(rogueLootGuiSettings.requirementsNotMetFormatting());
-				requirementsMetFormatting = new ArrayList<>(rogueLootGuiSettings.requirementsMetFormatting());
+			RogueLootGuiSettings rogueLootGuiSettings1 = RogueLootGuiSettings.getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootGuiSettingsIdentifier);
+			if (rogueLootGuiSettings1 != null) {
+				rogueLootGuiSettings = RogueLootGuiSettings.copy(rogueLootGuiSettings1);
 			}
 		}
 
@@ -202,38 +193,32 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
-			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
-			Identifier iconTextureIdentifier = Identifier.tryParse(rogueLootTableEntry.iconTexturePath());
 			Optional<Identifier> optionalIconTextureIdentifier = Optional.empty();
+			Identifier iconTextureIdentifier = Identifier.tryParse(rogueLootTableEntry.iconTexturePath());
 			if (!rogueLootTableEntry.iconTexturePath().isEmpty() && iconTextureIdentifier != null) {
 				optionalIconTextureIdentifier = Optional.of(iconTextureIdentifier);
 			}
-			String assetPathAddition = "";
-			List<ChatFormatting> labelFormatting = List.of();
+
+			RogueLootTableEntryRarity rogueLootTableEntryRarity = RogueLootTableEntryRarity.DEFAULT;
+			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
-				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
-				if (rarity != null) {
-					if (!rarity.assetPathAddition().isEmpty()) {
-						assetPathAddition = rarity.assetPathAddition() + "/";
-					}
-					labelFormatting = new ArrayList<>(rarity.labelFormatting());
+				RogueLootTableEntryRarity rogueLootTableEntryRarity1 = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+				if (rogueLootTableEntryRarity1 != null) {
+					rogueLootTableEntryRarity = rogueLootTableEntryRarity1;
 				}
 			}
 			visibleRogueLootTableEntries.add(new GeneratedRogueLoot.VisibleRogueLootTableEntry(
-					entriesAssetPathAddition + assetPathAddition,
 					rogueLootTableEntry.displayStack(),
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
-					labelFormatting,
 					rogueLootTableEntry.allowBanishing(),
+					rogueLootTableEntryRarity,
 					Optional.of(entryIdentifier)
 			));
 		}
 
 		return new GeneratedRogueLoot(
-				backgroundTexturePath,
-				requirementsNotMetFormatting,
-				requirementsMetFormatting,
+				rogueLootGuiSettings,
 				visibleRogueLootTableEntries,
 				generatedRogueLootTableIdentifier.minChoices(),
 				generatedRogueLootTableIdentifier.maxChoices(),

@@ -2,7 +2,8 @@ package com.github.theredbrain.rogueloot.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.ChatFormatting;
+import io.netty.buffer.ByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -14,9 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public record GeneratedRogueLoot(
-		String backgroundTexturePath,
-		List<ChatFormatting> requirementsNotMetFormatting,
-		List<ChatFormatting> requirementsMetFormatting,
+		RogueLootGuiSettings rogueLootGuiSettings,
 		List<VisibleRogueLootTableEntry> entryList,
 		int minChoices,
 		int maxChoices,
@@ -26,9 +25,7 @@ public record GeneratedRogueLoot(
 		Optional<ItemStackTemplate> banishingCost
 ) {
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.STRING.fieldOf("background_texture_path").forGetter(x -> x.backgroundTexturePath),
-			ChatFormatting.CODEC.listOf().fieldOf("requirements_not_met_formatting").forGetter(x -> x.requirementsNotMetFormatting),
-			ChatFormatting.CODEC.listOf().fieldOf("requirements_met_formatting").forGetter(x -> x.requirementsMetFormatting),
+			RogueLootGuiSettings.CODEC.fieldOf("rogue_loot_gui_settings").forGetter(x -> x.rogueLootGuiSettings),
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
 			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
 			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices),
@@ -38,52 +35,30 @@ public record GeneratedRogueLoot(
 			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost)
 	).apply(instance, GeneratedRogueLoot::new));
 
-	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.composite(
-			ByteBufCodecs.STRING_UTF8,
-			GeneratedRogueLoot::backgroundTexturePath,
-			ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
-			GeneratedRogueLoot::requirementsNotMetFormatting,
-			ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
-			GeneratedRogueLoot::requirementsMetFormatting,
-			VisibleRogueLootTableEntry.STREAM_CODEC.apply(ByteBufCodecs.list()),
-			GeneratedRogueLoot::entryList,
-			ByteBufCodecs.INT,
-			GeneratedRogueLoot::minChoices,
-			ByteBufCodecs.INT,
-			GeneratedRogueLoot::maxChoices,
-			ByteBufCodecs.BOOL,
-			GeneratedRogueLoot::enableRerolling,
-			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
-			GeneratedRogueLoot::rerollCost,
-			ByteBufCodecs.BOOL,
-			GeneratedRogueLoot::enableEntryBanishing,
-			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
-			GeneratedRogueLoot::banishingCost,
-			GeneratedRogueLoot::new
-	);
+	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.ofMember(GeneratedRogueLoot::write, GeneratedRogueLoot::new);
 
-	public GeneratedRogueLoot(
-			final String backgroundTexturePath,
-			final List<ChatFormatting> requirementsNotMetFormatting,
-			final List<ChatFormatting> requirementsMetFormatting,
-			final List<VisibleRogueLootTableEntry> entryList,
-			final int minChoices,
-			final int maxChoices,
-			boolean enableRerolling,
-			Optional<ItemStackTemplate> rerollCost,
-			final boolean enableEntryBanishing,
-			final Optional<ItemStackTemplate> banishingCost
-	) {
-		this.backgroundTexturePath = backgroundTexturePath != null ? backgroundTexturePath : "";
-		this.requirementsNotMetFormatting = requirementsNotMetFormatting != null ? requirementsNotMetFormatting : List.of();
-		this.requirementsMetFormatting = requirementsMetFormatting != null ? requirementsMetFormatting : List.of();
-		this.entryList = entryList != null ? entryList : List.of();
-		this.minChoices = minChoices;
-		this.maxChoices = maxChoices;
-		this.enableRerolling = enableRerolling;
-		this.rerollCost = rerollCost;
-		this.enableEntryBanishing = enableEntryBanishing;
-		this.banishingCost = banishingCost;
+	public GeneratedRogueLoot(final RegistryFriendlyByteBuf registryFriendlyByteBuf) {
+		this(
+				RogueLootGuiSettings.STREAM_CODEC.decode(registryFriendlyByteBuf),
+				registryFriendlyByteBuf.readList(VisibleRogueLootTableEntry.STREAM_CODEC),
+				ByteBufCodecs.INT.decode(registryFriendlyByteBuf),
+				ByteBufCodecs.INT.decode(registryFriendlyByteBuf),
+				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
+				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf),
+				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
+				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf)
+		);
+	}
+
+	private void write(final FriendlyByteBuf friendlyByteBuf) {
+		RogueLootGuiSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootGuiSettings);
+		friendlyByteBuf.writeCollection(this.entryList, VisibleRogueLootTableEntry.STREAM_CODEC);
+		ByteBufCodecs.INT.encode(friendlyByteBuf, this.minChoices);
+		ByteBufCodecs.INT.encode(friendlyByteBuf, this.maxChoices);
+		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableRerolling);
+		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rerollCost);
+		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryBanishing);
+		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.banishingCost);
 	}
 
 	public static GeneratedRogueLoot copy(final GeneratedRogueLoot generatedRogueLoot) {
@@ -92,9 +67,7 @@ public record GeneratedRogueLoot(
 			newVisibleRogueLootTableEntryList.add(VisibleRogueLootTableEntry.copy(visibleRogueLootTableEntry));
 		}));
 		return new GeneratedRogueLoot(
-				generatedRogueLoot.backgroundTexturePath(),
-				new ArrayList<>(generatedRogueLoot.requirementsNotMetFormatting()),
-				new ArrayList<>(generatedRogueLoot.requirementsMetFormatting()),
+				RogueLootGuiSettings.copy(generatedRogueLoot.rogueLootGuiSettings()),
 				newVisibleRogueLootTableEntryList,
 				generatedRogueLoot.minChoices(),
 				generatedRogueLoot.maxChoices(),
@@ -106,68 +79,51 @@ public record GeneratedRogueLoot(
 	}
 
 	public record VisibleRogueLootTableEntry(
-			String entryBackgroundTexturePathAddition,
 			Optional<ItemStackTemplate> displayStack,
 			Optional<Identifier> iconTextureIdentifier,
 			String labelText,
-			List<ChatFormatting> labelFormatting,
 			boolean allowBanishing,
+			RogueLootTableEntryRarity rogueLootTableEntryRarity,
 			Optional<Identifier> parentRogueLootTableEntryId
 	) {
 		public static final Codec<VisibleRogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Codec.STRING.optionalFieldOf("entry_background_texture_path_addition", "").forGetter(x -> x.entryBackgroundTexturePathAddition),
 				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
-				Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
-				ChatFormatting.CODEC.listOf().optionalFieldOf("label_formatting", List.of()).forGetter(x -> x.labelFormatting),
-				Codec.BOOL.optionalFieldOf("allow_banishing", false).forGetter(x -> x.allowBanishing),
+				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
+				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
+				RogueLootTableEntryRarity.CODEC.fieldOf("rogue_loot_table_entry_rarity").forGetter(x -> x.rogueLootTableEntryRarity),
 				Identifier.CODEC.optionalFieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
 
-		public static final StreamCodec<RegistryFriendlyByteBuf, VisibleRogueLootTableEntry> STREAM_CODEC = StreamCodec.composite(
-				ByteBufCodecs.STRING_UTF8,
-				VisibleRogueLootTableEntry::entryBackgroundTexturePathAddition,
-				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC),
-				VisibleRogueLootTableEntry::displayStack,
-				ByteBufCodecs.optional(Identifier.STREAM_CODEC),
-				VisibleRogueLootTableEntry::iconTextureIdentifier,
-				ByteBufCodecs.STRING_UTF8,
-				VisibleRogueLootTableEntry::labelText,
-				ByteBufCodecs.fromCodec(ChatFormatting.CODEC).apply(ByteBufCodecs.list()),
-				VisibleRogueLootTableEntry::labelFormatting,
-				ByteBufCodecs.BOOL,
-				VisibleRogueLootTableEntry::allowBanishing,
-				ByteBufCodecs.optional(Identifier.STREAM_CODEC),
-				VisibleRogueLootTableEntry::parentRogueLootTableEntryId,
-				VisibleRogueLootTableEntry::new
-		);
+		public static final StreamCodec<FriendlyByteBuf, VisibleRogueLootTableEntry> STREAM_CODEC = StreamCodec.ofMember(VisibleRogueLootTableEntry::write, VisibleRogueLootTableEntry::new);
 
-		public VisibleRogueLootTableEntry(
-				final String entryBackgroundTexturePathAddition,
-				final Optional<ItemStackTemplate> displayStack,
-				final Optional<Identifier> iconTextureIdentifier,
-				final String labelText,
-				final List<ChatFormatting> labelFormatting,
-				final boolean allowBanishing,
-				final Optional<Identifier> parentRogueLootTableEntryId
-		) {
-			this.entryBackgroundTexturePathAddition = entryBackgroundTexturePathAddition;
-			this.displayStack = displayStack;
-			this.iconTextureIdentifier = iconTextureIdentifier;
-			this.labelText = labelText;
-			this.labelFormatting = labelFormatting;
-			this.allowBanishing = allowBanishing;
-			this.parentRogueLootTableEntryId = parentRogueLootTableEntryId;
+		public VisibleRogueLootTableEntry(final FriendlyByteBuf friendlyByteBuf) {
+			this(
+					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf),
+					ByteBufCodecs.STRING_UTF8.decode(friendlyByteBuf),
+					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
+					RogueLootTableEntryRarity.STREAM_CODEC.decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf)
+			);
+		}
+
+		private void write(final ByteBuf registryByteBuf) {
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.displayStack);
+			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.iconTextureIdentifier);
+			ByteBufCodecs.STRING_UTF8.encode(registryByteBuf, this.labelText);
+			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowBanishing);
+			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.rogueLootTableEntryRarity);
+			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.parentRogueLootTableEntryId);
 		}
 
 		public static VisibleRogueLootTableEntry copy(final VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
 			return new VisibleRogueLootTableEntry(
-					visibleRogueLootTableEntry.entryBackgroundTexturePathAddition(),
 					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),
 					visibleRogueLootTableEntry.iconTextureIdentifier(),
 					visibleRogueLootTableEntry.labelText(),
-					new ArrayList<>(visibleRogueLootTableEntry.labelFormatting()),
 					visibleRogueLootTableEntry.allowBanishing(),
+					visibleRogueLootTableEntry.rogueLootTableEntryRarity(),
 					visibleRogueLootTableEntry.parentRogueLootTableEntryId()
 			);
 		}

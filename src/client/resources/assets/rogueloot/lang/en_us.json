@@ -29,8 +29,8 @@
 	"gui.rogue_loot_screen.confirm_choices.plural": "Confirm %s/%s Choices",
 	"gui.rogue_loot_screen.confirm_choices.range": "Confirm %s Out Of %s To %s Choices",
 	"gui.rogue_loot_screen.banish.simple": "Banish",
-	"gui.rogue_loot_screen.banish.singular": "Banish (%s %Attempt)",
-	"gui.rogue_loot_screen.banish.plural": "Banish (%s %Attempts)",
+	"gui.rogue_loot_screen.banish.singular": "Banish (%s Attempt)",
+	"gui.rogue_loot_screen.banish.plural": "Banish (%s Attempts)",
 	"gui.rogue_loot_screen.banish.stop": "Stop Banishing",
 
 
