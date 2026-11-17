@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.block;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.entity.player.DuckPlayerMixin;
 import com.mojang.serialization.MapCodec;
@@ -85,7 +86,7 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
 								RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
-								RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayer, Optional.of(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices(), Optional.empty());
+								RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootTableIdentifier(identifier, Optional.of(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), interactiveRogueLootBlockEntity.getMaxChoices()), Optional.empty());
 							} else {
 								List<ItemStack> lootStacks = getLootItems(serverLevel, pos, player, interactiveRogueLootBlockEntity);
 								for (ItemStack itemStack : lootStacks) {

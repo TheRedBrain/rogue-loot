@@ -1,6 +1,7 @@
 package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import com.github.theredbrain.rogueloot.block.entity.SuppliesRogueLootTable;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
@@ -23,6 +24,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.jspecify.annotations.Nullable;
 
@@ -32,55 +34,67 @@ import java.util.Optional;
 
 public class RogueLootTableHelper {
 
-	public static void supplyRogueLootTable(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Optional<BlockPos> pos, final int rolls, final int minChoices, final int maxChoices, final Optional<ItemStack> itemStack) {
-		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), identifier);
-		if (rogueLootTable == null) {
-			return;
-		}
-		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier = new GeneratedRogueLootTableIdentifier(identifier, pos, rolls, minChoices, maxChoices);
-		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
-		if (generatedRogueLoot == null) {
-			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, rolls, minChoices, maxChoices);
-		}
-		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
-		int rerollAttempts = calculateRerollAttempts(serverPlayer, generatedRogueLoot);
-		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, rerollAttempts, banishingAttempts, itemStack));
-
-	}
-
 	public static void supplyRogueLootTable(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final Optional<ItemStack> itemStack) {
-		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.identifier());
+		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
 		if (rogueLootTable == null) {
 			return;
 		}
-		GeneratedRogueLoot generatedRogueLoot = DataAttachmentHelper.getGeneratedRogueLootForPlayer(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
-		if (generatedRogueLoot == null) {
-			generatedRogueLoot = generateRogueLoot(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls(), generatedRogueLootTableIdentifier.minChoices(), generatedRogueLootTableIdentifier.maxChoices());
+		Optional<BlockPos> optionalBlockPos = generatedRogueLootTableIdentifier.optionalBlockPos();
+		List<Identifier> generatedRogueLootEntries = new ArrayList<>();
+		if (optionalBlockPos.isPresent()) {
+			BlockEntity blockEntity = serverLevel.getBlockEntity(optionalBlockPos.get());
+			if (blockEntity instanceof SuppliesRogueLootTable suppliesRogueLootTable) {
+				generatedRogueLootEntries = new ArrayList<>(suppliesRogueLootTable.getGeneratedRogueLootEntries(serverPlayer));
+				if (generatedRogueLootEntries.isEmpty()) {
+					generatedRogueLootEntries = generateRogueLootEntries(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls());
+				}
+				if (!generatedRogueLootEntries.isEmpty()) {
+					suppliesRogueLootTable.setGeneratedRogueLootEntries(generatedRogueLootEntries, serverPlayer);
+					openRogueLootScreen(serverLevel, serverPlayer, generatedRogueLootTableIdentifier, generatedRogueLootEntries, itemStack);
+				}
+				return;
+			}
 		}
-		DataAttachmentHelper.setGeneratedRogueLootForPlayer(serverLevel, generatedRogueLoot, generatedRogueLootTableIdentifier, serverPlayer);
-		int rerollAttempts = calculateRerollAttempts(serverPlayer, generatedRogueLoot);
-		int banishingAttempts = calculateBanishingAttempts(serverPlayer, generatedRogueLoot);
-		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(generatedRogueLoot, generatedRogueLootTableIdentifier, rerollAttempts, banishingAttempts, itemStack));
+		// TODO save generatedRogueLootEntries to player attached data
+		if (!generatedRogueLootEntries.isEmpty()) {
+			openRogueLootScreen(serverLevel, serverPlayer, generatedRogueLootTableIdentifier, generatedRogueLootEntries, itemStack);
+		}
 
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Optional<BlockPos> pos, final String identifierString, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
-		Identifier identifier = Identifier.tryParse(identifierString);
-		if (identifier != null) {
-			removeRogueLootTableUses(serverLevel, pos, identifier, rolls, minChoices, maxChoices, serverPlayer);
+	private static void openRogueLootScreen(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, List<Identifier> generatedRogueLootEntries, final Optional<ItemStack> itemStack) {
+		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
+		if (rogueLootTable == null) {
+			return;
+		}
+		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(
+				generateRogueLoot(serverLevel, rogueLootTable, generatedRogueLootEntries, generatedRogueLootTableIdentifier),
+				generatedRogueLootTableIdentifier,
+				calculateRerollAttempts(serverPlayer, rogueLootTable),
+				calculateBanishingAttempts(serverPlayer, rogueLootTable),
+				itemStack
+		));
+	}
+
+	public static void removeGeneratedRogueLootEntries(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier) {
+
+		Optional<BlockPos> optionalBlockPos = generatedRogueLootTableIdentifier.optionalBlockPos();
+		if (optionalBlockPos.isPresent()) {
+			serverLevel.getBlockEntity(optionalBlockPos.get());
+			BlockEntity blockEntity = serverLevel.getBlockEntity(optionalBlockPos.get());
+			if (blockEntity instanceof SuppliesRogueLootTable suppliesRogueLootTable) {
+				suppliesRogueLootTable.removeGeneratedRogueLootEntries(serverPlayer);
+			}
+		} else {
+			// TODO remove entries from player attached data
 		}
 	}
 
-	public static void removeRogueLootTableUses(final ServerLevel serverLevel, final Optional<BlockPos> pos, final Identifier identifier, final int rolls, final int minChoices, final int maxChoices, @Nullable final ServerPlayer serverPlayer) {
-		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, new GeneratedRogueLootTableIdentifier(identifier, pos, rolls, minChoices, maxChoices), serverPlayer);
-	}
-
-	private static int calculateRerollAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
+	private static int calculateRerollAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
 
 		int rerollAttempts = -1;
-		if (generatedRogueLoot.enableRerolling() && generatedRogueLoot.rerollCost().isPresent()) {
-			ItemStack rerollCostStack = generatedRogueLoot.rerollCost().get().create();
+		if (rogueLootTable.enableRerolling() && rogueLootTable.rerollCost().isPresent()) {
+			ItemStack rerollCostStack = rogueLootTable.rerollCost().get().create();
 
 			if (!rerollCostStack.isEmpty()) {
 				rerollAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, rerollCostStack);
@@ -89,21 +103,82 @@ public class RogueLootTableHelper {
 		return rerollAttempts;
 	}
 
-	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, GeneratedRogueLoot generatedRogueLoot) {
+	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
 
 		int banishingAttempts = -1;
-		if (generatedRogueLoot.enableEntryBanishing() && generatedRogueLoot.banishingCost().isPresent()) {
-			ItemStack banishingCostStack = generatedRogueLoot.banishingCost().get().create();
+		if (rogueLootTable.enableEntryBanishing() && rogueLootTable.banishingCost().isPresent()) {
+			ItemStack banishingCostStack = rogueLootTable.banishingCost().get().create();
 
 			if (!banishingCostStack.isEmpty()) {
 				banishingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, banishingCostStack);
 			}
 		}
-		RogueLoot.info("calculateBanishingAttempts banishingAttempts: " + banishingAttempts);
 		return banishingAttempts;
 	}
 
-	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final ServerPlayer serverPlayer, final int rolls, final int minChoices, final int maxChoices) {
+	public static List<Identifier> generateRogueLootEntries(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final ServerPlayer serverPlayer, final int rolls) {
+
+		List<MutablePair<Integer, Identifier>> tempList = new ArrayList<>();
+		int totalWeight = 0;
+		for (Holder<RogueLootTableEntry> entry : rogueLootTable.rogueLootTableEntries()) {
+			RogueLootTableEntry rogueLootTableEntry = entry.value();
+			Optional<ResourceKey<RogueLootTableEntry>> optionalResourceKey = entry.unwrapKey();
+			if (optionalResourceKey.isEmpty()) {
+				continue;
+			}
+			Identifier entryIdentifier = optionalResourceKey.get().identifier();
+			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayer, Optional.of(entryIdentifier))) {
+				continue;
+			}
+
+			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
+			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
+				continue;
+			}
+
+			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
+			int weight = 1;
+			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
+				RogueLootTableEntryRarity rarity = getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+				if (rarity != null) {
+					weight = rogueLootTable.rarityOverrides().getOrDefault(rarityIdentifier, rarity.defaultWeight());
+				}
+			}
+			tempList.add(new MutablePair<>(weight, entryIdentifier));
+			totalWeight = totalWeight + weight;
+		}
+
+		if (tempList.size() < rolls) {
+			RogueLoot.info("generated rogue loot table has fewer unlocked entries than rolls requested");
+		}
+
+		List<Identifier> generatedRogueLootEntries = new ArrayList<>();
+
+		int chosenWeight;
+		int index;
+		int weightCounter;
+		int initialTempListSize = tempList.size();
+		for (int i = 0; i < Math.min(initialTempListSize, rolls); i++) {
+			chosenWeight = serverLevel.getRandom().nextInt(totalWeight);
+			index = -1;
+			weightCounter = 0;
+			for (int j = 0; j < tempList.size(); j++) {
+				weightCounter += tempList.get(j).left;
+				if (chosenWeight <= weightCounter) {
+					index = j;
+					break;
+				}
+			}
+			if (index >= 0) {
+				generatedRogueLootEntries.add(tempList.get(index).right);
+				totalWeight -= tempList.get(index).left;
+				tempList.remove(index);
+			}
+		}
+		return generatedRogueLootEntries;
+	}
+
+	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final List<Identifier> unlockedEntries, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier) {
 
 		String backgroundTexturePath = "";
 		String entriesAssetPathAddition = "";
@@ -123,21 +198,11 @@ public class RogueLootTableHelper {
 			}
 		}
 
-		List<MutablePair<Integer, GeneratedRogueLoot.VisibleRogueLootTableEntry>> tempList = new ArrayList<>();
-		int totalWeight = 0;
-		for (Holder<RogueLootTableEntry> entry : rogueLootTable.rogueLootTableEntries()) {
-			RogueLootTableEntry rogueLootTableEntry = entry.value();
-			Optional<ResourceKey<RogueLootTableEntry>> optionalResourceKey = entry.unwrapKey();
-			if (optionalResourceKey.isEmpty()) {
-				continue;
-			}
-			Identifier entryIdentifier = optionalResourceKey.get().identifier();
-			if (DataAttachmentHelper.isRogueLootEntryBanished(serverPlayer, Optional.of(entryIdentifier))) {
-				continue;
-			}
+		List<GeneratedRogueLoot.VisibleRogueLootTableEntry> visibleRogueLootTableEntries = new ArrayList<>();
 
-			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
-			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
+		for (Identifier entryIdentifier : unlockedEntries) {
+			RogueLootTableEntry rogueLootTableEntry = getRogueLootTableEntry(serverLevel.registryAccess(), entryIdentifier);
+			if (rogueLootTableEntry == null) {
 				continue;
 			}
 
@@ -148,7 +213,6 @@ public class RogueLootTableHelper {
 				optionalIconTextureIdentifier = Optional.of(iconTextureIdentifier);
 			}
 			String assetPathAddition = "";
-			int weight = 1;
 			List<ChatFormatting> labelFormatting = List.of();
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
 				RogueLootTableEntryRarity rarity = getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
@@ -156,11 +220,10 @@ public class RogueLootTableHelper {
 					if (!rarity.assetPathAddition().isEmpty()) {
 						assetPathAddition = rarity.assetPathAddition() + "/";
 					}
-					weight = rogueLootTable.rarityOverrides().getOrDefault(rarityIdentifier, rarity.defaultWeight());
 					labelFormatting = new ArrayList<>(rarity.labelFormatting());
 				}
 			}
-			tempList.add(new MutablePair<>(weight, new GeneratedRogueLoot.VisibleRogueLootTableEntry(
+			visibleRogueLootTableEntries.add(new GeneratedRogueLoot.VisibleRogueLootTableEntry(
 					entriesAssetPathAddition + assetPathAddition,
 					rogueLootTableEntry.displayStack(),
 					optionalIconTextureIdentifier,
@@ -168,36 +231,7 @@ public class RogueLootTableHelper {
 					labelFormatting,
 					rogueLootTableEntry.allowBanishing(),
 					Optional.of(entryIdentifier)
-			)));
-			totalWeight = totalWeight + weight;
-		}
-
-		if (tempList.size() < rolls) {
-			RogueLoot.info("generated rogue loot table has fewer unlocked entries than rolls requested");
-		}
-
-		List<GeneratedRogueLoot.VisibleRogueLootTableEntry> visibleRogueLootTableEntries = new ArrayList<>();
-
-		int chosenWeight;
-		int index;
-		int weightCounter;
-		int initialTempListSize = tempList.size();
-		for (int i = 0; i < Math.min(initialTempListSize, rolls); i++) {
-			chosenWeight = serverLevel.getRandom().nextInt(totalWeight);
-			index = -1;
-			weightCounter = 0;
-			for (int j = 0; j < tempList.size(); j++) {
-				weightCounter += tempList.get(j).left;
-				if (chosenWeight <= weightCounter) {
-					index = j;
-					break;
-				}
-			}
-			if (index >= 0) {
-				visibleRogueLootTableEntries.add(tempList.get(index).right);
-				totalWeight -= tempList.get(index).left;
-				tempList.remove(index);
-			}
+			));
 		}
 
 		return new GeneratedRogueLoot(
@@ -205,17 +239,13 @@ public class RogueLootTableHelper {
 				requirementsNotMetFormatting,
 				requirementsMetFormatting,
 				visibleRogueLootTableEntries,
-				minChoices,
-				maxChoices,
+				generatedRogueLootTableIdentifier.minChoices(),
+				generatedRogueLootTableIdentifier.maxChoices(),
 				rogueLootTable.enableRerolling(),
 				rogueLootTable.rerollCost(),
 				rogueLootTable.enableEntryBanishing(),
 				rogueLootTable.banishingCost()
 		);
-	}
-
-	public static Identifier getLocalRogueLootTableId(final ServerLevel serverLevel, final Identifier identifier, final BlockPos pos, final int rolls, final int minChoices, final int maxChoices) {
-		return RogueLoot.identifier(serverLevel.dimension().identifier().toLanguageKey() + "_" + identifier.toLanguageKey() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ() + "_" + rolls + "_" + minChoices + "_" + maxChoices);
 	}
 
 	@Nullable

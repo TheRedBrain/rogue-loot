@@ -6,7 +6,6 @@ import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEn
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
-import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
@@ -32,7 +31,7 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier = payload.generatedRogueLootTableIdentifier();
 		Optional<ItemStack> itemStack = payload.itemStack();
 
-		DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
+		RogueLootTableHelper.removeGeneratedRogueLootEntries(serverLevel, serverPlayer, generatedRogueLootTableIdentifier);
 
 		if (generatedRogueLootTableIdentifier.optionalBlockPos().isPresent()) {
 			BlockEntity blockEntity = serverLevel.getBlockEntity(generatedRogueLootTableIdentifier.optionalBlockPos().get());

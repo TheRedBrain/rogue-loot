@@ -6,11 +6,11 @@ import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultCli
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultServerData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultSharedData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
-import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
-import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -52,22 +52,22 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
-import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-public class RogueLootVaultBlockEntity extends BlockEntity {
-	private static final Logger LOGGER = LogUtils.getLogger();
+public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRogueLootTable {
 	private final RogueLootVaultServerData serverData = new RogueLootVaultServerData();
 	private final RogueLootVaultSharedData sharedData = new RogueLootVaultSharedData();
 	private final RogueLootVaultClientData clientData = new RogueLootVaultClientData();
 	@Nullable
 	private RogueLootVaultConfig config = null;
 	private String lootableVaultConfigIdentifier = "";
+	private SuppliesRogueLootTable.GeneratedRogueLootEntriesForPlayer generatedRogueLootEntries = GeneratedRogueLootEntriesForPlayer.DEFAULT;
 
 	public RogueLootVaultBlockEntity(final BlockPos pos, final BlockState state) {
 		super(RogueLootEntities.ROGUE_LOOT_VAULT_BLOCK_ENTITY, pos, state);
@@ -87,16 +87,20 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 	@Override
 	protected void saveAdditional(final ValueOutput output) {
 
+		super.saveAdditional(output);
+
 		output.putString("config_identifier", this.lootableVaultConfigIdentifier);
 
 		output.store("shared_data", RogueLootVaultSharedData.CODEC, this.sharedData);
 		output.store("server_data", RogueLootVaultServerData.CODEC, this.serverData);
 
-		super.saveAdditional(output);
+		output.store("generated_loot_entries", GeneratedRogueLootEntriesForPlayer.CODEC, this.generatedRogueLootEntries);
 	}
 
 	@Override
 	protected void loadAdditional(final ValueInput input) {
+
+		super.loadAdditional(input);
 
 		input.read("shared_data", RogueLootVaultSharedData.CODEC).ifPresent(this.sharedData::set);
 
@@ -105,7 +109,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 		this.lootableVaultConfigIdentifier = input.getStringOr("config_identifier", "");
 		this.config = null;
 
-		super.loadAdditional(input);
+		this.generatedRogueLootEntries = input.read("generated_loot_entries", GeneratedRogueLootEntriesForPlayer.CODEC).orElse(GeneratedRogueLootEntriesForPlayer.DEFAULT);
 	}
 
 	@Override
@@ -179,9 +183,41 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 
 	private void removeLootableUses(final ServerLevel serverLevel, final BlockPos pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-			RogueLootTableHelper.removeRogueLootTableUses(serverLevel, Optional.of(pos), config.lootTableIdentifier(), config.rolls(), config.minChoices(), config.maxChoices(), serverPlayer);
+			removeGeneratedRogueLootEntries(serverPlayer);
 		} else {
 			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(pos), config.lootTableIdentifier(), serverPlayer);
+		}
+	}
+
+	@Override
+	public List<Identifier> getGeneratedRogueLootEntries(final ServerPlayer serverPlayer) {
+		GeneratedRogueLootEntriesForPlayer.GeneratedRogueLootEntries generatedRogueLootEntries = this.generatedRogueLootEntries.generatedRogueLootEntries().get(serverPlayer.getUUID());
+		return generatedRogueLootEntries != null ? generatedRogueLootEntries.generatedRogueLootEntries() : List.of();
+	}
+
+	@Override
+	public void setGeneratedRogueLootEntries(final List<Identifier> generatedRogueLootEntries, final ServerPlayer serverPlayer) {
+		if (this.getLevel() instanceof ServerLevel serverLevel) {
+			GeneratedRogueLootEntriesForPlayer newGeneratedRogueLootEntriesForPlayer = GeneratedRogueLootEntriesForPlayer.copy(this.generatedRogueLootEntries);
+			newGeneratedRogueLootEntriesForPlayer.generatedRogueLootEntries().put(serverPlayer.getUUID(), new GeneratedRogueLootEntriesForPlayer.GeneratedRogueLootEntries(new ArrayList<>(generatedRogueLootEntries)));
+			this.generatedRogueLootEntries = newGeneratedRogueLootEntriesForPlayer;
+			this.setChanged();
+			serverLevel.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
+		}
+	}
+
+	@Override
+	public void removeGeneratedRogueLootEntries(final @Nullable ServerPlayer serverPlayer) {
+		if (this.getLevel() instanceof ServerLevel serverLevel) {
+			if (serverPlayer != null) {
+				GeneratedRogueLootEntriesForPlayer newGeneratedRogueLootEntriesForPlayer = GeneratedRogueLootEntriesForPlayer.copy(this.generatedRogueLootEntries);
+				newGeneratedRogueLootEntriesForPlayer.generatedRogueLootEntries().remove(serverPlayer.getUUID());
+				this.generatedRogueLootEntries = newGeneratedRogueLootEntriesForPlayer;
+			} else {
+				this.generatedRogueLootEntries = GeneratedRogueLootEntriesForPlayer.DEFAULT;
+			}
+			this.setChanged();
+			serverLevel.sendBlockUpdated(this.getBlockPos(), this.getBlockState(), this.getBlockState(), Block.UPDATE_ALL);
 		}
 	}
 
@@ -339,7 +375,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity {
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(identifier, serverLevel, serverPlayerEntity, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices(), Optional.of(stack));
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayerEntity, new GeneratedRogueLootTableIdentifier(identifier, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices()), Optional.of(stack));
 					} else {
 						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 						serverData.markPlayerAsRewarded(player);

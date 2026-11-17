@@ -11,14 +11,14 @@ import net.minecraft.resources.Identifier;
 import java.util.Optional;
 
 public record GeneratedRogueLootTableIdentifier(
-		Identifier identifier,
+		Identifier rogueLootTableIdentifier,
 		Optional<BlockPos> optionalBlockPos,
 		int rolls,
 		int minChoices,
 		int maxChoices
 ) {
 	public static final Codec<GeneratedRogueLootTableIdentifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Identifier.CODEC.fieldOf("identifier").forGetter(x -> x.identifier),
+			Identifier.CODEC.fieldOf("rogue_loot_table_identifier").forGetter(x -> x.rogueLootTableIdentifier),
 			BlockPos.CODEC.optionalFieldOf("optional_block_pos").forGetter(x -> x.optionalBlockPos),
 			Codec.INT.fieldOf("rolls").forGetter(x -> x.rolls),
 			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
@@ -27,7 +27,7 @@ public record GeneratedRogueLootTableIdentifier(
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLootTableIdentifier> STREAM_CODEC = StreamCodec.composite(
 			Identifier.STREAM_CODEC,
-			GeneratedRogueLootTableIdentifier::identifier,
+			GeneratedRogueLootTableIdentifier::rogueLootTableIdentifier,
 			ByteBufCodecs.optional(BlockPos.STREAM_CODEC),
 			GeneratedRogueLootTableIdentifier::optionalBlockPos,
 			ByteBufCodecs.INT,
@@ -39,32 +39,19 @@ public record GeneratedRogueLootTableIdentifier(
 			GeneratedRogueLootTableIdentifier::new
 	);
 
-	public GeneratedRogueLootTableIdentifier(
-			final Identifier identifier,
-			Optional<BlockPos> optionalBlockPos,
-			final int rolls,
-			final int minChoices,
-			final int maxChoices
-	) {
-		this.identifier = identifier;
-		this.optionalBlockPos = optionalBlockPos;
-		this.rolls = rolls;
-		this.minChoices = minChoices;
-		this.maxChoices = maxChoices;
-	}
-
+	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
 			return true;
 		}
 		if (obj instanceof GeneratedRogueLootTableIdentifier(
-				Identifier identifier1,
+				Identifier rogueLootTableIdentifier1,
 				Optional<BlockPos> optionalBlockPos1,
 				int rolls1,
 				int choices,
 				int maxChoices1
 		)) {
-			return this.identifier.equals(identifier1)
+			return this.rogueLootTableIdentifier.equals(rogueLootTableIdentifier1)
 					&& this.optionalBlockPos.equals(optionalBlockPos1)
 					&& this.rolls == rolls1
 					&& this.minChoices == choices

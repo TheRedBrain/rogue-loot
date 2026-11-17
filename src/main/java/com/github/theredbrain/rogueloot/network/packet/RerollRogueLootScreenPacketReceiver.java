@@ -1,7 +1,6 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
-import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -24,8 +23,7 @@ public class RerollRogueLootScreenPacketReceiver implements ServerPlayNetworking
 		Optional<ItemStack> rerollCost = payload.rerollCost();
 
 		if (rerollCost.isEmpty() || PlayerHelper.payItemCost(serverPlayer, rerollCost.get())) {
-			DataAttachmentHelper.removeGeneratedRogueLoot(serverLevel, generatedRogueLootTableIdentifier, serverPlayer);
-
+			RogueLootTableHelper.removeGeneratedRogueLootEntries(serverLevel, serverPlayer, generatedRogueLootTableIdentifier);
 			RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, generatedRogueLootTableIdentifier, itemStack);
 		}
 	}

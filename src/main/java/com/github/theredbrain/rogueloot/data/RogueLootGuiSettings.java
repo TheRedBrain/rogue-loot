@@ -12,7 +12,7 @@ public record RogueLootGuiSettings(
 		List<ChatFormatting> requirementsNotMetFormatting,
 		List<ChatFormatting> requirementsMetFormatting
 ) {
-	public static final RogueLootGuiSettings DEFAULT = new RogueLootGuiSettings("", "", List.of(), List.of()/*-6250336, true*/);
+	public static final RogueLootGuiSettings DEFAULT = new RogueLootGuiSettings("", "", List.of(), List.of());
 	public static final Codec<RogueLootGuiSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.optionalFieldOf("background_texture_path", "").forGetter(x -> x.backgroundTexturePath),
 			Codec.STRING.optionalFieldOf("entries_asset_path_addition", "").forGetter(x -> x.entriesAssetPathAddition),
