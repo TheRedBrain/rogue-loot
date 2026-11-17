@@ -1,12 +1,18 @@
 package com.github.theredbrain.rogueloot.data;
 
+import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStackTemplate;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +52,19 @@ public record RogueLootTableEntry(
 		this.labelText = labelText != null ? labelText : "";
 		this.rarityIdString = rarityIdString;
 		this.allowBanishing = allowBanishing;
+	}
+
+	@Nullable
+	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {
+		RogueLootTableEntry rogueLootTableEntry = null;
+		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
+		if (optionalRogueLootTableEntryRegistry.isPresent()) {
+			Optional<Holder.Reference<RogueLootTableEntry>> optionalRogueLootTableEntryReference = optionalRogueLootTableEntryRegistry.get().get(identifier);
+			if (optionalRogueLootTableEntryReference.isPresent()) {
+				rogueLootTableEntry = optionalRogueLootTableEntryReference.get().value();
+			}
+		}
+		return rogueLootTableEntry;
 	}
 
 	public record RogueLootTableEntryComponent(

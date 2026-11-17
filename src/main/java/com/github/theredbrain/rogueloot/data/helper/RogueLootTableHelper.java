@@ -10,15 +10,12 @@ import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
-import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
-import net.minecraft.core.Registry;
-import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +23,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +31,7 @@ import java.util.Optional;
 public class RogueLootTableHelper {
 
 	public static void supplyRogueLootTable(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final Optional<ItemStack> itemStack) {
-		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
+		RogueLootTable rogueLootTable = RogueLootTable.getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
 		if (rogueLootTable == null) {
 			return;
 		}
@@ -63,7 +59,7 @@ public class RogueLootTableHelper {
 	}
 
 	private static void openRogueLootScreen(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, List<Identifier> generatedRogueLootEntries, final Optional<ItemStack> itemStack) {
-		RogueLootTable rogueLootTable = getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
+		RogueLootTable rogueLootTable = RogueLootTable.getRogueLootTable(serverLevel.registryAccess(), generatedRogueLootTableIdentifier.rogueLootTableIdentifier());
 		if (rogueLootTable == null) {
 			return;
 		}
@@ -139,7 +135,7 @@ public class RogueLootTableHelper {
 			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
 			int weight = 1;
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
-				RogueLootTableEntryRarity rarity = getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
 				if (rarity != null) {
 					weight = rogueLootTable.rarityOverrides().getOrDefault(rarityIdentifier, rarity.defaultWeight());
 				}
@@ -187,7 +183,7 @@ public class RogueLootTableHelper {
 
 		Identifier rogueLootGuiSettingsIdentifier = Identifier.tryParse(rogueLootTable.rogueLootGuiSettingsIdString());
 		if (!rogueLootTable.rogueLootGuiSettingsIdString().isEmpty() && rogueLootGuiSettingsIdentifier != null) {
-			RogueLootGuiSettings rogueLootGuiSettings = getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootGuiSettingsIdentifier);
+			RogueLootGuiSettings rogueLootGuiSettings = RogueLootGuiSettings.getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootGuiSettingsIdentifier);
 			if (rogueLootGuiSettings != null) {
 				backgroundTexturePath = rogueLootGuiSettings.backgroundTexturePath();
 				if (!rogueLootGuiSettings.entriesAssetPathAddition().isEmpty()) {
@@ -201,7 +197,7 @@ public class RogueLootTableHelper {
 		List<GeneratedRogueLoot.VisibleRogueLootTableEntry> visibleRogueLootTableEntries = new ArrayList<>();
 
 		for (Identifier entryIdentifier : unlockedEntries) {
-			RogueLootTableEntry rogueLootTableEntry = getRogueLootTableEntry(serverLevel.registryAccess(), entryIdentifier);
+			RogueLootTableEntry rogueLootTableEntry = RogueLootTableEntry.getRogueLootTableEntry(serverLevel.registryAccess(), entryIdentifier);
 			if (rogueLootTableEntry == null) {
 				continue;
 			}
@@ -215,7 +211,7 @@ public class RogueLootTableHelper {
 			String assetPathAddition = "";
 			List<ChatFormatting> labelFormatting = List.of();
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
-				RogueLootTableEntryRarity rarity = getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
 				if (rarity != null) {
 					if (!rarity.assetPathAddition().isEmpty()) {
 						assetPathAddition = rarity.assetPathAddition() + "/";
@@ -246,58 +242,6 @@ public class RogueLootTableHelper {
 				rogueLootTable.enableEntryBanishing(),
 				rogueLootTable.banishingCost()
 		);
-	}
-
-	@Nullable
-	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {
-		RogueLootTable rogueLootTable = null;
-		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
-		if (optionalRogueLootTableRegistry.isPresent()) {
-			Optional<Holder.Reference<RogueLootTable>> optionalRogueLootTableReference = optionalRogueLootTableRegistry.get().get(identifier);
-			if (optionalRogueLootTableReference.isPresent()) {
-				rogueLootTable = optionalRogueLootTableReference.get().value();
-			}
-		}
-		return rogueLootTable;
-	}
-
-	@Nullable
-	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {
-		RogueLootTableEntry rogueLootTableEntry = null;
-		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
-		if (optionalRogueLootTableEntryRegistry.isPresent()) {
-			Optional<Holder.Reference<RogueLootTableEntry>> optionalRogueLootTableEntryReference = optionalRogueLootTableEntryRegistry.get().get(identifier);
-			if (optionalRogueLootTableEntryReference.isPresent()) {
-				rogueLootTableEntry = optionalRogueLootTableEntryReference.get().value();
-			}
-		}
-		return rogueLootTableEntry;
-	}
-
-	@Nullable
-	public static RogueLootTableEntryRarity getRogueLootTableEntryRarity(final RegistryAccess registryAccess, final Identifier identifier) {
-		RogueLootTableEntryRarity rogueLootTableEntryRarity = null;
-		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
-		if (optionalRogueLootTableEntryRarityRegistry.isPresent()) {
-			Optional<Holder.Reference<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityReference = optionalRogueLootTableEntryRarityRegistry.get().get(identifier);
-			if (optionalRogueLootTableEntryRarityReference.isPresent()) {
-				rogueLootTableEntryRarity = optionalRogueLootTableEntryRarityReference.get().value();
-			}
-		}
-		return rogueLootTableEntryRarity;
-	}
-
-	@Nullable
-	public static RogueLootGuiSettings getRogueLootGuiSettings(final RegistryAccess registryAccess, final Identifier identifier) {
-		RogueLootGuiSettings rogueLootTableEntryRarity = null;
-		Optional<Registry<RogueLootGuiSettings>> optionalRogueLootGuiSettingsRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY);
-		if (optionalRogueLootGuiSettingsRegistry.isPresent()) {
-			Optional<Holder.Reference<RogueLootGuiSettings>> optionalRogueLootGuiSettingsReference = optionalRogueLootGuiSettingsRegistry.get().get(identifier);
-			if (optionalRogueLootGuiSettingsReference.isPresent()) {
-				rogueLootTableEntryRarity = optionalRogueLootGuiSettingsReference.get().value();
-			}
-		}
-		return rogueLootTableEntryRarity;
 	}
 
 }

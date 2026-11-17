@@ -44,7 +44,7 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 		}
 
 		for (Identifier identifier : chosenRogueLootEntries) {
-			RogueLootTableEntry rogueLootTableEntry = RogueLootTableHelper.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
+			RogueLootTableEntry rogueLootTableEntry = RogueLootTableEntry.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
 			if (rogueLootTableEntry != null) {
 				for (RogueLootTableEntry.RogueLootTableEntryComponent component : rogueLootTableEntry.rogueLootTableEntryComponents()) {
 					if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ITEM_STACK) {

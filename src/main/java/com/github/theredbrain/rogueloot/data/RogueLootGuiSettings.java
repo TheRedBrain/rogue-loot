@@ -1,10 +1,17 @@
 package com.github.theredbrain.rogueloot.data;
 
+import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Optional;
 
 public record RogueLootGuiSettings(
 		String backgroundTexturePath,
@@ -31,4 +38,18 @@ public record RogueLootGuiSettings(
 		this.requirementsNotMetFormatting = requirementsNotMetFormatting != null ? requirementsNotMetFormatting : List.of();
 		this.requirementsMetFormatting = requirementsMetFormatting != null ? requirementsMetFormatting : List.of();
 	}
+
+	@Nullable
+	public static RogueLootGuiSettings getRogueLootGuiSettings(final RegistryAccess registryAccess, final Identifier identifier) {
+		RogueLootGuiSettings rogueLootTableEntryRarity = null;
+		Optional<Registry<RogueLootGuiSettings>> optionalRogueLootGuiSettingsRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY);
+		if (optionalRogueLootGuiSettingsRegistry.isPresent()) {
+			Optional<Holder.Reference<RogueLootGuiSettings>> optionalRogueLootGuiSettingsReference = optionalRogueLootGuiSettingsRegistry.get().get(identifier);
+			if (optionalRogueLootGuiSettingsReference.isPresent()) {
+				rogueLootTableEntryRarity = optionalRogueLootGuiSettingsReference.get().value();
+			}
+		}
+		return rogueLootTableEntryRarity;
+	}
+
 }

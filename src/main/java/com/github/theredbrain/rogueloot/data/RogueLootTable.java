@@ -3,10 +3,14 @@ package com.github.theredbrain.rogueloot.data;
 import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistryCodecs;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
+import org.jspecify.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,4 +52,18 @@ public record RogueLootTable(
 		this.enableEntryBanishing = enableEntryBanishing;
 		this.banishingCost = banishingCost;
 	}
+
+	@Nullable
+	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {
+		RogueLootTable rogueLootTable = null;
+		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
+		if (optionalRogueLootTableRegistry.isPresent()) {
+			Optional<Holder.Reference<RogueLootTable>> optionalRogueLootTableReference = optionalRogueLootTableRegistry.get().get(identifier);
+			if (optionalRogueLootTableReference.isPresent()) {
+				rogueLootTable = optionalRogueLootTableReference.get().value();
+			}
+		}
+		return rogueLootTable;
+	}
+
 }
