@@ -1,7 +1,24 @@
 {
   "asset_path_addition": "rare",
   "default_weight": 5,
-  "label_formatting": [
-    "aqua"
-  ]
+  "banished_label": {
+    "formatting": [
+      "aqua"
+    ]
+  },
+  "default_label": {
+    "formatting": [
+      "aqua"
+    ]
+  },
+  "locked_label": {
+    "formatting": [
+      "aqua"
+    ]
+  },
+  "selected_label": {
+    "formatting": [
+      "aqua"
+    ]
+  }
 }

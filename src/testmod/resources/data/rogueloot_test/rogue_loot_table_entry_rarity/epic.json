@@ -1,7 +1,24 @@
 {
   "asset_path_addition": "epic",
   "default_weight": 1,
-  "label_formatting": [
-    "light_purple"
-  ]
+  "banished_label": {
+    "formatting": [
+      "light_purple"
+    ]
+  },
+  "default_label": {
+    "formatting": [
+      "light_purple"
+    ]
+  },
+  "locked_label": {
+    "formatting": [
+      "light_purple"
+    ]
+  },
+  "selected_label": {
+    "formatting": [
+      "light_purple"
+    ]
+  }
 }

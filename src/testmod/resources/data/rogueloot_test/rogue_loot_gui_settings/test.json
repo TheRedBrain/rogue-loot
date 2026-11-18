@@ -1,10 +1,14 @@
 {
   "background_texture_path": "",
   "entries_asset_path_addition": "",
-  "requirements_not_met_formatting": [
-    "red"
-  ],
-  "requirements_met_formatting": [
-    "green"
+  "confirmation_requirements_not_met": {
+    "formatting": [
+      "red"
   ]
+},
+  "confirmation_requirements_met": {
+    "formatting": [
+    "green"
+    ]
+  }
 }
