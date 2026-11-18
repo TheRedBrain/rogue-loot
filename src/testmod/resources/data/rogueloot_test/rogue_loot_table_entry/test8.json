@@ -5,6 +5,14 @@
       "item_stack": {
         "id": "minecraft:stick"
       }
+    },
+    {
+      "type": "rogueloot:apply_mob_effect",
+      "mob_effect_instance": {
+        "id": "minecraft:strength",
+        "amplifier": 0,
+        "duration": 300
+      }
     }
   ],
   "label_text": "Test 8"
