@@ -1,0 +1,11 @@
+{
+  "components": [
+    {
+      "type": "item_stack",
+      "item_stack": {
+        "id": "minecraft:stick"
+      }
+    }
+  ],
+  "label_text": "Test 10"
+}

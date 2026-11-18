@@ -35,7 +35,7 @@ import java.util.Optional;
 @Environment(value = EnvType.CLIENT)
 public class RogueLootGUIScreen extends Screen {
 
-	private static final int MAX_OPTIONS_AMOUNT = 6;
+	private static final int MAX_OPTIONS_AMOUNT = 12;
 	private final GeneratedRogueLoot generatedRogueLoot;
 	private final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier;
 	private final RogueLootGuiSettings rogueLootGuiSettings;
@@ -50,6 +50,12 @@ public class RogueLootGUIScreen extends Screen {
 	private Button selectLootOption3Button;
 	private Button selectLootOption4Button;
 	private Button selectLootOption5Button;
+	private Button selectLootOption6Button;
+	private Button selectLootOption7Button;
+	private Button selectLootOption8Button;
+	private Button selectLootOption9Button;
+	private Button selectLootOption10Button;
+	private Button selectLootOption11Button;
 	private Button rerollButton;
 	private Button confirmButton;
 	private CycleButton<Boolean> toggleBanishingButton;
@@ -266,12 +272,18 @@ public class RogueLootGUIScreen extends Screen {
 		);
 		// endregion banish
 
-		this.selectLootOption0Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 - 81, 50, 50, 50, button -> this.selectLootOption(button, 0)));
-		this.selectLootOption1Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 - 25, 50, 50, 50, button -> this.selectLootOption(button, 1)));
-		this.selectLootOption2Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 + 31, 50, 50, 50, button -> this.selectLootOption(button, 2)));
-		this.selectLootOption3Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 - 81, 106, 50, 50, button -> this.selectLootOption(button, 3)));
-		this.selectLootOption4Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 - 25, 106, 50, 50, button -> this.selectLootOption(button, 4)));
-		this.selectLootOption5Button = this.addRenderableWidget(new LootOptionButton(this.width / 2 + 31, 106, 50, 50, button -> this.selectLootOption(button, 5)));
+		this.selectLootOption0Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 0)));
+		this.selectLootOption1Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 1)));
+		this.selectLootOption2Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 2)));
+		this.selectLootOption3Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 3)));
+		this.selectLootOption4Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 4)));
+		this.selectLootOption5Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 5)));
+		this.selectLootOption6Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 6)));
+		this.selectLootOption7Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 7)));
+		this.selectLootOption8Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 8)));
+		this.selectLootOption9Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 9)));
+		this.selectLootOption10Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 10)));
+		this.selectLootOption11Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 11)));
 
 		// region reroll
 		MutableComponent rerollButtonLabelComponent = this.rerollAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.reroll.simple") : this.rerollAttempts == 0 ? Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts) : this.rerollAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.reroll.singular", this.rerollAttempts) : Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts);
@@ -318,18 +330,14 @@ public class RogueLootGUIScreen extends Screen {
 						.build()
 		);
 
-		// 7 + 50 + 6 + 50 + 6 + 50 + 7
-		// 7 + 50 + 6 + + 25 + 25 + 6 + 50 + 7
-		// 35 + 50 + 3 + 3 + 50 + 35
-
-		// -81 -25 +31
-		// -53 +3
-		// -25
-
-		// 21 + 50 + 3 + 3 + 50
-		this.setInitialFocus(this.selectLootOption0Button);
 		this.initWidgets();
 		this.updateWidgets();
+
+		if (this.selectLootOption0Button.visible) {
+			this.setInitialFocus(this.selectLootOption0Button);
+		} else {
+			super.setInitialFocus();
+		}
 	}
 
 	private void initWidgets() {
@@ -366,7 +374,11 @@ public class RogueLootGUIScreen extends Screen {
 		for (int i = 0; i < MAX_OPTIONS_AMOUNT; i++) {
 			Button button = this.getLootOptionButton(i);
 
-			button.setPosition(buttonPositions[i][0], buttonPositions[i][1]);
+			if (i < buttonPositions.length) {
+				button.setPosition(buttonPositions[i][0], buttonPositions[i][1]);
+			} else {
+				button.setPosition(0, 0);
+			}
 			button.visible = false;
 
 			if (visibleOptionsAmount >= i + 1) {
@@ -377,12 +389,18 @@ public class RogueLootGUIScreen extends Screen {
 
 	private Button getLootOptionButton(int index) {
 		return switch (index) {
-			case 0 -> this.selectLootOption0Button;
 			case 1 -> this.selectLootOption1Button;
 			case 2 -> this.selectLootOption2Button;
 			case 3 -> this.selectLootOption3Button;
 			case 4 -> this.selectLootOption4Button;
-			default -> this.selectLootOption5Button;
+			case 5 -> this.selectLootOption5Button;
+			case 6 -> this.selectLootOption6Button;
+			case 7 -> this.selectLootOption7Button;
+			case 8 -> this.selectLootOption8Button;
+			case 9 -> this.selectLootOption9Button;
+			case 10 -> this.selectLootOption10Button;
+			case 11 -> this.selectLootOption11Button;
+			default -> this.selectLootOption0Button;
 		};
 	}
 
@@ -450,17 +468,82 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private int[][] getButtonPositions(final int visibleOptionsAmount) {
+
+		// x
+		int odd_columns_1 = this.width / 2 - 193;
+		int odd_columns_2 = this.width / 2 - 137;
+		int odd_columns_3 = this.width / 2 - 81;
+		int odd_columns_4 = this.width / 2 - 25;
+		int odd_columns_5 = this.width / 2 + 31;
+		int odd_columns_6 = this.width / 2 + 87;
+		int odd_columns_7 = this.width / 2 + 143;
+		
+		int even_columns_1 = this.width / 2 - 165;
+		int even_columns_2 = this.width / 2 - 109;
+		int even_columns_3 = this.width / 2 - 53;
+		int even_columns_4 = this.width / 2 + 3;
+		int even_columns_5 = this.width / 2 + 59;
+		int even_columns_6 = this.width / 2 + 115;
+
+		// y
+		int odd_rows_1 = this.height / 2 - 81;
+		int odd_rows_2 = this.height / 2 - 25;
+		int odd_rows_3 = this.height / 2 + 31;
+		
+		int even_rows_1 = this.height / 2 - 53;
+		int even_rows_2 = this.height / 2 + 3;
+
 		return switch (visibleOptionsAmount) {
-			case 1 -> new int[][]{{this.width / 2 - 25, 78}, {0, 0}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
-			case 2 -> new int[][]{{this.width / 2 - 53, 78}, {this.width / 2 + 3, 78}, {0, 0}, {0, 0}, {0, 0}, {0, 0}};
-			case 3 ->
-					new int[][]{{this.width / 2 - 81, 78}, {this.width / 2 - 25, 78}, {this.width / 2 + 31, 78}, {0, 0}, {0, 0}, {0, 0}};
-			case 4 ->
-					new int[][]{{this.width / 2 - 53, 50}, {this.width / 2 + 3, 50}, {this.width / 2 - 53, 106}, {this.width / 2 + 3, 106}, {0, 0}, {0, 0}};
-			case 5 ->
-					new int[][]{{this.width / 2 - 81, 50}, {this.width / 2 - 25, 50}, {this.width / 2 + 31, 50}, {this.width / 2 - 53, 106}, {this.width / 2 + 3, 106}, {0, 0}};
-			default ->
-					new int[][]{{this.width / 2 - 81, 50}, {this.width / 2 - 25, 50}, {this.width / 2 + 31, 50}, {this.width / 2 - 81, 106}, {this.width / 2 - 25, 106}, {this.width / 2 + 31, 106}};
+			case 1 -> new int[][]{
+					{odd_columns_4, odd_rows_2}
+			};
+			case 2 -> new int[][]{
+					{even_columns_3, odd_rows_2}, {even_columns_4, odd_rows_2}
+			};
+			case 3 -> new int[][]{
+					{odd_columns_3, odd_rows_2}, {odd_columns_4, odd_rows_2}, {odd_columns_5, odd_rows_2}
+			};
+			case 4 -> new int[][]{
+					{even_columns_3, even_rows_1}, {even_columns_4, even_rows_1},
+					{even_columns_3, even_rows_2}, {even_columns_4, even_rows_2}
+			};
+			case 5 -> new int[][]{
+					{odd_columns_3, even_rows_1}, {odd_columns_4, even_rows_1}, {odd_columns_5, even_rows_1},
+					{even_columns_3, even_rows_2}, {even_columns_4, even_rows_2}
+			};
+			case 6 -> new int[][]{
+					{odd_columns_3, even_rows_1}, {odd_columns_4, even_rows_1}, {odd_columns_5, even_rows_1},
+					{odd_columns_3, even_rows_2}, {odd_columns_4, even_rows_2}, {odd_columns_5, even_rows_2}
+			};
+			case 7 -> new int[][]{
+					{odd_columns_3, even_rows_1}, {odd_columns_4, even_rows_1}, {odd_columns_5, even_rows_1},
+					{even_columns_2, even_rows_2}, {even_columns_3, even_rows_2}, {even_columns_4, even_rows_2}, {even_columns_5, even_rows_2}
+			};
+			case 8 -> new int[][]{
+					{even_columns_2, even_rows_1}, {even_columns_3, even_rows_1}, {even_columns_4, even_rows_1}, {even_columns_5, even_rows_1},
+					{even_columns_2, even_rows_2}, {even_columns_3, even_rows_2}, {even_columns_4, even_rows_2}, {even_columns_5, even_rows_2}
+			};
+			case 9 -> new int[][]{
+					{odd_columns_3, odd_rows_1}, {odd_columns_4, odd_rows_1}, {odd_columns_5, odd_rows_1},
+					{odd_columns_3, odd_rows_2}, {odd_columns_4, odd_rows_2}, {odd_columns_5, odd_rows_2},
+					{odd_columns_3, odd_rows_3}, {odd_columns_4, odd_rows_3}, {odd_columns_5, odd_rows_3}
+			};
+			case 10 -> new int[][]{
+					{odd_columns_3, odd_rows_1}, {odd_columns_4, odd_rows_1}, {odd_columns_5, odd_rows_1},
+					{even_columns_2, odd_rows_2}, {even_columns_3, odd_rows_2}, {even_columns_4, odd_rows_2}, {even_columns_5, odd_rows_2},
+					{odd_columns_3, odd_rows_3}, {odd_columns_4, odd_rows_3}, {odd_columns_5, odd_rows_3}
+			};
+			case 11 -> new int[][]{
+					{even_columns_2, odd_rows_1}, {even_columns_3, odd_rows_1}, {even_columns_4, odd_rows_1}, {even_columns_5, odd_rows_1},
+					{odd_columns_3, odd_rows_2}, {odd_columns_4, odd_rows_2}, {odd_columns_5, odd_rows_2},
+					{even_columns_2, odd_rows_3}, {even_columns_3, odd_rows_3}, {even_columns_4, odd_rows_3}, {even_columns_5, odd_rows_3}
+			};
+			case 12 -> new int[][]{
+					{even_columns_2, odd_rows_1}, {even_columns_3, odd_rows_1}, {even_columns_4, odd_rows_1}, {even_columns_5, odd_rows_1},
+					{even_columns_2, odd_rows_2}, {even_columns_3, odd_rows_2}, {even_columns_4, odd_rows_2}, {even_columns_5, odd_rows_2},
+					{even_columns_2, odd_rows_3}, {even_columns_3, odd_rows_3}, {even_columns_4, odd_rows_3}, {even_columns_5, odd_rows_3}
+			};
+			default -> new int[][]{};
 		};
 	}
 
