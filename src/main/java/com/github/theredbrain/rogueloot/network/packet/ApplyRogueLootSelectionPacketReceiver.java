@@ -1,19 +1,17 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
-import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.InteractiveRogueLootBlock;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.RogueLootTableEntryComponentType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import java.util.List;
@@ -45,25 +43,10 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 
 		for (Identifier identifier : chosenRogueLootEntries) {
 			RogueLootTableEntry rogueLootTableEntry = RogueLootTableEntry.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
+
 			if (rogueLootTableEntry != null) {
-				for (RogueLootTableEntry.RogueLootTableEntryComponent component : rogueLootTableEntry.rogueLootTableEntryComponents()) {
-					if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ITEM_STACK) {
-						RogueLoot.info("offer item stack");
-						Optional<ItemStackTemplate> optionalItemStackTemplate = component.itemStackTemplate();
-						if (optionalItemStackTemplate.isPresent()) {
-							serverPlayer.getInventory().placeItemBackInInventory(optionalItemStackTemplate.get().create());
-						}
-					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.ADVANCEMENT) {
-						RogueLoot.info("offer advancement");
-					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.LOOT_TABLE) {
-						RogueLoot.info("offer loot table");
-					} else if (component.type() == RogueLootTableEntry.RogueLootTableEntryComponent.Type.MOB_EFFECT_INSTANCE) {
-						RogueLoot.info("offer mob effect");
-						Optional<MobEffectInstance> optionalMobEffectInstance = component.mobEffectInstance();
-						if (optionalMobEffectInstance.isPresent()) {
-							serverPlayer.addEffect(new MobEffectInstance(optionalMobEffectInstance.get()));
-						}
-					}
+				for (RogueLootTableEntryComponentType component : rogueLootTableEntry.rogueLootTableEntryComponentTypes()) {
+					component.apply(serverLevel, serverPlayer);
 				}
 			}
 		}

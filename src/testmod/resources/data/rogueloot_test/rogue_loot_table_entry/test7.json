@@ -1,12 +1,10 @@
 {
   "components": [
     {
-      "type": "mob_effect_instance",
-      "mob_effect": {
-        "id": "minecraft:strength",
-        "amplifier": 0,
-        "duration": 300
-      }
+      "type": "rogueloot:apply_mob_effect",
+      "id": "minecraft:strength",
+      "amplifier": 0,
+      "duration": 300
     }
   ],
   "display_stack": {

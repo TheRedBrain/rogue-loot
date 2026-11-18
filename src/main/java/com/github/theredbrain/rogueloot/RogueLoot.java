@@ -8,6 +8,7 @@ import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerEvents;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerPackets;
+import com.github.theredbrain.rogueloot.registry.RogueLootTableEntryComponentTypes;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resources.Identifier;
@@ -50,6 +51,7 @@ public class RogueLoot implements ModInitializer {
 		LOGGER.info("Rogue Like Loot!");
 
 		RogueLootRegistries.init();
+		RogueLootTableEntryComponentTypes.init();
 		RogueLootServerEvents.initializeEvents();
 		RogueLootServerPackets.init();
 
