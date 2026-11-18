@@ -24,7 +24,9 @@ public record RogueLootTableEntry(
 		String iconTexturePath,
 		String labelText,
 		String rarityIdString,
-		boolean allowBanishing
+		boolean allowBanishing,
+		boolean allowLocking,
+		boolean isPermanent
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
@@ -33,26 +35,10 @@ public record RogueLootTableEntry(
 			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
 			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString),
-			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing)
+			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing),
+			Codec.BOOL.optionalFieldOf("allow_locking", true).forGetter(x -> x.allowLocking),
+			Codec.BOOL.optionalFieldOf("is_permanent", false).forGetter(x -> x.isPermanent)
 	).apply(instance, RogueLootTableEntry::new));
-
-	public RogueLootTableEntry(
-			final Optional<ContextAwarePredicate> unlockPredicate,
-			final List<RogueLootTableEntryComponent> rogueLootTableEntryComponents,
-			final Optional<ItemStackTemplate> displayStack,
-			final String iconTexturePath,
-			final String labelText,
-			final String rarityIdString,
-			final boolean allowBanishing
-	) {
-		this.unlockPredicate = unlockPredicate;
-		this.rogueLootTableEntryComponents = rogueLootTableEntryComponents != null ? rogueLootTableEntryComponents : List.of();
-		this.displayStack = displayStack;
-		this.iconTexturePath = iconTexturePath != null ? iconTexturePath : "";
-		this.labelText = labelText != null ? labelText : "";
-		this.rarityIdString = rarityIdString;
-		this.allowBanishing = allowBanishing;
-	}
 
 	@Nullable
 	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {

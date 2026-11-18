@@ -67,6 +67,7 @@ public class RogueLootTableHelper {
 				generatedRogueLootTableIdentifier,
 				calculateRerollAttempts(serverPlayer, rogueLootTable),
 				calculateBanishingAttempts(serverPlayer, rogueLootTable),
+				calculateLockingAttempts(serverPlayer, rogueLootTable),
 				itemStack
 		));
 	}
@@ -111,7 +112,22 @@ public class RogueLootTableHelper {
 		return banishingAttempts;
 	}
 
+	private static int calculateLockingAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
+
+		int lockingAttempts = -1;
+		if (rogueLootTable.enableEntryLocking() && rogueLootTable.lockingCost().isPresent()) {
+			ItemStack lockingCostStack = rogueLootTable.lockingCost().get().create();
+
+			if (!lockingCostStack.isEmpty()) {
+				lockingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, lockingCostStack);
+			}
+		}
+		return lockingAttempts;
+	}
+
 	public static List<Identifier> generateRogueLootEntries(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final ServerPlayer serverPlayer, final int rolls) {
+
+		List<Identifier> generatedRogueLootEntries = new ArrayList<>();
 
 		List<MutablePair<Integer, Identifier>> tempList = new ArrayList<>();
 		int totalWeight = 0;
@@ -131,6 +147,17 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
+			if (DataAttachmentHelper.isRogueLootEntryLocked(serverPlayer, Optional.of(entryIdentifier))) {
+				generatedRogueLootEntries.add(entryIdentifier);
+				DataAttachmentHelper.unlockRogueLootEntry(serverPlayer, entryIdentifier);
+				continue;
+			}
+
+			if (rogueLootTableEntry.isPermanent()) {
+				generatedRogueLootEntries.add(entryIdentifier);
+				continue;
+			}
+
 			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
 			int weight = 1;
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
@@ -146,8 +173,6 @@ public class RogueLootTableHelper {
 		if (tempList.size() < rolls) {
 			RogueLoot.info("generated rogue loot table has fewer unlocked entries than rolls requested");
 		}
-
-		List<Identifier> generatedRogueLootEntries = new ArrayList<>();
 
 		int chosenWeight;
 		int index;
@@ -212,6 +237,7 @@ public class RogueLootTableHelper {
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
 					rogueLootTableEntry.allowBanishing(),
+					rogueLootTableEntry.allowLocking(),
 					rogueLootTableEntryRarity,
 					Optional.of(entryIdentifier)
 			));
@@ -225,7 +251,9 @@ public class RogueLootTableHelper {
 				rogueLootTable.enableRerolling(),
 				rogueLootTable.rerollCost(),
 				rogueLootTable.enableEntryBanishing(),
-				rogueLootTable.banishingCost()
+				rogueLootTable.banishingCost(),
+				rogueLootTable.enableEntryLocking(),
+				rogueLootTable.lockingCost()
 		);
 	}
 

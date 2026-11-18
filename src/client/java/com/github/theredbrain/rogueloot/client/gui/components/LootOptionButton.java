@@ -12,34 +12,41 @@ import java.util.Optional;
 
 public class LootOptionButton extends Button {
 
-	private Identifier disabledHighlightedTextureId;
-	private Identifier disabledTextureId;
+	private Identifier banishedHighlightedTextureId;
+	private Identifier banishedTextureId;
+	private Identifier defaultHighlightedTextureId;
+	private Identifier defaultTextureId;
+	private Identifier lockedHighlightedTextureId;
+	private Identifier lockedTextureId;
 	private Identifier selectedHighlightedTextureId;
 	private Identifier selectedTextureId;
-	private Identifier unselectedHighlightedTextureId;
-	private Identifier unselectedTextureId;
 	private Component banishedMessage;
 	private Component defaultMessage;
+	private Component lockedMessage;
 	private Component selectedMessage;
 	private Optional<Identifier> iconTexture = Optional.empty();
 	private Optional<ItemStackTemplate> displayStack = Optional.empty();
 	private boolean selected;
+	private boolean locked;
 
 	public LootOptionButton(final int x, final int y, final int width, final int height, final OnPress onPress) {
 		super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 		setTextureIds("");
 		this.banishedMessage = Component.empty();
 		this.defaultMessage = Component.empty();
+		this.lockedMessage = Component.empty();
 		this.selectedMessage = Component.empty();
 	}
 
 	public void setTextureIds(final String string) {
-		this.disabledHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "disabled_highlighted");
-		this.disabledTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "disabled");
+		this.banishedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "banished_highlighted");
+		this.banishedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "banished");
+		this.defaultHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "default_highlighted");
+		this.defaultTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "default");
+		this.lockedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "locked_highlighted");
+		this.lockedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "locked");
 		this.selectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected_highlighted");
 		this.selectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected");
-		this.unselectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "unselected_highlighted");
-		this.unselectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "unselected");
 	}
 
 	public void setIconTexture(final Optional<Identifier> iconTexture) {
@@ -58,6 +65,14 @@ public class LootOptionButton extends Button {
 		this.selected = selected;
 	}
 
+	public boolean isLocked() {
+		return this.locked;
+	}
+
+	public void setLocked(final boolean locked) {
+		this.locked = locked;
+	}
+
 	public void setBanishedMessage(Component banishedMessage) {
 		this.banishedMessage = banishedMessage;
 	}
@@ -66,13 +81,17 @@ public class LootOptionButton extends Button {
 		this.defaultMessage = defaultMessage;
 	}
 
+	public void setLockedMessage(Component lockedMessage) {
+		this.lockedMessage = lockedMessage;
+	}
+
 	public void setSelectedMessage(Component selectedMessage) {
 		this.selectedMessage = selectedMessage;
 	}
 
 	@Override
 	public Component getMessage() {
-		return this.active ? this.selected ? this.selectedMessage : this.defaultMessage : this.banishedMessage;
+		return this.active ? (this.selected ? this.selectedMessage : this.defaultMessage) : (this.locked ? this.lockedMessage : this.banishedMessage);
 	}
 
 	@Override
@@ -80,9 +99,9 @@ public class LootOptionButton extends Button {
 
 		Identifier textureId;
 		if (this.isHoveredOrFocused()) {
-			textureId = this.active ? this.selected ? this.selectedHighlightedTextureId : this.unselectedHighlightedTextureId : this.disabledHighlightedTextureId;
+			textureId = this.active ? (this.selected ? this.selectedHighlightedTextureId : this.defaultHighlightedTextureId) : (this.locked ? this.lockedHighlightedTextureId : this.banishedHighlightedTextureId);
 		} else {
-			textureId = this.active ? this.selected ? this.selectedTextureId : this.unselectedTextureId : this.disabledTextureId;
+			textureId = this.active ? (this.selected ? this.selectedTextureId : this.defaultTextureId) : (this.locked ? this.lockedTextureId : this.banishedTextureId);
 		}
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);

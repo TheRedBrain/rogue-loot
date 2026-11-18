@@ -23,7 +23,9 @@ public record RogueLootTable(
 		boolean enableRerolling,
 		Optional<ItemStackTemplate> rerollCost,
 		boolean enableEntryBanishing,
-		Optional<ItemStackTemplate> banishingCost
+		Optional<ItemStackTemplate> banishingCost,
+		boolean enableEntryLocking,
+		Optional<ItemStackTemplate> lockingCost
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RegistryCodecs.homogeneousList(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
@@ -32,26 +34,10 @@ public record RogueLootTable(
 			Codec.BOOL.optionalFieldOf("enable_rerolling", false).forGetter(x -> x.enableRerolling),
 			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
 			Codec.BOOL.optionalFieldOf("enable_entry_banishing", false).forGetter(x -> x.enableEntryBanishing),
-			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost)
+			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost),
+			Codec.BOOL.optionalFieldOf("enable_entry_locking", false).forGetter(x -> x.enableEntryLocking),
+			ItemStackTemplate.CODEC.optionalFieldOf("locking_cost").forGetter(x -> x.lockingCost)
 	).apply(instance, RogueLootTable::new));
-
-	public RogueLootTable(
-			final HolderSet<RogueLootTableEntry> rogueLootTableEntries,
-			final Map<Identifier, Integer> rarityOverrides,
-			final String rogueLootGuiSettingsIdString,
-			boolean enableRerolling,
-			Optional<ItemStackTemplate> rerollCost,
-			final boolean enableEntryBanishing,
-			final Optional<ItemStackTemplate> banishingCost
-	) {
-		this.rogueLootTableEntries = rogueLootTableEntries;
-		this.rarityOverrides = rarityOverrides != null ? new HashMap<>(rarityOverrides) : Map.of();
-		this.rogueLootGuiSettingsIdString = rogueLootGuiSettingsIdString != null ? rogueLootGuiSettingsIdString : "";
-		this.enableRerolling = enableRerolling;
-		this.rerollCost = rerollCost;
-		this.enableEntryBanishing = enableEntryBanishing;
-		this.banishingCost = banishingCost;
-	}
 
 	@Nullable
 	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {

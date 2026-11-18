@@ -13,6 +13,7 @@ public class OpenRogueLootScreenPacketReceiver implements ClientPlayNetworking.P
 				payload.generatedRogueLootTableIdentifier(),
 				payload.rerollAttempts(),
 				payload.banishingAttempts(),
+				payload.lockingAttempts(),
 				payload.itemStack()
 		));
 	}

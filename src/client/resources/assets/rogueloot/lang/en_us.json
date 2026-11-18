@@ -32,6 +32,10 @@
 	"gui.rogue_loot_screen.banish.singular": "Banish (%s Attempt)",
 	"gui.rogue_loot_screen.banish.plural": "Banish (%s Attempts)",
 	"gui.rogue_loot_screen.banish.stop": "Stop Banishing",
+	"gui.rogue_loot_screen.lock.simple": "Lock",
+	"gui.rogue_loot_screen.lock.singular": "Lock (%s Attempt)",
+	"gui.rogue_loot_screen.lock.plural": "Lock (%s Attempts)",
+	"gui.rogue_loot_screen.lock.stop": "Stop Locking",
 
 
 	"hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices": "Max Choices was smaller than Min Choices. This has been corrected.",

@@ -18,6 +18,7 @@ public record OpenRogueLootScreenPacket(
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		int rerollAttempts,
 		int banishingAttempts,
+		int lockingAttempts,
 		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
@@ -29,6 +30,7 @@ public record OpenRogueLootScreenPacket(
 				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readInt(),
 				registryByteBuf.readInt(),
+				registryByteBuf.readInt(),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
@@ -38,6 +40,7 @@ public record OpenRogueLootScreenPacket(
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		registryByteBuf.writeInt(this.rerollAttempts);
 		registryByteBuf.writeInt(this.banishingAttempts);
+		registryByteBuf.writeInt(this.lockingAttempts);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}
 
