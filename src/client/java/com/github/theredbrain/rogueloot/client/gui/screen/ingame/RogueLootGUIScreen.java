@@ -1,5 +1,6 @@
 package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
+import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
@@ -679,13 +680,15 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private List<Identifier> getChosenRogueLootEntries() {
+		RogueLoot.info("RogueLootGUIScreen getChosenRogueLootEntries");
 		List<Identifier> list = new ArrayList<>();
 		List<GeneratedRogueLoot.VisibleRogueLootTableEntry> visibleRogueLootTableEntryList = this.generatedRogueLoot.entryList();
 
-		for (int i = 0; i < Math.min(6, visibleRogueLootTableEntryList.size()); i++) {
+		for (int i = 0; i < Math.min(MAX_OPTIONS_AMOUNT, visibleRogueLootTableEntryList.size()); i++) {
 			if (this.selectedOptions[i]) {
 				Optional<Identifier> optionalIdentifier = visibleRogueLootTableEntryList.get(i).parentRogueLootTableEntryId();
 				if (optionalIdentifier.isPresent()) {
+					RogueLoot.info("optionalIdentifier.get(): " + optionalIdentifier.get());
 					list.add(optionalIdentifier.get());
 				}
 			}

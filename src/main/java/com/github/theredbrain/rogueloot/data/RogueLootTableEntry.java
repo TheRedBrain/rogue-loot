@@ -1,6 +1,6 @@
 package com.github.theredbrain.rogueloot.data;
 
-import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
@@ -43,7 +43,7 @@ public record RogueLootTableEntry(
 	@Nullable
 	public static RogueLootTableEntry getRogueLootTableEntry(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntry rogueLootTableEntry = null;
-		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
+		Optional<Registry<RogueLootTableEntry>> optionalRogueLootTableEntryRegistry = registryAccess.lookup(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTableEntry>> optionalRogueLootTableEntryReference = optionalRogueLootTableEntryRegistry.get().get(identifier);
 			if (optionalRogueLootTableEntryReference.isPresent()) {

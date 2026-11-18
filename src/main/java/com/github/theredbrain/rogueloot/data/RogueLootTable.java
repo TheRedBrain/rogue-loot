@@ -1,6 +1,6 @@
 package com.github.theredbrain.rogueloot.data;
 
-import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -12,7 +12,6 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public record RogueLootTable(
 		Optional<ItemStackTemplate> lockingCost
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			RegistryCodecs.homogeneousList(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
+			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
 			Codec.unboundedMap(Identifier.CODEC, Codec.INT).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
 			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
 			Codec.BOOL.optionalFieldOf("enable_rerolling", false).forGetter(x -> x.enableRerolling),
@@ -42,7 +41,7 @@ public record RogueLootTable(
 	@Nullable
 	public static RogueLootTable getRogueLootTable(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTable rogueLootTable = null;
-		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
+		Optional<Registry<RogueLootTable>> optionalRogueLootTableRegistry = registryAccess.lookup(RogueLootRegistries.ROGUE_LOOT_TABLE_REGISTRY_KEY);
 		if (optionalRogueLootTableRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTable>> optionalRogueLootTableReference = optionalRogueLootTableRegistry.get().get(identifier);
 			if (optionalRogueLootTableReference.isPresent()) {

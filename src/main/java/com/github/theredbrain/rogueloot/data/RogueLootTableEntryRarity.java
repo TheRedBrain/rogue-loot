@@ -1,6 +1,6 @@
 package com.github.theredbrain.rogueloot.data;
 
-import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
+import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
@@ -58,7 +58,7 @@ public record RogueLootTableEntryRarity(
 	@Nullable
 	public static RogueLootTableEntryRarity getRogueLootTableEntryRarity(final RegistryAccess registryAccess, final Identifier identifier) {
 		RogueLootTableEntryRarity rogueLootTableEntryRarity = null;
-		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(RogueLootDynamicRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
+		Optional<Registry<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityRegistry = registryAccess.lookup(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY);
 		if (optionalRogueLootTableEntryRarityRegistry.isPresent()) {
 			Optional<Holder.Reference<RogueLootTableEntryRarity>> optionalRogueLootTableEntryRarityReference = optionalRogueLootTableEntryRarityRegistry.get().get(identifier);
 			if (optionalRogueLootTableEntryRarityReference.isPresent()) {

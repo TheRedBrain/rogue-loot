@@ -3,9 +3,9 @@ package com.github.theredbrain.rogueloot;
 import com.github.theredbrain.rogueloot.compat.LootablesCompat;
 import com.github.theredbrain.rogueloot.registry.RogueLootBlocks;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
-import com.github.theredbrain.rogueloot.registry.RogueLootDynamicRegistries;
-import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
+import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
+import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerEvents;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerPackets;
 import net.fabricmc.api.ModInitializer;
@@ -49,7 +49,7 @@ public class RogueLoot implements ModInitializer {
 	public void onInitialize() {
 		LOGGER.info("Rogue Like Loot!");
 
-		RogueLootDynamicRegistries.init();
+		RogueLootRegistries.init();
 		RogueLootServerEvents.initializeEvents();
 		RogueLootServerPackets.init();
 

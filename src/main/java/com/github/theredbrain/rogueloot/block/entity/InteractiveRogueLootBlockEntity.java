@@ -71,7 +71,7 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity implements Supp
 
 		output.putInt("max_choices", this.maxChoices);
 
-		output.putBoolean("track_players", true);
+		output.putBoolean("track_players", this.trackPlayers);
 
 		output.putString("loot_acquired_message", this.lootAcquiredMessage);
 
