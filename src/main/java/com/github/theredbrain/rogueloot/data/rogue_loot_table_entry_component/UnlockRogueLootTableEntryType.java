@@ -19,10 +19,10 @@ public record UnlockRogueLootTableEntryType(
 		HolderSet<RogueLootTableEntry> entries
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<UnlockRogueLootTableEntryType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
+			instance -> instance.group(
 							RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.entries)
 					)
-					.apply(i, UnlockRogueLootTableEntryType::new)
+					.apply(instance, UnlockRogueLootTableEntryType::new)
 	);
 
 	@Override

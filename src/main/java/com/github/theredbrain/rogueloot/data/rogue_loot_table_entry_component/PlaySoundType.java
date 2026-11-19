@@ -1,28 +1,36 @@
 package com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
+import net.minecraft.world.level.storage.loot.providers.number.NumberProviders;
+
+import java.util.Optional;
 
 public record PlaySoundType(
 		Holder<SoundEvent> soundEventHolder,
-		float volume
+		NumberProvider volume,
+		NumberProvider pitch,
+		Optional<Identifier> randomSequence
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<PlaySoundType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							SoundEvent.CODEC.fieldOf("sound_event").forGetter(PlaySoundType::soundEventHolder),
-							Codec.FLOAT.validate(value -> value <= 0.0F ? DataResult.error(() -> "Damage amount can not be zero or smaller, but was " + value) : DataResult.success(value)).optionalFieldOf("volume", 1.0F).forGetter(PlaySoundType::volume)
+			instance -> instance.group(
+							SoundEvent.CODEC.fieldOf("sound_event").forGetter(x -> x.soundEventHolder),
+							NumberProviders.CODEC.fieldOf("volume").forGetter(x -> x.volume),
+							NumberProviders.CODEC.fieldOf("pitch").forGetter(x -> x.pitch),
+							Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(x -> x.randomSequence)
 					)
-					.apply(i, PlaySoundType::new)
+					.apply(instance, PlaySoundType::new)
 	);
 
 	@Override
@@ -32,7 +40,28 @@ public record PlaySoundType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		serverLevel.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), this.soundEventHolder, SoundSource.PLAYERS, this.volume, ((serverPlayer.getRandom().nextFloat() - serverPlayer.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
+		serverLevel.playSound(
+				null,
+				serverPlayer.getX(),
+				serverPlayer.getY(),
+				serverPlayer.getZ(),
+				this.soundEventHolder,
+				SoundSource.PLAYERS,
+				this.volume.getFloat(new LootContext.Builder(
+								new LootParams.Builder(serverLevel)
+										.withParameter(LootContextParams.THIS_ENTITY, serverPlayer)
+										.withParameter(LootContextParams.ORIGIN, serverPlayer.position())
+										.create(LootContextParamSets.ADVANCEMENT_REWARD)
+						).create(this.randomSequence)
+				),
+				this.pitch.getFloat(new LootContext.Builder(
+								new LootParams.Builder(serverLevel)
+										.withParameter(LootContextParams.THIS_ENTITY, serverPlayer)
+										.withParameter(LootContextParams.ORIGIN, serverPlayer.position())
+										.create(LootContextParamSets.ADVANCEMENT_REWARD)
+						).create(this.randomSequence)
+				)
+		);
 
 	}
 }

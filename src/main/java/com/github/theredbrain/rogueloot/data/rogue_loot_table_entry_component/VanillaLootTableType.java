@@ -16,10 +16,10 @@ public record VanillaLootTableType(
 		Holder<LootTable> lootTableHolder
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<VanillaLootTableType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							LootTable.CODEC.fieldOf("loot_table").forGetter(VanillaLootTableType::lootTableHolder)
+			instance -> instance.group(
+							LootTable.CODEC.fieldOf("loot_table").forGetter(x -> x.lootTableHolder)
 					)
-					.apply(i, VanillaLootTableType::new)
+					.apply(instance, VanillaLootTableType::new)
 	);
 
 	@Override
@@ -29,7 +29,10 @@ public record VanillaLootTableType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		LootParams params = new LootParams.Builder(serverLevel).withParameter(LootContextParams.THIS_ENTITY, serverPlayer).withParameter(LootContextParams.ORIGIN, serverPlayer.position()).create(LootContextParamSets.ADVANCEMENT_REWARD);
+		LootParams params = new LootParams.Builder(serverLevel)
+				.withParameter(LootContextParams.THIS_ENTITY, serverPlayer)
+				.withParameter(LootContextParams.ORIGIN, serverPlayer.position())
+				.create(LootContextParamSets.ADVANCEMENT_REWARD);
 		boolean bl = false;
 		for (ItemStack itemStack : this.lootTableHolder.value().getRandomItems(params)) {
 

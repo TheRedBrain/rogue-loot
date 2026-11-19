@@ -13,11 +13,11 @@ public record AdvancementCriterionType(
 		String criterion
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<AdvancementCriterionType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							Identifier.CODEC.fieldOf("advancement_identifier").forGetter(AdvancementCriterionType::advancementIdentifier),
-							Codec.STRING.fieldOf("criterion").forGetter(AdvancementCriterionType::criterion)
+			instance -> instance.group(
+							Identifier.CODEC.fieldOf("advancement_identifier").forGetter(x -> x.advancementIdentifier),
+							Codec.STRING.fieldOf("criterion").forGetter(x -> x.criterion)
 					)
-					.apply(i, AdvancementCriterionType::new)
+					.apply(instance, AdvancementCriterionType::new)
 	);
 
 	@Override
@@ -28,10 +28,10 @@ public record AdvancementCriterionType(
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
 
-			AdvancementHolder advancementEntry = serverLevel.getServer().getAdvancements().get(this.advancementIdentifier);
+		AdvancementHolder advancementEntry = serverLevel.getServer().getAdvancements().get(this.advancementIdentifier);
 
-			if (advancementEntry != null && !this.criterion.isEmpty()) {
-				serverPlayer.getAdvancements().award(advancementEntry, this.criterion);
-			}
+		if (advancementEntry != null && !this.criterion.isEmpty()) {
+			serverPlayer.getAdvancements().award(advancementEntry, this.criterion);
+		}
 	}
 }

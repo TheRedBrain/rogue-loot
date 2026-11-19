@@ -10,10 +10,10 @@ public record MobEffectInstanceType(
 		MobEffectInstance mobEffectInstance
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<MobEffectInstanceType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							MobEffectInstance.CODEC.fieldOf("mob_effect_instance").forGetter(MobEffectInstanceType::mobEffectInstance)
+			instance -> instance.group(
+							MobEffectInstance.CODEC.fieldOf("mob_effect_instance").forGetter(x -> x.mobEffectInstance)
 					)
-					.apply(i, MobEffectInstanceType::new)
+					.apply(instance, MobEffectInstanceType::new)
 	);
 
 	@Override

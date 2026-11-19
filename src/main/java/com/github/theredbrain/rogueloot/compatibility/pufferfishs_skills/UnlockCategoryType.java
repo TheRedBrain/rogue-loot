@@ -2,7 +2,6 @@ package com.github.theredbrain.rogueloot.compatibility.pufferfishs_skills;
 
 import com.github.theredbrain.rogueloot.compatibility.PufferfishsSkillsCompat;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.RogueLootTableEntryComponentType;
-import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.Identifier;
@@ -13,10 +12,10 @@ public record UnlockCategoryType(
 		Identifier categoryId
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<UnlockCategoryType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							Identifier.CODEC.fieldOf("category_id").forGetter(UnlockCategoryType::categoryId)
+			instance -> instance.group(
+							Identifier.CODEC.fieldOf("category_id").forGetter(x -> x.categoryId)
 					)
-					.apply(i, UnlockCategoryType::new)
+					.apply(instance, UnlockCategoryType::new)
 	);
 
 	@Override
@@ -26,6 +25,9 @@ public record UnlockCategoryType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		PufferfishsSkillsCompat.unlockCategory(serverPlayer, this.categoryId);
+		PufferfishsSkillsCompat.unlockCategory(
+				serverPlayer,
+				this.categoryId
+		);
 	}
 }

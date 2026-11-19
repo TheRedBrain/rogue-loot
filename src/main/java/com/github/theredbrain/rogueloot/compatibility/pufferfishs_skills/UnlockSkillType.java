@@ -14,11 +14,11 @@ public record UnlockSkillType(
 		String skillId
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<UnlockSkillType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							Identifier.CODEC.fieldOf("category_id").forGetter(UnlockSkillType::categoryId),
-							Codec.STRING.fieldOf("skill_id").forGetter(UnlockSkillType::skillId)
+			instance -> instance.group(
+							Identifier.CODEC.fieldOf("category_id").forGetter(x -> x.categoryId),
+							Codec.STRING.fieldOf("skill_id").forGetter(x -> x.skillId)
 					)
-					.apply(i, UnlockSkillType::new)
+					.apply(instance, UnlockSkillType::new)
 	);
 
 	@Override
@@ -28,6 +28,10 @@ public record UnlockSkillType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		PufferfishsSkillsCompat.unlockSkill(serverPlayer, this.categoryId, this.skillId);
+		PufferfishsSkillsCompat.unlockSkill(
+				serverPlayer,
+				this.categoryId,
+				this.skillId
+		);
 	}
 }

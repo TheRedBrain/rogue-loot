@@ -10,10 +10,10 @@ public record ItemStackType(
 		ItemStackTemplate itemStackTemplate
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<ItemStackType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							ItemStackTemplate.CODEC.fieldOf("item_stack").forGetter(ItemStackType::itemStackTemplate)
+			instance -> instance.group(
+							ItemStackTemplate.CODEC.fieldOf("item_stack").forGetter(x -> x.itemStackTemplate)
 					)
-					.apply(i, ItemStackType::new)
+					.apply(instance, ItemStackType::new)
 	);
 
 	@Override

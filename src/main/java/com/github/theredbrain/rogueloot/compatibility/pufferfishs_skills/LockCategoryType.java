@@ -12,10 +12,10 @@ public record LockCategoryType(
 		Identifier categoryId
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<LockCategoryType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							Identifier.CODEC.fieldOf("category_id").forGetter(LockCategoryType::categoryId)
+			instance -> instance.group(
+							Identifier.CODEC.fieldOf("category_id").forGetter(x -> x.categoryId)
 					)
-					.apply(i, LockCategoryType::new)
+					.apply(instance, LockCategoryType::new)
 	);
 
 	@Override
@@ -25,6 +25,9 @@ public record LockCategoryType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		PufferfishsSkillsCompat.lockCategory(serverPlayer, this.categoryId);
+		PufferfishsSkillsCompat.lockCategory(
+				serverPlayer,
+				this.categoryId
+		);
 	}
 }

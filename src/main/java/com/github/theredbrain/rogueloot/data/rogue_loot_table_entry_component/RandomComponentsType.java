@@ -13,10 +13,10 @@ public record RandomComponentsType(
 		List<ComponentTypeListWithWeight> weightedComponentLists
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<RandomComponentsType> MAP_CODEC = RecordCodecBuilder.mapCodec(
-			i -> i.group(
-							ComponentTypeListWithWeight.CODEC.listOf().fieldOf("weighted_component_lists").forGetter(RandomComponentsType::weightedComponentLists)
+			instance -> instance.group(
+							ComponentTypeListWithWeight.CODEC.listOf().fieldOf("weighted_component_lists").forGetter(x -> x.weightedComponentLists)
 					)
-					.apply(i, RandomComponentsType::new)
+					.apply(instance, RandomComponentsType::new)
 	);
 
 	@Override
@@ -50,11 +50,11 @@ public record RandomComponentsType(
 			int weight
 	) {
 		public static final MapCodec<ComponentTypeListWithWeight> MAP_CODEC = RecordCodecBuilder.mapCodec(
-				i -> i.group(
+				instance -> instance.group(
 								RogueLootTableEntryComponentType.CODEC.listOf().fieldOf("components").forGetter(ComponentTypeListWithWeight::componentList),
 								Codec.INT.validate(value -> value <= 0 ? DataResult.error(() -> "Weight can not be zero or smaller, but was " + value) : DataResult.success(value)).optionalFieldOf("weight", 1).forGetter(ComponentTypeListWithWeight::weight)
 						)
-						.apply(i, ComponentTypeListWithWeight::new)
+						.apply(instance, ComponentTypeListWithWeight::new)
 		);
 		public static final Codec<ComponentTypeListWithWeight> CODEC = MAP_CODEC.codec();
 	}
