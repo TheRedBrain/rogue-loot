@@ -8,6 +8,7 @@ import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.Mo
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.ItemStackType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.AdvancementCriterionType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.PlaySoundType;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.RandomComponentsType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.VanillaLootTableType;
 import net.minecraft.core.Registry;
 
@@ -21,6 +22,7 @@ public class RogueLootTableEntryComponentTypes {
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("item_stack"), ItemStackType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("mob_effect_instance"), MobEffectInstanceType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("play_sound"), PlaySoundType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("random_components"), RandomComponentsType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("vanilla_loot_table"), VanillaLootTableType.MAP_CODEC);
 	}
 

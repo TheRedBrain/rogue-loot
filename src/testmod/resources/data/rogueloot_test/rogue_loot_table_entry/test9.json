@@ -1,11 +1,44 @@
 {
   "components": [
     {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:stick"
-      }
+      "type": "rogueloot:random_components",
+      "weighted_component_lists": [
+        {
+          "components": [
+            {
+              "type": "rogueloot:item_stack",
+              "item_stack": {
+                "id": "minecraft:stick"
+              }
+            },
+            {
+              "type": "rogueloot:item_stack",
+              "item_stack": {
+                "id": "minecraft:stone",
+                "count": 2
+              }
+            }
+          ],
+          "weight": 10
+        },
+        {
+          "components": [
+            {
+              "type": "rogueloot:item_stack",
+              "item_stack": {
+                "id": "minecraft:iron_sword"
+              }
+            },
+            {
+              "type": "rogueloot:item_stack",
+              "item_stack": {
+                "id": "minecraft:shield"
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
-  "label_text": "Test 9"
+  "label_text": "Random"
 }
