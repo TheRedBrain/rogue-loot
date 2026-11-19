@@ -6,23 +6,23 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStackTemplate;
 
-public record GiveItemStackEntryComponentType(
+public record ItemStackType(
 		ItemStackTemplate itemStackTemplate
 ) implements RogueLootTableEntryComponentType {
-	public static final MapCodec<GiveItemStackEntryComponentType> MAP_CODEC = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<ItemStackType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			i -> i.group(
-							ItemStackTemplate.CODEC.fieldOf("item_stack").forGetter(GiveItemStackEntryComponentType::itemStackTemplate)
+							ItemStackTemplate.CODEC.fieldOf("item_stack").forGetter(ItemStackType::itemStackTemplate)
 					)
-					.apply(i, GiveItemStackEntryComponentType::new)
+					.apply(i, ItemStackType::new)
 	);
 
 	@Override
-	public MapCodec<GiveItemStackEntryComponentType> codec() {
+	public MapCodec<ItemStackType> codec() {
 		return MAP_CODEC;
 	}
 
 	@Override
-	public void apply(ServerLevel serverLevel, ServerPlayer serverPlayer) {
+	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
 		serverPlayer.getInventory().placeItemBackInInventory(this.itemStackTemplate.create());
 	}
 }

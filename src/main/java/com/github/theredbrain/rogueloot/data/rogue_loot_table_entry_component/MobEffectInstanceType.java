@@ -6,23 +6,23 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 
-public record AddMobEffectInstanceEntryComponentType(
+public record MobEffectInstanceType(
 		MobEffectInstance mobEffectInstance
 ) implements RogueLootTableEntryComponentType {
-	public static final MapCodec<AddMobEffectInstanceEntryComponentType> MAP_CODEC = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<MobEffectInstanceType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			i -> i.group(
-							MobEffectInstance.CODEC.fieldOf("mob_effect_instance").forGetter(AddMobEffectInstanceEntryComponentType::mobEffectInstance)
+							MobEffectInstance.CODEC.fieldOf("mob_effect_instance").forGetter(MobEffectInstanceType::mobEffectInstance)
 					)
-					.apply(i, AddMobEffectInstanceEntryComponentType::new)
+					.apply(i, MobEffectInstanceType::new)
 	);
 
 	@Override
-	public MapCodec<AddMobEffectInstanceEntryComponentType> codec() {
+	public MapCodec<MobEffectInstanceType> codec() {
 		return MAP_CODEC;
 	}
 
 	@Override
-	public void apply(ServerLevel serverLevel, ServerPlayer serverPlayer) {
+	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
 		serverPlayer.addEffect(new MobEffectInstance(this.mobEffectInstance));
 	}
 }
