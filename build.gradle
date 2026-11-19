@@ -1,3 +1,6 @@
+import me.modmuss50.mpp.ReleaseType
+import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
+
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
 	id "me.modmuss50.mod-publish-plugin" version "2.1.1"
@@ -28,6 +31,10 @@ repositories {
 			includeGroup "maven.modrinth"
 		}
 	}
+
+    maven {
+        url = uri("https://maven.puffish.net")
+    }
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -117,6 +124,9 @@ dependencies {
 	// Data Fixer
 	implementation "maven.modrinth:easy-data-fix:${project.easy_data_fix_version}-fabric"
 
+    // Pufferfish's Skills
+    implementation("net.puffish:skillsmod:${project.pufferfish_skills_version}:fabric")
+
 	// Test mod
 	testmodImplementation sourceSets.main.output
 	testmodClientImplementation sourceSets.main.output
@@ -175,9 +185,9 @@ tasks.register("publishMod") {
 publishMods {
 	file = jar.archiveFile
 	changelog = providers.provider { changelog_last_section() }   // lazy: read only at publish
-	type = releaseTypeName == "release" ? me.modmuss50.mpp.ReleaseType.STABLE
-			: releaseTypeName == "alpha" ? me.modmuss50.mpp.ReleaseType.ALPHA
-			: me.modmuss50.mpp.ReleaseType.BETA
+	type = releaseTypeName == "release" ? ReleaseType.STABLE
+			: releaseTypeName == "alpha" ? ReleaseType.ALPHA
+			: ReleaseType.BETA
 //    version = "${project.version}-${platform}" // per-loader suffix -> unique Modrinth version
 	version = "${project.version}"
 //	displayName = "${project.version}"
@@ -200,12 +210,13 @@ publishMods {
 				"loot-n-explore",
 				"mana-attributes",
 				"overhauled-damage",
-				"stamina-attributes"
+				"stamina-attributes",
+				"puffish-skills"
 		)
 	}
 
 	modrinth {
-		environment = me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment.CLIENT_AND_SERVER
+		environment = ModrinthEnvironment.CLIENT_AND_SERVER
 		projectId = providers.environmentVariable("MODRINTH_PROJECT_ID")
 		accessToken = providers.environmentVariable("MODRINTH_API_KEY")
 		minecraftVersions.addAll(rootProject.minecraftCompatVersions)
@@ -219,7 +230,8 @@ publishMods {
 				"loot-n-explore",
 				"mana-attributes",
 				"overhauled-damage",
-				"stamina-attributes"
+				"stamina-attributes",
+				"skills"
 		)
 	}
 

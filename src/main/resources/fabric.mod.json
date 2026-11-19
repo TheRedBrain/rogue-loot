@@ -40,6 +40,7 @@
 	},
 	"suggests": {
 		"lootables": "*",
-		"loot_n_explore": "*"
+		"loot_n_explore": "*",
+		"puffish_skills": "*"
   }
 }
