@@ -11,5 +11,5 @@ public interface RogueLootTableEntryComponentType {
 
 	MapCodec<? extends RogueLootTableEntryComponentType> codec();
 
-	void apply(ServerLevel serverLevel, ServerPlayer serverPlayer);
+	void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer);
 }

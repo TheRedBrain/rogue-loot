@@ -86,7 +86,7 @@ public class RogueLootTableHelper {
 		}
 	}
 
-	private static int calculateRerollAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
+	private static int calculateRerollAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int rerollAttempts = -1;
 		if (rogueLootTable.enableRerolling() && rogueLootTable.rerollCost().isPresent()) {
@@ -99,7 +99,7 @@ public class RogueLootTableHelper {
 		return rerollAttempts;
 	}
 
-	private static int calculateBanishingAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
+	private static int calculateBanishingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int banishingAttempts = -1;
 		if (rogueLootTable.enableEntryBanishing() && rogueLootTable.banishingCost().isPresent()) {
@@ -112,7 +112,7 @@ public class RogueLootTableHelper {
 		return banishingAttempts;
 	}
 
-	private static int calculateLockingAttempts(ServerPlayer serverPlayer, RogueLootTable rogueLootTable) {
+	private static int calculateLockingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int lockingAttempts = -1;
 		if (rogueLootTable.enableEntryLocking() && rogueLootTable.lockingCost().isPresent()) {
