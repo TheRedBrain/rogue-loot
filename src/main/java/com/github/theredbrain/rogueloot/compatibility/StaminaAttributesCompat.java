@@ -9,7 +9,7 @@ import net.minecraft.core.Registry;
 public class StaminaAttributesCompat {
 
 	public static void init() {
-		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("add_stamina"), AddStaminaType.MAP_CODEC);
-		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("set_stamina"), SetStaminaType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("compat/staminaattributes/add_stamina"), AddStaminaType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("compat/staminaattributes/set_stamina"), SetStaminaType.MAP_CODEC);
 	}
 }
