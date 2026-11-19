@@ -11,16 +11,16 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public record LockRogueLootEntryPacket(
+public record ReserveRogueLootEntryPacket(
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		Optional<ItemStack> itemStack,
-		Identifier lockedRogueLootEntry,
-		Optional<ItemStack> lockingCost
+		Identifier reservedRogueLootEntry,
+		Optional<ItemStack> reservingCost
 ) implements CustomPacketPayload {
-	public static final Type<LockRogueLootEntryPacket> PACKET_ID = new Type<>(RogueLoot.identifier("lock_rogue_loot_entry"));
-	public static final StreamCodec<RegistryFriendlyByteBuf, LockRogueLootEntryPacket> PACKET_CODEC = StreamCodec.ofMember(LockRogueLootEntryPacket::write, LockRogueLootEntryPacket::new);
+	public static final Type<ReserveRogueLootEntryPacket> PACKET_ID = new Type<>(RogueLoot.identifier("reserve_rogue_loot_entry"));
+	public static final StreamCodec<RegistryFriendlyByteBuf, ReserveRogueLootEntryPacket> PACKET_CODEC = StreamCodec.ofMember(ReserveRogueLootEntryPacket::write, ReserveRogueLootEntryPacket::new);
 
-	public LockRogueLootEntryPacket(final RegistryFriendlyByteBuf registryByteBuf) {
+	public ReserveRogueLootEntryPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
 				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf),
@@ -32,8 +32,8 @@ public record LockRogueLootEntryPacket(
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
-		registryByteBuf.writeIdentifier(this.lockedRogueLootEntry);
-		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.lockingCost);
+		registryByteBuf.writeIdentifier(this.reservedRogueLootEntry);
+		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.reservingCost);
 	}
 
 	@Override

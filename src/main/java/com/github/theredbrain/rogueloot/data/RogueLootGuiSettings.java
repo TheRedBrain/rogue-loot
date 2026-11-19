@@ -23,9 +23,9 @@ public record RogueLootGuiSettings(
 		LabelSettings enableBanishingRequirementsNotMet,
 		LabelSettings enableBanishingRequirementsMet,
 		LabelSettings disableBanishing,
-		LabelSettings lockingRequirementsNotMet,
-		LabelSettings lockingRequirementsMet,
-		LabelSettings disableLocking,
+		LabelSettings enableReservingRequirementsNotMet,
+		LabelSettings enableReservingRequirementsMet,
+		LabelSettings disableReserving,
 		LabelSettings confirmationRequirementsNotMet,
 		LabelSettings confirmationRequirementsMet
 ) {
@@ -38,9 +38,9 @@ public record RogueLootGuiSettings(
 			LabelSettings.CODEC.optionalFieldOf("enable_banishing_requirements_not_met", LabelSettings.DEFAULT).forGetter(x -> x.enableBanishingRequirementsNotMet),
 			LabelSettings.CODEC.optionalFieldOf("enable_banishing_requirements_met", LabelSettings.DEFAULT).forGetter(x -> x.enableBanishingRequirementsMet),
 			LabelSettings.CODEC.optionalFieldOf("disable_banishing", LabelSettings.DEFAULT).forGetter(x -> x.disableBanishing),
-			LabelSettings.CODEC.optionalFieldOf("locking_requirements_not_met", LabelSettings.DEFAULT).forGetter(x -> x.lockingRequirementsNotMet),
-			LabelSettings.CODEC.optionalFieldOf("locking_requirements_met", LabelSettings.DEFAULT).forGetter(x -> x.lockingRequirementsMet),
-			LabelSettings.CODEC.optionalFieldOf("disable_locking", LabelSettings.DEFAULT).forGetter(x -> x.disableLocking),
+			LabelSettings.CODEC.optionalFieldOf("enable_reserving_requirements_not_met", LabelSettings.DEFAULT).forGetter(x -> x.enableReservingRequirementsNotMet),
+			LabelSettings.CODEC.optionalFieldOf("enable_reserving_requirements_met", LabelSettings.DEFAULT).forGetter(x -> x.enableReservingRequirementsMet),
+			LabelSettings.CODEC.optionalFieldOf("disable_reserving", LabelSettings.DEFAULT).forGetter(x -> x.disableReserving),
 			LabelSettings.CODEC.optionalFieldOf("confirmation_requirements_not_met", LabelSettings.DEFAULT).forGetter(x -> x.confirmationRequirementsNotMet),
 			LabelSettings.CODEC.optionalFieldOf("confirmation_requirements_met", LabelSettings.DEFAULT).forGetter(x -> x.confirmationRequirementsMet)
 	).apply(instance, RogueLootGuiSettings::new));
@@ -72,9 +72,9 @@ public record RogueLootGuiSettings(
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.enableBanishingRequirementsNotMet);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.enableBanishingRequirementsMet);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.disableBanishing);
-		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.lockingRequirementsNotMet);
-		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.lockingRequirementsMet);
-		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.disableLocking);
+		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.enableReservingRequirementsNotMet);
+		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.enableReservingRequirementsMet);
+		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.disableReserving);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.confirmationRequirementsNotMet);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.confirmationRequirementsMet);
 	}
@@ -88,9 +88,9 @@ public record RogueLootGuiSettings(
 				LabelSettings.copy(rogueLootGuiSettings.enableBanishingRequirementsNotMet),
 				LabelSettings.copy(rogueLootGuiSettings.enableBanishingRequirementsMet),
 				LabelSettings.copy(rogueLootGuiSettings.disableBanishing),
-				LabelSettings.copy(rogueLootGuiSettings.lockingRequirementsNotMet),
-				LabelSettings.copy(rogueLootGuiSettings.lockingRequirementsMet),
-				LabelSettings.copy(rogueLootGuiSettings.disableLocking),
+				LabelSettings.copy(rogueLootGuiSettings.enableReservingRequirementsNotMet),
+				LabelSettings.copy(rogueLootGuiSettings.enableReservingRequirementsMet),
+				LabelSettings.copy(rogueLootGuiSettings.disableReserving),
 				LabelSettings.copy(rogueLootGuiSettings.confirmationRequirementsNotMet),
 				LabelSettings.copy(rogueLootGuiSettings.confirmationRequirementsMet)
 		);

@@ -24,7 +24,7 @@ public record RogueLootTableEntry(
 		String labelText,
 		String rarityIdString,
 		boolean allowBanishing,
-		boolean allowLocking,
+		boolean allowReserving,
 		boolean isPermanent
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
@@ -35,7 +35,7 @@ public record RogueLootTableEntry(
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
 			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString),
 			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing),
-			Codec.BOOL.optionalFieldOf("allow_locking", true).forGetter(x -> x.allowLocking),
+			Codec.BOOL.optionalFieldOf("allow_reserving", true).forGetter(x -> x.allowReserving),
 			Codec.BOOL.optionalFieldOf("is_permanent", false).forGetter(x -> x.isPermanent)
 	).apply(instance, RogueLootTableEntry::new));
 

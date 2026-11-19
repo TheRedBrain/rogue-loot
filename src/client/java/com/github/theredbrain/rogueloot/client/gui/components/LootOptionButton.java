@@ -16,25 +16,25 @@ public class LootOptionButton extends Button {
 	private Identifier banishedTextureId;
 	private Identifier defaultHighlightedTextureId;
 	private Identifier defaultTextureId;
-	private Identifier lockedHighlightedTextureId;
-	private Identifier lockedTextureId;
+	private Identifier reservedHighlightedTextureId;
+	private Identifier reservedTextureId;
 	private Identifier selectedHighlightedTextureId;
 	private Identifier selectedTextureId;
 	private Component banishedMessage;
 	private Component defaultMessage;
-	private Component lockedMessage;
+	private Component reservedMessage;
 	private Component selectedMessage;
 	private Optional<Identifier> iconTexture = Optional.empty();
 	private Optional<ItemStackTemplate> displayStack = Optional.empty();
 	private boolean selected;
-	private boolean locked;
+	private boolean reserved;
 
 	public LootOptionButton(final int x, final int y, final int width, final int height, final OnPress onPress) {
 		super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 		setTextureIds("");
 		this.banishedMessage = Component.empty();
 		this.defaultMessage = Component.empty();
-		this.lockedMessage = Component.empty();
+		this.reservedMessage = Component.empty();
 		this.selectedMessage = Component.empty();
 	}
 
@@ -43,8 +43,8 @@ public class LootOptionButton extends Button {
 		this.banishedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "banished");
 		this.defaultHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "default_highlighted");
 		this.defaultTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "default");
-		this.lockedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "locked_highlighted");
-		this.lockedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "locked");
+		this.reservedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "reserved_highlighted");
+		this.reservedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "reserved");
 		this.selectedHighlightedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected_highlighted");
 		this.selectedTextureId = RogueLoot.identifier("widget/loot_option_button/" + string + "selected");
 	}
@@ -65,12 +65,12 @@ public class LootOptionButton extends Button {
 		this.selected = selected;
 	}
 
-	public boolean isLocked() {
-		return this.locked;
+	public boolean isReserved() {
+		return this.reserved;
 	}
 
-	public void setLocked(final boolean locked) {
-		this.locked = locked;
+	public void setReserved(final boolean reserved) {
+		this.reserved = reserved;
 	}
 
 	public void setBanishedMessage(Component banishedMessage) {
@@ -81,8 +81,8 @@ public class LootOptionButton extends Button {
 		this.defaultMessage = defaultMessage;
 	}
 
-	public void setLockedMessage(Component lockedMessage) {
-		this.lockedMessage = lockedMessage;
+	public void setReservedMessage(Component reservedMessage) {
+		this.reservedMessage = reservedMessage;
 	}
 
 	public void setSelectedMessage(Component selectedMessage) {
@@ -91,7 +91,7 @@ public class LootOptionButton extends Button {
 
 	@Override
 	public Component getMessage() {
-		return this.active ? (this.selected ? this.selectedMessage : this.defaultMessage) : (this.locked ? this.lockedMessage : this.banishedMessage);
+		return this.active ? (this.selected ? this.selectedMessage : this.defaultMessage) : (this.reserved ? this.reservedMessage : this.banishedMessage);
 	}
 
 	@Override
@@ -99,9 +99,9 @@ public class LootOptionButton extends Button {
 
 		Identifier textureId;
 		if (this.isHoveredOrFocused()) {
-			textureId = this.active ? (this.selected ? this.selectedHighlightedTextureId : this.defaultHighlightedTextureId) : (this.locked ? this.lockedHighlightedTextureId : this.banishedHighlightedTextureId);
+			textureId = this.active ? (this.selected ? this.selectedHighlightedTextureId : this.defaultHighlightedTextureId) : (this.reserved ? this.reservedHighlightedTextureId : this.banishedHighlightedTextureId);
 		} else {
-			textureId = this.active ? (this.selected ? this.selectedTextureId : this.defaultTextureId) : (this.locked ? this.lockedTextureId : this.banishedTextureId);
+			textureId = this.active ? (this.selected ? this.selectedTextureId : this.defaultTextureId) : (this.reserved ? this.reservedTextureId : this.banishedTextureId);
 		}
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);

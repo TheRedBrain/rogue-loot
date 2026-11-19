@@ -1,7 +1,7 @@
 package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.data.attached.BanishedRogueLootEntriesAttachedData;
-import com.github.theredbrain.rogueloot.data.attached.LockedRogueLootEntriesAttachedData;
+import com.github.theredbrain.rogueloot.data.attached.ReservedRogueLootEntriesAttachedData;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,52 +16,52 @@ import java.util.Set;
 
 public class DataAttachmentHelper {
 
-	public static boolean isRogueLootEntryLocked(@Nullable Player player, final Optional<Identifier> entryIdentifier) {
-		return player != null && entryIdentifier.isPresent() && RogueLootDataAttachments.getLockedRogueLootEntriesAttachedData(player).lockedRogueLootEntries().contains(entryIdentifier.get());
+	public static boolean isRogueLootEntryReserved(@Nullable Player player, final Optional<Identifier> entryIdentifier) {
+		return player != null && entryIdentifier.isPresent() && RogueLootDataAttachments.getReservedRogueLootEntriesAttachedData(player).reservedRogueLootEntries().contains(entryIdentifier.get());
 	}
 
-	public static void lockRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
-		LockedRogueLootEntriesAttachedData newLockedRogueLootEntriesAttachedData = LockedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getLockedRogueLootEntriesAttachedData(serverPlayer));
-		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newLockedRogueLootEntriesAttachedData.lockedRogueLootEntries());
+	public static void reserveRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
+		ReservedRogueLootEntriesAttachedData newReservedRogueLootEntriesAttachedData = ReservedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getReservedRogueLootEntriesAttachedData(serverPlayer));
+		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newReservedRogueLootEntriesAttachedData.reservedRogueLootEntries());
 
 		newLockedRogueLootEntrySet.addAll(entryIdentifierList);
 
-		RogueLootDataAttachments.setLockedRogueLootEntriesAttachedData(serverPlayer, new LockedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
+		RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, new ReservedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
 	}
 
-	public static void lockRogueLootEntry(final ServerPlayer serverPlayer, final Identifier entryIdentifier) {
-		LockedRogueLootEntriesAttachedData newLockedRogueLootEntriesAttachedData = LockedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getLockedRogueLootEntriesAttachedData(serverPlayer));
-		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newLockedRogueLootEntriesAttachedData.lockedRogueLootEntries());
+	public static void reserveRogueLootEntry(final ServerPlayer serverPlayer, final Identifier entryIdentifier) {
+		ReservedRogueLootEntriesAttachedData newReservedRogueLootEntriesAttachedData = ReservedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getReservedRogueLootEntriesAttachedData(serverPlayer));
+		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newReservedRogueLootEntriesAttachedData.reservedRogueLootEntries());
 
 		newLockedRogueLootEntrySet.add(entryIdentifier);
 
-		RogueLootDataAttachments.setLockedRogueLootEntriesAttachedData(serverPlayer, new LockedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
+		RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, new ReservedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
 	}
 
-	public static void unlockRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
-		LockedRogueLootEntriesAttachedData newLockedRogueLootEntriesAttachedData = LockedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getLockedRogueLootEntriesAttachedData(serverPlayer));
-		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newLockedRogueLootEntriesAttachedData.lockedRogueLootEntries());
+	public static void unreserveRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
+		ReservedRogueLootEntriesAttachedData newReservedRogueLootEntriesAttachedData = ReservedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getReservedRogueLootEntriesAttachedData(serverPlayer));
+		Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newReservedRogueLootEntriesAttachedData.reservedRogueLootEntries());
 
 		for (Identifier identifier : entryIdentifierList) {
 			newLockedRogueLootEntrySet.remove(identifier);
 		}
 
-		RogueLootDataAttachments.setLockedRogueLootEntriesAttachedData(serverPlayer, new LockedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
+		RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, new ReservedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
 	}
 
 	/**
-	 * Unlocks all entries when entryIdentifier is null
+	 * Unreserves all entries when entryIdentifier is null
 	 */
-	public static void unlockRogueLootEntry(final ServerPlayer serverPlayer, @Nullable final Identifier entryIdentifier) {
+	public static void unreserveRogueLootEntry(final ServerPlayer serverPlayer, @Nullable final Identifier entryIdentifier) {
 		if (entryIdentifier != null) {
-			LockedRogueLootEntriesAttachedData newLockedRogueLootEntriesAttachedData = LockedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getLockedRogueLootEntriesAttachedData(serverPlayer));
-			Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newLockedRogueLootEntriesAttachedData.lockedRogueLootEntries());
+			ReservedRogueLootEntriesAttachedData newReservedRogueLootEntriesAttachedData = ReservedRogueLootEntriesAttachedData.copy(RogueLootDataAttachments.getReservedRogueLootEntriesAttachedData(serverPlayer));
+			Set<Identifier> newLockedRogueLootEntrySet = new HashSet<>(newReservedRogueLootEntriesAttachedData.reservedRogueLootEntries());
 
 			newLockedRogueLootEntrySet.remove(entryIdentifier);
 
-			RogueLootDataAttachments.setLockedRogueLootEntriesAttachedData(serverPlayer, new LockedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
+			RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, new ReservedRogueLootEntriesAttachedData(new ArrayList<>(newLockedRogueLootEntrySet)));
 		} else {
-			RogueLootDataAttachments.setLockedRogueLootEntriesAttachedData(serverPlayer, LockedRogueLootEntriesAttachedData.DEFAULT);
+			RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, ReservedRogueLootEntriesAttachedData.DEFAULT);
 		}
 	}
 

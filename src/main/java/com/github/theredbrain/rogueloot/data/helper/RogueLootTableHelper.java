@@ -67,7 +67,7 @@ public class RogueLootTableHelper {
 				generatedRogueLootTableIdentifier,
 				calculateRerollAttempts(serverPlayer, rogueLootTable),
 				calculateBanishingAttempts(serverPlayer, rogueLootTable),
-				calculateLockingAttempts(serverPlayer, rogueLootTable),
+				calculateReservingAttempts(serverPlayer, rogueLootTable),
 				itemStack
 		));
 	}
@@ -112,11 +112,11 @@ public class RogueLootTableHelper {
 		return banishingAttempts;
 	}
 
-	private static int calculateLockingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
+	private static int calculateReservingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int lockingAttempts = -1;
-		if (rogueLootTable.enableEntryLocking() && rogueLootTable.lockingCost().isPresent()) {
-			ItemStack lockingCostStack = rogueLootTable.lockingCost().get().create();
+		if (rogueLootTable.enableEntryReserving() && rogueLootTable.reservingCost().isPresent()) {
+			ItemStack lockingCostStack = rogueLootTable.reservingCost().get().create();
 
 			if (!lockingCostStack.isEmpty()) {
 				lockingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, lockingCostStack);
@@ -147,9 +147,9 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
-			if (DataAttachmentHelper.isRogueLootEntryLocked(serverPlayer, Optional.of(entryIdentifier))) {
+			if (DataAttachmentHelper.isRogueLootEntryReserved(serverPlayer, Optional.of(entryIdentifier))) {
 				generatedRogueLootEntries.add(entryIdentifier);
-				DataAttachmentHelper.unlockRogueLootEntry(serverPlayer, entryIdentifier);
+				DataAttachmentHelper.unreserveRogueLootEntry(serverPlayer, entryIdentifier);
 				continue;
 			}
 
@@ -237,7 +237,7 @@ public class RogueLootTableHelper {
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
 					rogueLootTableEntry.allowBanishing(),
-					rogueLootTableEntry.allowLocking(),
+					rogueLootTableEntry.allowReserving(),
 					rogueLootTableEntryRarity,
 					Optional.of(entryIdentifier)
 			));
@@ -252,8 +252,8 @@ public class RogueLootTableHelper {
 				rogueLootTable.rerollCost(),
 				rogueLootTable.enableEntryBanishing(),
 				rogueLootTable.banishingCost(),
-				rogueLootTable.enableEntryLocking(),
-				rogueLootTable.lockingCost()
+				rogueLootTable.enableEntryReserving(),
+				rogueLootTable.reservingCost()
 		);
 	}
 

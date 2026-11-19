@@ -3,12 +3,10 @@ package com.github.theredbrain.rogueloot.network.packet;
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -18,7 +16,7 @@ public record OpenRogueLootScreenPacket(
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		int rerollAttempts,
 		int banishingAttempts,
-		int lockingAttempts,
+		int reservingAttempts,
 		Optional<ItemStack> itemStack
 ) implements CustomPacketPayload {
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
@@ -40,7 +38,7 @@ public record OpenRogueLootScreenPacket(
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		registryByteBuf.writeInt(this.rerollAttempts);
 		registryByteBuf.writeInt(this.banishingAttempts);
-		registryByteBuf.writeInt(this.lockingAttempts);
+		registryByteBuf.writeInt(this.reservingAttempts);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
 	}
 

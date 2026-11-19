@@ -23,8 +23,8 @@ public record RogueLootTable(
 		Optional<ItemStackTemplate> rerollCost,
 		boolean enableEntryBanishing,
 		Optional<ItemStackTemplate> banishingCost,
-		boolean enableEntryLocking,
-		Optional<ItemStackTemplate> lockingCost
+		boolean enableEntryReserving,
+		Optional<ItemStackTemplate> reservingCost
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
@@ -34,8 +34,8 @@ public record RogueLootTable(
 			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
 			Codec.BOOL.optionalFieldOf("enable_entry_banishing", false).forGetter(x -> x.enableEntryBanishing),
 			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost),
-			Codec.BOOL.optionalFieldOf("enable_entry_locking", false).forGetter(x -> x.enableEntryLocking),
-			ItemStackTemplate.CODEC.optionalFieldOf("locking_cost").forGetter(x -> x.lockingCost)
+			Codec.BOOL.optionalFieldOf("enable_entry_reserving", false).forGetter(x -> x.enableEntryReserving),
+			ItemStackTemplate.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reservingCost)
 	).apply(instance, RogueLootTable::new));
 
 	@Nullable

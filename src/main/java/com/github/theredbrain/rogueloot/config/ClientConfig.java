@@ -11,7 +11,7 @@ public class ClientConfig extends Config {
 	}
 
 	public ValidatedBoolean show_banished_loot_options = new ValidatedBoolean(true);
-	public ValidatedBoolean show_locked_loot_options = new ValidatedBoolean(true);
+	public ValidatedBoolean show_reserved_loot_options = new ValidatedBoolean(true);
 	public ValidatedBoolean enable_banishing_selected_options = new ValidatedBoolean(false);
-	public ValidatedBoolean enable_locking_selected_options = new ValidatedBoolean(false);
+	public ValidatedBoolean enable_reserving_selected_options = new ValidatedBoolean(false);
 }

@@ -23,8 +23,8 @@ public record GeneratedRogueLoot(
 		Optional<ItemStackTemplate> rerollCost,
 		boolean enableEntryBanishing,
 		Optional<ItemStackTemplate> banishingCost,
-		boolean enableEntryLocking,
-		Optional<ItemStackTemplate> lockingCost
+		boolean enableEntryReserving,
+		Optional<ItemStackTemplate> reservingCost
 ) {
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RogueLootGuiSettings.CODEC.fieldOf("rogue_loot_gui_settings").forGetter(x -> x.rogueLootGuiSettings),
@@ -35,8 +35,8 @@ public record GeneratedRogueLoot(
 			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
 			Codec.BOOL.fieldOf("enable_entry_banishing").forGetter(x -> x.enableEntryBanishing),
 			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost),
-			Codec.BOOL.optionalFieldOf("enable_entry_locking", false).forGetter(x -> x.enableEntryLocking),
-			ItemStackTemplate.CODEC.optionalFieldOf("locking_cost").forGetter(x -> x.lockingCost)
+			Codec.BOOL.optionalFieldOf("enable_entry_reserving", false).forGetter(x -> x.enableEntryReserving),
+			ItemStackTemplate.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reservingCost)
 	).apply(instance, GeneratedRogueLoot::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.ofMember(GeneratedRogueLoot::write, GeneratedRogueLoot::new);
@@ -65,8 +65,8 @@ public record GeneratedRogueLoot(
 		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rerollCost);
 		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryBanishing);
 		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.banishingCost);
-		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryLocking);
-		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.lockingCost);
+		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryReserving);
+		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.reservingCost);
 	}
 
 	public static GeneratedRogueLoot copy(final GeneratedRogueLoot generatedRogueLoot) {
@@ -83,8 +83,8 @@ public record GeneratedRogueLoot(
 				generatedRogueLoot.rerollCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.rerollCost().get().create())) : Optional.empty(),
 				generatedRogueLoot.enableEntryBanishing(),
 				generatedRogueLoot.banishingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.banishingCost().get().create())) : Optional.empty(),
-				generatedRogueLoot.enableEntryLocking(),
-				generatedRogueLoot.lockingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.lockingCost().get().create())) : Optional.empty()
+				generatedRogueLoot.enableEntryReserving(),
+				generatedRogueLoot.reservingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.reservingCost().get().create())) : Optional.empty()
 		);
 	}
 
@@ -93,7 +93,7 @@ public record GeneratedRogueLoot(
 			Optional<Identifier> iconTextureIdentifier,
 			String labelText,
 			boolean allowBanishing,
-			boolean allowLocking,
+			boolean allowReserving,
 			RogueLootTableEntryRarity rogueLootTableEntryRarity,
 			Optional<Identifier> parentRogueLootTableEntryId
 	) {
@@ -102,7 +102,7 @@ public record GeneratedRogueLoot(
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
 				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
 				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
-				Codec.BOOL.fieldOf("allow_locking").forGetter(x -> x.allowLocking),
+				Codec.BOOL.fieldOf("allow_reserving").forGetter(x -> x.allowReserving),
 				RogueLootTableEntryRarity.CODEC.fieldOf("rogue_loot_table_entry_rarity").forGetter(x -> x.rogueLootTableEntryRarity),
 				Identifier.CODEC.optionalFieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
@@ -126,7 +126,7 @@ public record GeneratedRogueLoot(
 			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.iconTextureIdentifier);
 			ByteBufCodecs.STRING_UTF8.encode(registryByteBuf, this.labelText);
 			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowBanishing);
-			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowLocking);
+			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowReserving);
 			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.rogueLootTableEntryRarity);
 			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.parentRogueLootTableEntryId);
 		}
@@ -137,7 +137,7 @@ public record GeneratedRogueLoot(
 					visibleRogueLootTableEntry.iconTextureIdentifier(),
 					visibleRogueLootTableEntry.labelText(),
 					visibleRogueLootTableEntry.allowBanishing(),
-					visibleRogueLootTableEntry.allowLocking(),
+					visibleRogueLootTableEntry.allowReserving(),
 					visibleRogueLootTableEntry.rogueLootTableEntryRarity(),
 					visibleRogueLootTableEntry.parentRogueLootTableEntryId()
 			);

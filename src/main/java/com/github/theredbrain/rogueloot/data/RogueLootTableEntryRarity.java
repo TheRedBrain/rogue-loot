@@ -20,7 +20,7 @@ public record RogueLootTableEntryRarity(
 		int defaultWeight,
 		LabelSettings banishedLabel,
 		LabelSettings defaultLabel,
-		LabelSettings lockedLabel,
+		LabelSettings reservedLabel,
 		LabelSettings selectedLabel
 ) {
 	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT);
@@ -29,7 +29,7 @@ public record RogueLootTableEntryRarity(
 			Codec.INT.optionalFieldOf("default_weight", 1).forGetter(x -> x.defaultWeight),
 			LabelSettings.CODEC.optionalFieldOf("banished_label", LabelSettings.DEFAULT).forGetter(x -> x.banishedLabel),
 			LabelSettings.CODEC.optionalFieldOf("default_label", LabelSettings.DEFAULT).forGetter(x -> x.defaultLabel),
-			LabelSettings.CODEC.optionalFieldOf("locked_label", LabelSettings.DEFAULT).forGetter(x -> x.lockedLabel),
+			LabelSettings.CODEC.optionalFieldOf("reserved_label", LabelSettings.DEFAULT).forGetter(x -> x.reservedLabel),
 			LabelSettings.CODEC.optionalFieldOf("selected_label", LabelSettings.DEFAULT).forGetter(x -> x.selectedLabel)
 	).apply(instance, RogueLootTableEntryRarity::new));
 
@@ -51,7 +51,7 @@ public record RogueLootTableEntryRarity(
 		ByteBufCodecs.INT.encode(registryByteBuf, this.defaultWeight);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.banishedLabel);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.defaultLabel);
-		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.lockedLabel);
+		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.reservedLabel);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.selectedLabel);
 	}
 

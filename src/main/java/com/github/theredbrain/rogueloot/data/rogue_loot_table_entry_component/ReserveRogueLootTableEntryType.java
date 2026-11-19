@@ -15,18 +15,18 @@ import net.minecraft.server.level.ServerPlayer;
 
 import java.util.Optional;
 
-public record UnlockRogueLootTableEntryType(
+public record ReserveRogueLootTableEntryType(
 		HolderSet<RogueLootTableEntry> entries
 ) implements RogueLootTableEntryComponentType {
-	public static final MapCodec<UnlockRogueLootTableEntryType> MAP_CODEC = RecordCodecBuilder.mapCodec(
+	public static final MapCodec<ReserveRogueLootTableEntryType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 							RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.entries)
 					)
-					.apply(instance, UnlockRogueLootTableEntryType::new)
+					.apply(instance, ReserveRogueLootTableEntryType::new)
 	);
 
 	@Override
-	public MapCodec<UnlockRogueLootTableEntryType> codec() {
+	public MapCodec<ReserveRogueLootTableEntryType> codec() {
 		return MAP_CODEC;
 	}
 
@@ -38,7 +38,7 @@ public record UnlockRogueLootTableEntryType(
 				continue;
 			}
 			Identifier entryIdentifier = optionalResourceKey.get().identifier();
-			DataAttachmentHelper.unlockRogueLootEntry(serverPlayer, entryIdentifier);
+			DataAttachmentHelper.reserveRogueLootEntry(serverPlayer, entryIdentifier);
 		}
 	}
 }

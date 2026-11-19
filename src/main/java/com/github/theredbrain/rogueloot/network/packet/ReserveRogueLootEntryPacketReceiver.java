@@ -12,21 +12,21 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
-public class LockRogueLootEntryPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<LockRogueLootEntryPacket> {
+public class ReserveRogueLootEntryPacketReceiver implements ServerPlayNetworking.PlayPayloadHandler<ReserveRogueLootEntryPacket> {
 
 	@Override
-	public void receive(final LockRogueLootEntryPacket payload, final ServerPlayNetworking.Context context) {
+	public void receive(final ReserveRogueLootEntryPacket payload, final ServerPlayNetworking.Context context) {
 
 		ServerPlayer serverPlayer = context.player();
 		ServerLevel serverLevel = serverPlayer.level();
 
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier = payload.generatedRogueLootTableIdentifier();
 		Optional<ItemStack> itemStack = payload.itemStack();
-		Identifier lockedRogueLootEntry = payload.lockedRogueLootEntry();
-		Optional<ItemStack> lockingCost = payload.lockingCost();
+		Identifier reservedRogueLootEntry = payload.reservedRogueLootEntry();
+		Optional<ItemStack> reservingCost = payload.reservingCost();
 
-		if (lockingCost.isEmpty() || PlayerHelper.payItemCost(serverPlayer, lockingCost.get())) {
-			DataAttachmentHelper.lockRogueLootEntry(serverPlayer, lockedRogueLootEntry);
+		if (reservingCost.isEmpty() || PlayerHelper.payItemCost(serverPlayer, reservingCost.get())) {
+			DataAttachmentHelper.reserveRogueLootEntry(serverPlayer, reservedRogueLootEntry);
 
 			RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, generatedRogueLootTableIdentifier, itemStack);
 		}
