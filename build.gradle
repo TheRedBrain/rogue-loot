@@ -102,6 +102,18 @@ dependencies {
 		exclude(group: "com.terraformersmc")
 	}
 
+	// Mana Attributes
+	implementation "maven.modrinth:mana-attributes:${project.mana_attributes_version}"
+
+	// Stamina Attributes
+	implementation "maven.modrinth:stamina-attributes:${project.stamina_attributes_version}"
+
+	// Overhauled Damage
+	implementation "maven.modrinth:overhauled-damage:${project.overhauled_damage_version}"
+
+	// Resource Bar API
+	implementation "maven.modrinth:resource-bar-api:${project.resource_bar_api_version}"
+
 	// Data Fixer
 	implementation "maven.modrinth:easy-data-fix:${project.easy_data_fix_version}-fabric"
 
@@ -185,7 +197,10 @@ publishMods {
 		)
 		optional(
 				"lootables",
-				"loot-n-explore"
+				"loot-n-explore",
+				"mana-attributes",
+				"overhauled-damage",
+				"stamina-attributes"
 		)
 	}
 
@@ -201,7 +216,10 @@ publishMods {
 		)
 		optional(
 				"lootables",
-				"loot-n-explore"
+				"loot-n-explore",
+				"mana-attributes",
+				"overhauled-damage",
+				"stamina-attributes"
 		)
 	}
 

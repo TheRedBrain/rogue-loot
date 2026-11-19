@@ -9,11 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStackTemplate;
 
 public record HealXAmountType(
-		float healAmount
+		float amount
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<HealXAmountType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			i -> i.group(
-							Codec.FLOAT.validate(value -> value <= 0.0F ? DataResult.error(() -> "Health amount can not be zero or smaller, but was " + value) : DataResult.success(value)).fieldOf("heal_amount").forGetter(HealXAmountType::healAmount)
+							Codec.FLOAT.validate(value -> value <= 0.0F ? DataResult.error(() -> "Health amount can not be zero or smaller, but was " + value) : DataResult.success(value)).fieldOf("heal_amount").forGetter(HealXAmountType::amount)
 					)
 					.apply(i, HealXAmountType::new)
 	);
@@ -25,6 +25,6 @@ public record HealXAmountType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		serverPlayer.heal(this.healAmount);
+		serverPlayer.heal(this.amount);
 	}
 }

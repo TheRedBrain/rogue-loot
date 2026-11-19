@@ -5,8 +5,6 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -36,15 +34,15 @@ public record VanillaLootTableType(
 		for (ItemStack itemStack : this.lootTableHolder.value().getRandomItems(params)) {
 
 			if (serverPlayer.addItem(itemStack)) {
-				serverLevel.playSound(null, serverPlayer.getX(), serverPlayer.getY(), serverPlayer.getZ(), SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2f, ((serverPlayer.getRandom().nextFloat() - serverPlayer.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
 				bl = true;
 				continue;
 			}
 			ItemEntity itemEntity = serverPlayer.drop(itemStack, false);
 
-			if (itemEntity == null) continue;
-			itemEntity.setNoPickUpDelay();
-			itemEntity.setTarget(serverPlayer.getUUID());
+			if (itemEntity != null) {
+				itemEntity.setNoPickUpDelay();
+				itemEntity.setTarget(serverPlayer.getUUID());
+			}
 		}
 		if (bl) {
 			serverPlayer.containerMenu.broadcastChanges();

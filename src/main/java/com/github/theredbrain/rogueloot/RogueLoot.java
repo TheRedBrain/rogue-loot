@@ -1,6 +1,8 @@
 package com.github.theredbrain.rogueloot;
 
-import com.github.theredbrain.rogueloot.compat.LootablesCompat;
+import com.github.theredbrain.rogueloot.compatibility.LootablesCompat;
+import com.github.theredbrain.rogueloot.compatibility.ManaAttributesCompat;
+import com.github.theredbrain.rogueloot.compatibility.StaminaAttributesCompat;
 import com.github.theredbrain.rogueloot.registry.RogueLootBlocks;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
@@ -25,6 +27,18 @@ public class RogueLoot implements ModInitializer {
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	public static final boolean isLootablesLoaded = FabricLoader.getInstance().isModLoaded("lootables");
+	public static final boolean isManaAttributesLoaded = FabricLoader.getInstance().isModLoaded("manaattributes");
+	public static final boolean isOverhauledDamageLoaded = FabricLoader.getInstance().isModLoaded("overhauleddamage");
+	public static final boolean isStaminaAttributesLoaded = FabricLoader.getInstance().isModLoaded("staminaattributes");
+
+	private static void initCompatibilityRogueLootTableEntryComponentTypes() {
+		if (isManaAttributesLoaded) {
+			ManaAttributesCompat.init();
+		}
+		if (isStaminaAttributesLoaded) {
+			StaminaAttributesCompat.init();
+		}
+	}
 
 	public static void supplyLootableLoot(final Identifier identifier, final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Vec3 pos, final int rolls, final int choices, final boolean withChoice, @Nullable final ItemStack itemStack) {
 		if (isLootablesLoaded) {
@@ -52,6 +66,7 @@ public class RogueLoot implements ModInitializer {
 
 		RogueLootRegistries.init();
 		RogueLootTableEntryComponentTypes.init();
+		initCompatibilityRogueLootTableEntryComponentTypes();
 		RogueLootServerEvents.initializeEvents();
 		RogueLootServerPackets.init();
 

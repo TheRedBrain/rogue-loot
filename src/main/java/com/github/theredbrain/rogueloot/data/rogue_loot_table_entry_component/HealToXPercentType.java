@@ -9,11 +9,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStackTemplate;
 
 public record HealToXPercentType(
-		float healthRatio
+		float ratio
 ) implements RogueLootTableEntryComponentType {
 	public static final MapCodec<HealToXPercentType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			i -> i.group(
-							Codec.FLOAT.validate(value -> value <= 0.0F ? DataResult.error(() -> "Health Ration can not be zero or smaller, but was " + value) : value > 1.0F ? DataResult.error(() -> "Health ratio can not be bigger than 1.0F, but was " + value) : DataResult.success(value)).fieldOf("health_ratio").forGetter(HealToXPercentType::healthRatio)
+							Codec.FLOAT.validate(value -> value <= 0.0F ? DataResult.error(() -> "Health ratio can not be zero or smaller, but was " + value) : value > 1.0F ? DataResult.error(() -> "Health ratio can not be bigger than 1.0F, but was " + value) : DataResult.success(value)).fieldOf("health_ratio").forGetter(HealToXPercentType::ratio)
 					)
 					.apply(i, HealToXPercentType::new)
 	);
@@ -25,8 +25,8 @@ public record HealToXPercentType(
 
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
-		if (this.healthRatio > 0.0F) {
-			float newHealth = serverPlayer.getMaxHealth() * this.healthRatio;
+		if (this.ratio > 0.0F) {
+			float newHealth = serverPlayer.getMaxHealth() * this.ratio;
 			serverPlayer.setHealth(newHealth);
 		}
 	}

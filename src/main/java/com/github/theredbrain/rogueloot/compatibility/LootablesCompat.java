@@ -1,4 +1,4 @@
-package com.github.theredbrain.rogueloot.compat;
+package com.github.theredbrain.rogueloot.compatibility;
 
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
