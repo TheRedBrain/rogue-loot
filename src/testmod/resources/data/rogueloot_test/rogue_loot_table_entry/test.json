@@ -1,10 +1,14 @@
 {
   "components": [
     {
-      "type": "rogueloot:give_item_stack",
+      "type": "rogueloot:item_stack",
       "item_stack": {
         "id": "minecraft:coal"
       }
+    },
+    {
+      "type": "rogueloot:play_sound",
+      "sound_event": "minecraft:entity.item.pickup"
     }
   ],
   "display_stack": {

@@ -1,7 +1,7 @@
 {
   "components": [
     {
-      "type": "rogueloot:apply_mob_effect",
+      "type": "rogueloot:mob_effect_instance",
       "mob_effect_instance": {
         "id": "minecraft:strength",
         "amplifier": 0,

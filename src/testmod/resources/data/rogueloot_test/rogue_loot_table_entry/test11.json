@@ -1,7 +1,7 @@
 {
   "components": [
     {
-      "type": "rogueloot:give_item_stack",
+      "type": "rogueloot:item_stack",
       "item_stack": {
         "id": "minecraft:stick"
       }
