@@ -1,6 +1,7 @@
 package com.github.theredbrain.rogueloot.client.gui.components;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -107,25 +108,29 @@ public class LootOptionButton extends Button {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);
 
 		boolean hasMessage = !this.getMessage().equals(Component.empty());
+		int top = this.getY();
 		if (this.displayStack.isPresent()) {
 			if (hasMessage) {
+				top = this.getY() + 27;
 				graphics.item(this.displayStack.get().create(), this.getX() + 17, this.getY() + 7);
-				// TODO wrap message
-				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.getMessage());
 			} else {
 				graphics.item(this.displayStack.get().create(), this.getX() + 17, this.getY() + 17);
 			}
 		} else if (this.iconTexture.isPresent()) {
 			if (hasMessage) {
+				top = this.getY() + 27;
 				graphics.blit(RenderPipelines.GUI_TEXTURED, this.iconTexture.get(), this.getX() + 17, this.getY() + 7, 0.0F, 0.0F, 16, 16, 16, 16);
-				// TODO wrap message
-				graphics.textRenderer().accept(this.getX() + 7, this.getY() + 27, this.getMessage());
 			} else {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, this.iconTexture.get(), this.getX() + 9, this.getY() + 9, 0.0F, 0.0F, 32, 32, 32, 32);
 			}
-		} else if (hasMessage) {
-			// TODO wrap message
-			graphics.textRenderer().accept(this.getX() + 7, this.getY() + 20, this.getMessage());
+		}
+		if (hasMessage) {
+			int left = this.getX() + 5;
+			int right = this.getX() + this.getWidth() - 5;
+			int centerX = this.getX() + this.getWidth() / 2;
+			int bottom = this.getY() + this.getHeight() - 5;
+			ActiveTextCollector output = graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE);
+			output.acceptScrolling(this.getMessage(), centerX, left, right, top, bottom);
 		}
 
 	}

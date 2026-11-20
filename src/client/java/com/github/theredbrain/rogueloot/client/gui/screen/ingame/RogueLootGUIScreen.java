@@ -461,6 +461,7 @@ public class RogueLootGUIScreen extends Screen {
 
 		boolean entryIsReserved = DataAttachmentHelper.isRogueLootEntryReserved(this.minecraft.player, visibleRogueLootTableEntry.parentRogueLootTableEntryId());
 		boolean entryIsBanished = DataAttachmentHelper.isRogueLootEntryBanished(this.minecraft.player, visibleRogueLootTableEntry.parentRogueLootTableEntryId());
+		((LootOptionButton) lootoptionButton).setReserved(entryIsReserved);
 		if (!entryIsReserved && !entryIsBanished) {
 			lootoptionButton.visible = true;
 		} else {
