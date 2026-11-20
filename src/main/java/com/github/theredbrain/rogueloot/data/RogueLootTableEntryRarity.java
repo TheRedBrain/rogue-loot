@@ -3,6 +3,7 @@ package com.github.theredbrain.rogueloot.data;
 import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
@@ -21,16 +22,18 @@ public record RogueLootTableEntryRarity(
 		LabelSettings banishedLabel,
 		LabelSettings defaultLabel,
 		LabelSettings reservedLabel,
-		LabelSettings selectedLabel
+		LabelSettings selectedLabel,
+		Optional<Identifier> tooltipStyle
 ) {
-	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT);
+	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT, LabelSettings.DEFAULT, Optional.empty());
 	public static final Codec<RogueLootTableEntryRarity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.optionalFieldOf("asset_path_addition", "").forGetter(x -> x.assetPathAddition),
 			Codec.INT.optionalFieldOf("default_weight", 1).forGetter(x -> x.defaultWeight),
 			LabelSettings.CODEC.optionalFieldOf("banished_label", LabelSettings.DEFAULT).forGetter(x -> x.banishedLabel),
 			LabelSettings.CODEC.optionalFieldOf("default_label", LabelSettings.DEFAULT).forGetter(x -> x.defaultLabel),
 			LabelSettings.CODEC.optionalFieldOf("reserved_label", LabelSettings.DEFAULT).forGetter(x -> x.reservedLabel),
-			LabelSettings.CODEC.optionalFieldOf("selected_label", LabelSettings.DEFAULT).forGetter(x -> x.selectedLabel)
+			LabelSettings.CODEC.optionalFieldOf("selected_label", LabelSettings.DEFAULT).forGetter(x -> x.selectedLabel),
+			Identifier.CODEC.optionalFieldOf("tooltip_style").forGetter(x -> x.tooltipStyle)
 	).apply(instance, RogueLootTableEntryRarity::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RogueLootTableEntryRarity> STREAM_CODEC = StreamCodec.ofMember(RogueLootTableEntryRarity::write, RogueLootTableEntryRarity::new);
@@ -42,7 +45,8 @@ public record RogueLootTableEntryRarity(
 				LabelSettings.STREAM_CODEC.decode(registryByteBuf),
 				LabelSettings.STREAM_CODEC.decode(registryByteBuf),
 				LabelSettings.STREAM_CODEC.decode(registryByteBuf),
-				LabelSettings.STREAM_CODEC.decode(registryByteBuf)
+				LabelSettings.STREAM_CODEC.decode(registryByteBuf),
+				ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
@@ -53,6 +57,7 @@ public record RogueLootTableEntryRarity(
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.defaultLabel);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.reservedLabel);
 		LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.selectedLabel);
+		ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.tooltipStyle);
 	}
 
 	@Nullable

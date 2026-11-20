@@ -36,6 +36,8 @@
 	"gui.rogue_loot_screen.reserve.singular": "Reserve (%s Attempt)",
 	"gui.rogue_loot_screen.reserve.plural": "Reserve (%s Attempts)",
 	"gui.rogue_loot_screen.reserve.stop": "Stop Reserving",
+	"gui.rogue_loot_screen.tooltip.uses_left.singular": "Can be chosen %s more time.",
+	"gui.rogue_loot_screen.tooltip.uses_left.plural": "Can be chosen %s more times.",
 
 
 	"hud.message.rogue_loot.max_choices_must_not_be_smaller_than_min_choices": "Max Choices was smaller than Min Choices. This has been corrected.",

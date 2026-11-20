@@ -1,6 +1,5 @@
 package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
-import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
@@ -10,8 +9,8 @@ import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.network.packet.ApplyRogueLootSelectionPacket;
 import com.github.theredbrain.rogueloot.network.packet.BanishRogueLootEntryPacket;
-import com.github.theredbrain.rogueloot.network.packet.ReserveRogueLootEntryPacket;
 import com.github.theredbrain.rogueloot.network.packet.RerollRogueLootScreenPacket;
+import com.github.theredbrain.rogueloot.network.packet.ReserveRogueLootEntryPacket;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,7 +20,6 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
-import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -274,18 +272,18 @@ public class RogueLootGUIScreen extends Screen {
 		);
 		// endregion banishing
 
-		this.selectLootOption0Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 0)));
-		this.selectLootOption1Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 1)));
-		this.selectLootOption2Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 2)));
-		this.selectLootOption3Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 3)));
-		this.selectLootOption4Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 4)));
-		this.selectLootOption5Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 5)));
-		this.selectLootOption6Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 6)));
-		this.selectLootOption7Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 7)));
-		this.selectLootOption8Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 8)));
-		this.selectLootOption9Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 9)));
-		this.selectLootOption10Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 10)));
-		this.selectLootOption11Button = this.addRenderableWidget(new LootOptionButton(0, 0, 50, 50, button -> this.selectLootOption(button, 11)));
+		this.selectLootOption0Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 0)));
+		this.selectLootOption1Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 1)));
+		this.selectLootOption2Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 2)));
+		this.selectLootOption3Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 3)));
+		this.selectLootOption4Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 4)));
+		this.selectLootOption5Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 5)));
+		this.selectLootOption6Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 6)));
+		this.selectLootOption7Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 7)));
+		this.selectLootOption8Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 8)));
+		this.selectLootOption9Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 9)));
+		this.selectLootOption10Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 10)));
+		this.selectLootOption11Button = this.addRenderableWidget(new LootOptionButton(this.font, 0, 0, 50, 50, button -> this.selectLootOption(button, 11)));
 
 		// region rerolling
 		MutableComponent rerollButtonLabelComponent = this.rerollAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.reroll.simple") : this.rerollAttempts == 0 ? Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts) : this.rerollAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.reroll.singular", this.rerollAttempts) : Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts);
@@ -469,14 +467,38 @@ public class RogueLootGUIScreen extends Screen {
 			lootoptionButton.visible = (entryIsReserved && showReservedLootOptions) || (entryIsBanished && showBanishedLootOptions);
 		}
 
-		Tooltip tooltip = null;
+		List<Component> list = new ArrayList<>();
 
-		if (visibleRogueLootTableEntry.usesLeft() > 0) {
-
-			tooltip = Tooltip.create(Component.translatable("Uses left: %s", visibleRogueLootTableEntry.usesLeft()));
+		ItemStack tooltipStack = ItemStack.EMPTY;
+		if (visibleRogueLootTableEntry.tooltipStack().isPresent()) {
+			tooltipStack = visibleRogueLootTableEntry.tooltipStack().get().create();
+		}
+		if (!tooltipStack.isEmpty()) {
+			list.addAll(Screen.getTooltipFromItem(this.minecraft, tooltipStack));
 		}
 
-		lootoptionButton.setTooltip(tooltip);
+		if (!visibleRogueLootTableEntry.tooltipLabelLines().isEmpty()) {
+			for (String string : visibleRogueLootTableEntry.tooltipLabelLines()) {
+				list.add(Component.translatable(string));
+			}
+		}
+
+		if (visibleRogueLootTableEntry.usesLeft() > 0) {
+			if (!list.isEmpty()) {
+				list.add(Component.empty());
+			}
+			if (visibleRogueLootTableEntry.usesLeft() > 1) {
+				list.add(Component.translatable("gui.rogue_loot_screen.tooltip.uses_left.plural", visibleRogueLootTableEntry.usesLeft()));
+			} else {
+				list.add(Component.translatable("gui.rogue_loot_screen.tooltip.uses_left.singular", visibleRogueLootTableEntry.usesLeft()));
+			}
+		}
+		if (!list.isEmpty()) {
+			((LootOptionButton) lootoptionButton).setTooltipLines(list);
+		}
+		if (rogueLootTableEntryRarity.tooltipStyle().isPresent()) {
+			((LootOptionButton) lootoptionButton).setTooltipStyle(rogueLootTableEntryRarity.tooltipStyle().get());
+		}
 	}
 
 	private int[][] getButtonPositions(final int visibleOptionsAmount) {
@@ -489,7 +511,7 @@ public class RogueLootGUIScreen extends Screen {
 		int odd_columns_5 = this.width / 2 + 31;
 		int odd_columns_6 = this.width / 2 + 87;
 		int odd_columns_7 = this.width / 2 + 143;
-		
+
 		int even_columns_1 = this.width / 2 - 165;
 		int even_columns_2 = this.width / 2 - 109;
 		int even_columns_3 = this.width / 2 - 53;
@@ -501,7 +523,7 @@ public class RogueLootGUIScreen extends Screen {
 		int odd_rows_1 = this.height / 2 - 81;
 		int odd_rows_2 = this.height / 2 - 25;
 		int odd_rows_3 = this.height / 2 + 31;
-		
+
 		int even_rows_1 = this.height / 2 - 53;
 		int even_rows_2 = this.height / 2 + 3;
 

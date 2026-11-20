@@ -246,6 +246,8 @@ public class RogueLootTableHelper {
 					rogueLootTableEntry.displayStack(),
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
+					rogueLootTableEntry.tooltipStack(),
+					rogueLootTableEntry.tooltipLabelLines(),
 					usesLeft,
 					rogueLootTableEntry.allowBanishing(),
 					rogueLootTableEntry.allowReserving(),

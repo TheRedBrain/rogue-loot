@@ -11,5 +11,9 @@
     "id": "minecraft:iron_sword"
   },
   "label_text": "Iron Sword",
-  "rarity": "rogueloot_test:rare"
+  "tooltip_stack": {
+    "id": "minecraft:iron_sword"
+  },
+  "rarity": "rogueloot_test:rare",
+  "use_limit": 3
 }

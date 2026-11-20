@@ -2,13 +2,17 @@ package com.github.theredbrain.rogueloot.client.gui.components;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import net.minecraft.client.gui.ActiveTextCollector;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
+import org.jspecify.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class LootOptionButton extends Button {
@@ -27,16 +31,21 @@ public class LootOptionButton extends Button {
 	private Component selectedMessage;
 	private Optional<Identifier> iconTexture = Optional.empty();
 	private Optional<ItemStackTemplate> displayStack = Optional.empty();
+	private List<Component> tooltipLines = List.of();
+	@Nullable
+	private Identifier tooltipStyle = null;
 	private boolean selected;
 	private boolean reserved;
+	private final Font font;
 
-	public LootOptionButton(final int x, final int y, final int width, final int height, final OnPress onPress) {
+	public LootOptionButton(Font font, final int x, final int y, final int width, final int height, final OnPress onPress) {
 		super(x, y, width, height, Component.empty(), onPress, Button.DEFAULT_NARRATION);
 		setTextureIds("");
 		this.banishedMessage = Component.empty();
 		this.defaultMessage = Component.empty();
 		this.reservedMessage = Component.empty();
 		this.selectedMessage = Component.empty();
+		this.font = font;
 	}
 
 	public void setTextureIds(final String string) {
@@ -95,6 +104,14 @@ public class LootOptionButton extends Button {
 		return this.active ? (this.selected ? this.selectedMessage : this.defaultMessage) : (this.reserved ? this.reservedMessage : this.banishedMessage);
 	}
 
+	public void setTooltipLines(List<Component> tooltipLines) {
+		this.tooltipLines = new ArrayList<>(tooltipLines);
+	}
+
+	public void setTooltipStyle(@Nullable Identifier tooltipStyle) {
+		this.tooltipStyle = tooltipStyle;
+	}
+
 	@Override
 	protected void extractContents(final GuiGraphicsExtractor graphics, final int mouseX, final int mouseY, final float a) {
 
@@ -108,7 +125,7 @@ public class LootOptionButton extends Button {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textureId, this.getX(), this.getY(), this.width, this.height);
 
 		boolean hasMessage = !this.getMessage().equals(Component.empty());
-		int top = this.getY();
+		int top = this.getY() + 6;
 		if (this.displayStack.isPresent()) {
 			if (hasMessage) {
 				top = this.getY() + 27;
@@ -125,13 +142,19 @@ public class LootOptionButton extends Button {
 			}
 		}
 		if (hasMessage) {
-			int left = this.getX() + 5;
-			int right = this.getX() + this.getWidth() - 5;
+			int left = this.getX() + 6;
+			int right = this.getX() + this.getWidth() - 6;
 			int centerX = this.getX() + this.getWidth() / 2;
-			int bottom = this.getY() + this.getHeight() - 5;
+			int bottom = this.getY() + this.getHeight() - 6;
 			ActiveTextCollector output = graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE);
 			output.acceptScrolling(this.getMessage(), centerX, left, right, top, bottom);
 		}
-
+		if (this.isHovered) {
+			if (!this.tooltipLines.isEmpty()) {
+				graphics.setComponentTooltipForNextFrame(
+						this.font, this.tooltipLines, mouseX, mouseY, this.tooltipStyle
+				);
+			}
+		}
 	}
 }

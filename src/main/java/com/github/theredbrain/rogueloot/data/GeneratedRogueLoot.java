@@ -2,7 +2,6 @@ package com.github.theredbrain.rogueloot.data;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -92,6 +91,8 @@ public record GeneratedRogueLoot(
 			Optional<ItemStackTemplate> displayStack,
 			Optional<Identifier> iconTextureIdentifier,
 			String labelText,
+			Optional<ItemStackTemplate> tooltipStack,
+			List<String> tooltipLabelLines,
 			int usesLeft,
 			boolean allowBanishing,
 			boolean allowReserving,
@@ -102,6 +103,8 @@ public record GeneratedRogueLoot(
 				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
 				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
+				ItemStackTemplate.CODEC.optionalFieldOf("tooltip_stack").forGetter(x -> x.displayStack),
+				Codec.STRING.listOf().optionalFieldOf("tooltip_label_lines", List.of()).forGetter(x -> x.tooltipLabelLines),
 				Codec.INT.fieldOf("uses_left").forGetter(x -> x.usesLeft),
 				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
 				Codec.BOOL.fieldOf("allow_reserving").forGetter(x -> x.allowReserving),
@@ -116,6 +119,8 @@ public record GeneratedRogueLoot(
 					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
 					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf),
 					ByteBufCodecs.STRING_UTF8.decode(friendlyByteBuf),
+					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					friendlyByteBuf.readList(ByteBufCodecs.STRING_UTF8),
 					ByteBufCodecs.INT.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
@@ -124,15 +129,17 @@ public record GeneratedRogueLoot(
 			);
 		}
 
-		private void write(final ByteBuf registryByteBuf) {
-			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.displayStack);
-			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.iconTextureIdentifier);
-			ByteBufCodecs.STRING_UTF8.encode(registryByteBuf, this.labelText);
-			ByteBufCodecs.INT.encode(registryByteBuf, this.usesLeft);
-			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowBanishing);
-			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowReserving);
-			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.rogueLootTableEntryRarity);
-			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.parentRogueLootTableEntryId);
+		private void write(final FriendlyByteBuf friendlyByteBuf) {
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.displayStack);
+			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(friendlyByteBuf, this.iconTextureIdentifier);
+			ByteBufCodecs.STRING_UTF8.encode(friendlyByteBuf, this.labelText);
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.tooltipStack);
+			friendlyByteBuf.writeCollection(this.tooltipLabelLines, ByteBufCodecs.STRING_UTF8);
+			ByteBufCodecs.INT.encode(friendlyByteBuf, this.usesLeft);
+			ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.allowBanishing);
+			ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.allowReserving);
+			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootTableEntryRarity);
+			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(friendlyByteBuf, this.parentRogueLootTableEntryId);
 		}
 
 		public static VisibleRogueLootTableEntry copy(final VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
@@ -140,6 +147,8 @@ public record GeneratedRogueLoot(
 					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),
 					visibleRogueLootTableEntry.iconTextureIdentifier(),
 					visibleRogueLootTableEntry.labelText(),
+					visibleRogueLootTableEntry.tooltipStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.tooltipStack().get().create())) : Optional.empty(),
+					new ArrayList<>(visibleRogueLootTableEntry.tooltipLabelLines()),
 					visibleRogueLootTableEntry.usesLeft(),
 					visibleRogueLootTableEntry.allowBanishing(),
 					visibleRogueLootTableEntry.allowReserving(),
