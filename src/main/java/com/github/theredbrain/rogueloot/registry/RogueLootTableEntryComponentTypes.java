@@ -17,6 +17,8 @@ import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.Se
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.SetExperiencePointType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.UnbanishRogueLootTableEntryType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.UnreserveRogueLootTableEntryType;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.UnuseRogueLootTableEntryType;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.UseRogueLootTableEntryType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.VanillaLootTableType;
 import net.minecraft.core.Registry;
 
@@ -39,6 +41,8 @@ public class RogueLootTableEntryComponentTypes {
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("set_experience_point"), SetExperiencePointType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("unbanish_rogue_loot_table_entries"), UnbanishRogueLootTableEntryType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("unreserve_rogue_loot_table_entries"), UnreserveRogueLootTableEntryType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("unuse_rogue_loot_table_entries"), UnuseRogueLootTableEntryType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("use_rogue_loot_table_entries"), UseRogueLootTableEntryType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("vanilla_loot_table"), VanillaLootTableType.MAP_CODEC);
 	}
 
