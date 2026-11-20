@@ -21,6 +21,7 @@ import net.minecraft.client.GameNarrator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.CycleButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -466,6 +467,15 @@ public class RogueLootGUIScreen extends Screen {
 			lootoptionButton.active = false;
 			lootoptionButton.visible = (entryIsReserved && showReservedLootOptions) || (entryIsBanished && showBanishedLootOptions);
 		}
+
+		Tooltip tooltip = null;
+
+		if (visibleRogueLootTableEntry.usesLeft() > 0) {
+
+			tooltip = Tooltip.create(Component.translatable("Uses left: %s", visibleRogueLootTableEntry.usesLeft()));
+		}
+
+		lootoptionButton.setTooltip(tooltip);
 	}
 
 	private int[][] getButtonPositions(final int visibleOptionsAmount) {
@@ -680,7 +690,6 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private List<Identifier> getChosenRogueLootEntries() {
-		RogueLoot.info("RogueLootGUIScreen getChosenRogueLootEntries");
 		List<Identifier> list = new ArrayList<>();
 		List<GeneratedRogueLoot.VisibleRogueLootTableEntry> visibleRogueLootTableEntryList = this.generatedRogueLoot.entryList();
 
@@ -688,7 +697,6 @@ public class RogueLootGUIScreen extends Screen {
 			if (this.selectedOptions[i]) {
 				Optional<Identifier> optionalIdentifier = visibleRogueLootTableEntryList.get(i).parentRogueLootTableEntryId();
 				if (optionalIdentifier.isPresent()) {
-					RogueLoot.info("optionalIdentifier.get(): " + optionalIdentifier.get());
 					list.add(optionalIdentifier.get());
 				}
 			}

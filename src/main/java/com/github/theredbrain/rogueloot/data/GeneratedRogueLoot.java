@@ -92,6 +92,7 @@ public record GeneratedRogueLoot(
 			Optional<ItemStackTemplate> displayStack,
 			Optional<Identifier> iconTextureIdentifier,
 			String labelText,
+			int usesLeft,
 			boolean allowBanishing,
 			boolean allowReserving,
 			RogueLootTableEntryRarity rogueLootTableEntryRarity,
@@ -101,6 +102,7 @@ public record GeneratedRogueLoot(
 				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
 				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
+				Codec.INT.fieldOf("uses_left").forGetter(x -> x.usesLeft),
 				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
 				Codec.BOOL.fieldOf("allow_reserving").forGetter(x -> x.allowReserving),
 				RogueLootTableEntryRarity.CODEC.fieldOf("rogue_loot_table_entry_rarity").forGetter(x -> x.rogueLootTableEntryRarity),
@@ -114,6 +116,7 @@ public record GeneratedRogueLoot(
 					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
 					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf),
 					ByteBufCodecs.STRING_UTF8.decode(friendlyByteBuf),
+					ByteBufCodecs.INT.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
 					RogueLootTableEntryRarity.STREAM_CODEC.decode((RegistryFriendlyByteBuf) friendlyByteBuf),
@@ -125,6 +128,7 @@ public record GeneratedRogueLoot(
 			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.displayStack);
 			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.iconTextureIdentifier);
 			ByteBufCodecs.STRING_UTF8.encode(registryByteBuf, this.labelText);
+			ByteBufCodecs.INT.encode(registryByteBuf, this.usesLeft);
 			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowBanishing);
 			ByteBufCodecs.BOOL.encode(registryByteBuf, this.allowReserving);
 			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.rogueLootTableEntryRarity);
@@ -136,6 +140,7 @@ public record GeneratedRogueLoot(
 					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),
 					visibleRogueLootTableEntry.iconTextureIdentifier(),
 					visibleRogueLootTableEntry.labelText(),
+					visibleRogueLootTableEntry.usesLeft(),
 					visibleRogueLootTableEntry.allowBanishing(),
 					visibleRogueLootTableEntry.allowReserving(),
 					visibleRogueLootTableEntry.rogueLootTableEntryRarity(),

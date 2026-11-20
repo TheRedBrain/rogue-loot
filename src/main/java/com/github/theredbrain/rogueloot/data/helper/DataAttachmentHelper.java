@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.data.attached.BanishedRogueLootEntriesAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.ReservedRogueLootEntriesAttachedData;
+import com.github.theredbrain.rogueloot.data.attached.RogueLootEntryUsesAttachedData;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
@@ -9,8 +10,10 @@ import net.minecraft.world.entity.player.Player;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -111,6 +114,69 @@ public class DataAttachmentHelper {
 			RogueLootDataAttachments.setBanishedRogueLootEntriesAttachedData(serverPlayer, new BanishedRogueLootEntriesAttachedData(new ArrayList<>(newBanishedRogueLootEntrySet)));
 		} else {
 			RogueLootDataAttachments.setBanishedRogueLootEntriesAttachedData(serverPlayer, BanishedRogueLootEntriesAttachedData.DEFAULT);
+		}
+	}
+
+	public static int getTimesRogueLootEntryWasUsed(@Nullable Player player, final Optional<Identifier> entryIdentifier) {
+		return player != null && entryIdentifier.isPresent() ? RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(player).rogueLootEntryUses().getOrDefault(entryIdentifier.get(), 0) : 0;
+	}
+
+	public static void useRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList) {
+		RogueLootEntryUsesAttachedData newRogueLootEntryUsesAttachedData = RogueLootEntryUsesAttachedData.copy(RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(serverPlayer));
+		Map<Identifier, Integer> newRogueLootEntryUses = new HashMap<>(newRogueLootEntryUsesAttachedData.rogueLootEntryUses());
+
+		for (Identifier identifier : entryIdentifierList) {
+			int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(identifier, 0);
+			newRogueLootEntryUses.put(identifier, oldUse + 1);
+		}
+
+		RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, new RogueLootEntryUsesAttachedData(newRogueLootEntryUses));
+	}
+
+	public static void useRogueLootEntry(final ServerPlayer serverPlayer, final Identifier entryIdentifier) {
+		RogueLootEntryUsesAttachedData newRogueLootEntryUsesAttachedData = RogueLootEntryUsesAttachedData.copy(RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(serverPlayer));
+		Map<Identifier, Integer> newRogueLootEntryUses = new HashMap<>(newRogueLootEntryUsesAttachedData.rogueLootEntryUses());
+
+		int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(entryIdentifier, 0);
+		newRogueLootEntryUses.put(entryIdentifier, oldUse + 1);
+
+		RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, new RogueLootEntryUsesAttachedData(newRogueLootEntryUses));
+	}
+
+	public static void unuseRogueLootEntries(final ServerPlayer serverPlayer, final List<Identifier> entryIdentifierList, boolean removeAllUses) {
+		RogueLootEntryUsesAttachedData newRogueLootEntryUsesAttachedData = RogueLootEntryUsesAttachedData.copy(RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(serverPlayer));
+		Map<Identifier, Integer> newRogueLootEntryUses = new HashMap<>(newRogueLootEntryUsesAttachedData.rogueLootEntryUses());
+
+		for (Identifier identifier : entryIdentifierList) {
+			int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(identifier, 0);
+			if (oldUse > 1 && !removeAllUses) {
+				newRogueLootEntryUses.put(identifier, oldUse - 1);
+			} else {
+				newRogueLootEntryUses.remove(identifier);
+			}
+		}
+
+		RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, new RogueLootEntryUsesAttachedData(newRogueLootEntryUses));
+	}
+
+	/**
+	 * Removes all uses of all entries when entryIdentifier is null
+	 */
+	public static void unuseRogueLootEntry(final ServerPlayer serverPlayer, @Nullable final Identifier entryIdentifier, boolean removeAllUses) {
+		if (entryIdentifier != null) {
+			RogueLootEntryUsesAttachedData newRogueLootEntryUsesAttachedData = RogueLootEntryUsesAttachedData.copy(RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(serverPlayer));
+			Map<Identifier, Integer> newRogueLootEntryUses = new HashMap<>(newRogueLootEntryUsesAttachedData.rogueLootEntryUses());
+
+				int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(entryIdentifier, 0);
+				if (oldUse > 1 && !removeAllUses) {
+					newRogueLootEntryUses.put(entryIdentifier, oldUse - 1);
+				} else {
+					newRogueLootEntryUses.remove(entryIdentifier);
+				}
+
+			RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, new RogueLootEntryUsesAttachedData(newRogueLootEntryUses));
+		} else {
+			RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, RogueLootEntryUsesAttachedData.DEFAULT);
 		}
 	}
 

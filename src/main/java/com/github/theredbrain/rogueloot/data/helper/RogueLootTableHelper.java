@@ -63,7 +63,7 @@ public class RogueLootTableHelper {
 			return;
 		}
 		ServerPlayNetworking.send(serverPlayer, new OpenRogueLootScreenPacket(
-				generateRogueLoot(serverLevel, rogueLootTable, generatedRogueLootEntries, generatedRogueLootTableIdentifier),
+				generateRogueLoot(serverLevel, serverPlayer, rogueLootTable, generatedRogueLootEntries, generatedRogueLootTableIdentifier),
 				generatedRogueLootTableIdentifier,
 				calculateRerollAttempts(serverPlayer, rogueLootTable),
 				calculateBanishingAttempts(serverPlayer, rogueLootTable),
@@ -142,6 +142,10 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
+			if (rogueLootTableEntry.useLimit() > 0 && DataAttachmentHelper.getTimesRogueLootEntryWasUsed(serverPlayer, Optional.of(entryIdentifier)) >= rogueLootTableEntry.useLimit()) {
+				continue;
+			}
+
 			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
 			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
 				continue;
@@ -198,7 +202,7 @@ public class RogueLootTableHelper {
 		return generatedRogueLootEntries;
 	}
 
-	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final RogueLootTable rogueLootTable, final List<Identifier> unlockedEntries, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier) {
+	public static GeneratedRogueLoot generateRogueLoot(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable, final List<Identifier> unlockedEntries, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier) {
 
 		RogueLootGuiSettings rogueLootGuiSettings = RogueLootGuiSettings.DEFAULT;
 
@@ -232,10 +236,17 @@ public class RogueLootTableHelper {
 					rogueLootTableEntryRarity = rogueLootTableEntryRarity1;
 				}
 			}
+
+			int usesLeft = 0;
+			if (rogueLootTableEntry.useLimit() > 0) {
+				usesLeft = rogueLootTableEntry.useLimit() - DataAttachmentHelper.getTimesRogueLootEntryWasUsed(serverPlayer, Optional.of(entryIdentifier));
+			}
+
 			visibleRogueLootTableEntries.add(new GeneratedRogueLoot.VisibleRogueLootTableEntry(
 					rogueLootTableEntry.displayStack(),
 					optionalIconTextureIdentifier,
 					rogueLootTableEntry.labelText(),
+					usesLeft,
 					rogueLootTableEntry.allowBanishing(),
 					rogueLootTableEntry.allowReserving(),
 					rogueLootTableEntryRarity,

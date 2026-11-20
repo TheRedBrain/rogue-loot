@@ -5,6 +5,7 @@ import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEn
 import com.github.theredbrain.rogueloot.block.entity.RogueLootVaultBlockEntity;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
+import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.RogueLootTableEntryComponentType;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -45,6 +46,9 @@ public class ApplyRogueLootSelectionPacketReceiver implements ServerPlayNetworki
 			RogueLootTableEntry rogueLootTableEntry = RogueLootTableEntry.getRogueLootTableEntry(serverLevel.registryAccess(), identifier);
 
 			if (rogueLootTableEntry != null) {
+				if (rogueLootTableEntry.useLimit() > 0) {
+					DataAttachmentHelper.useRogueLootEntry(serverPlayer, identifier);
+				}
 				for (RogueLootTableEntryComponentType component : rogueLootTableEntry.rogueLootTableEntryComponentTypes()) {
 					component.apply(serverLevel, serverPlayer);
 				}

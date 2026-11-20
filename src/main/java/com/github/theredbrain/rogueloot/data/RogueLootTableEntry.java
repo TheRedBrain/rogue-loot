@@ -23,6 +23,7 @@ public record RogueLootTableEntry(
 		String iconTexturePath,
 		String labelText,
 		String rarityIdString,
+		int useLimit,
 		boolean allowBanishing,
 		boolean allowReserving,
 		boolean isPermanent
@@ -34,6 +35,7 @@ public record RogueLootTableEntry(
 			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
 			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString),
+			Codec.INT.optionalFieldOf("use_limit", 0).forGetter(x -> x.useLimit),
 			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing),
 			Codec.BOOL.optionalFieldOf("allow_reserving", true).forGetter(x -> x.allowReserving),
 			Codec.BOOL.optionalFieldOf("is_permanent", false).forGetter(x -> x.isPermanent)

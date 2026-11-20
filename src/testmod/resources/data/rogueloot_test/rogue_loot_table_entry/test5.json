@@ -10,6 +10,7 @@
   "display_stack": {
     "id": "minecraft:diamond"
   },
+  "use_limit": 3,
   "label_text": "Diamond",
   "rarity": "rogueloot_test:epic"
 }
