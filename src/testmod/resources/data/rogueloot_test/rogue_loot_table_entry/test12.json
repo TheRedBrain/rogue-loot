@@ -3,6 +3,9 @@
     {
       "type": "rogueloot:modify_equipment",
       "equipment_slot_group": "mainhand",
+      "condition": {
+        "items": "#minecraft:swords"
+      },
       "functions": [
         {
           "only_compatible": true,
@@ -16,6 +19,6 @@
     "id": "minecraft:enchanted_book"
   },
   "tooltip_label_lines": [
-    "Randomly enchants item in main hand."
+    "Randomly enchants swords in your main hand."
   ]
 }
