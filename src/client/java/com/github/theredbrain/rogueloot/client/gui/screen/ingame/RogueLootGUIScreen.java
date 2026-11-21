@@ -25,6 +25,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class RogueLootGUIScreen extends Screen {
 	private final int rerollAttempts;
 	private final int reservingAttempts;
 	private final Optional<ItemStack> itemStack;
+	private final Optional<InteractionHand> interactionHand;
 
 	private Button selectLootOption0Button;
 	private Button selectLootOption1Button;
@@ -70,7 +72,7 @@ public class RogueLootGUIScreen extends Screen {
 	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[]{};
 	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[]{};
 
-	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int rerollAttempts, final int banishingAttempts, final int reservingAttempts, final Optional<ItemStack> itemStack) {
+	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int rerollAttempts, final int banishingAttempts, final int reservingAttempts, final Optional<ItemStack> itemStack, final Optional<InteractionHand> interactionHand) {
 		super(GameNarrator.NO_TITLE);
 		this.generatedRogueLoot = generatedRogueLoot;
 		this.rogueLootGuiSettings = this.generatedRogueLoot.rogueLootGuiSettings();
@@ -79,6 +81,7 @@ public class RogueLootGUIScreen extends Screen {
 		this.banishingAttempts = banishingAttempts;
 		this.reservingAttempts = reservingAttempts;
 		this.itemStack = itemStack;
+		this.interactionHand = interactionHand;
 		Arrays.fill(this.selectedOptions, false);
 
 	}
@@ -663,6 +666,7 @@ public class RogueLootGUIScreen extends Screen {
 				ClientPlayNetworking.send(new BanishRogueLootEntryPacket(
 						this.generatedRogueLootTableIdentifier,
 						this.itemStack,
+						this.interactionHand,
 						optionalIdentifier.get(),
 						optionalBanishingCost
 				));
@@ -681,6 +685,7 @@ public class RogueLootGUIScreen extends Screen {
 				ClientPlayNetworking.send(new ReserveRogueLootEntryPacket(
 						this.generatedRogueLootTableIdentifier,
 						this.itemStack,
+						this.interactionHand,
 						optionalIdentifier.get(),
 						optionalReservingCost
 				));
@@ -698,6 +703,7 @@ public class RogueLootGUIScreen extends Screen {
 			ClientPlayNetworking.send(new RerollRogueLootScreenPacket(
 					this.generatedRogueLootTableIdentifier,
 					this.itemStack,
+					this.interactionHand,
 					optionalRerollCost
 			));
 		}
@@ -707,7 +713,8 @@ public class RogueLootGUIScreen extends Screen {
 		ClientPlayNetworking.send(new ApplyRogueLootSelectionPacket(
 				getChosenRogueLootEntries(),
 				this.generatedRogueLootTableIdentifier,
-				this.itemStack
+				this.itemStack,
+				this.interactionHand
 		));
 		this.onClose();
 	}

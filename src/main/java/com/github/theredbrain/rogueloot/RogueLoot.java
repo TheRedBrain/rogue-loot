@@ -6,6 +6,7 @@ import com.github.theredbrain.rogueloot.compatibility.StaminaAttributesCompat;
 import com.github.theredbrain.rogueloot.registry.RogueLootBlocks;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
+import com.github.theredbrain.rogueloot.registry.RogueLootDataComponents;
 import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
 import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootServerEvents;
@@ -73,6 +74,7 @@ public class RogueLoot implements ModInitializer {
 		RogueLootBlocks.bootstrap();
 		RogueLootConfigs.bootstrap();
 		RogueLootDataAttachments.bootstrap();
+		RogueLootDataComponents.bootstrap();
 		RogueLootEntities.bootstrap();
 	}
 

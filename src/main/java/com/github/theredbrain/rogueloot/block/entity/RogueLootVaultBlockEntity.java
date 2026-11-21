@@ -37,6 +37,7 @@ import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -360,7 +361,8 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 				final RogueLootVaultServerData serverData,
 				final RogueLootVaultSharedData sharedData,
 				final Player player,
-				final ItemStack stack
+				final ItemStack stack,
+				final InteractionHand interactionHand
 		) {
 			RogueLootVaultState vaultState = state.getValue(RogueLootVaultBlock.ROGUE_LOOT_VAULT_STATE);
 			if (canEjectReward(config, vaultState)) {
@@ -375,7 +377,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayerEntity, new GeneratedRogueLootTableIdentifier(identifier, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices()), Optional.of(stack));
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayerEntity, new GeneratedRogueLootTableIdentifier(identifier, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices()), Optional.of(stack), Optional.of(interactionHand));
 					} else {
 						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 						serverData.markPlayerAsRewarded(player);

@@ -7,6 +7,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -17,7 +18,8 @@ public record OpenRogueLootScreenPacket(
 		int rerollAttempts,
 		int banishingAttempts,
 		int reservingAttempts,
-		Optional<ItemStack> itemStack
+		Optional<ItemStack> itemStack,
+		Optional<InteractionHand> interactionHand
 ) implements CustomPacketPayload {
 	public static final Type<OpenRogueLootScreenPacket> PACKET_ID = new Type<>(RogueLoot.identifier("open_rogue_loot_screen"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, OpenRogueLootScreenPacket> PACKET_CODEC = StreamCodec.ofMember(OpenRogueLootScreenPacket::write, OpenRogueLootScreenPacket::new);
@@ -29,7 +31,8 @@ public record OpenRogueLootScreenPacket(
 				registryByteBuf.readInt(),
 				registryByteBuf.readInt(),
 				registryByteBuf.readInt(),
-				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
+				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
@@ -40,6 +43,7 @@ public record OpenRogueLootScreenPacket(
 		registryByteBuf.writeInt(this.banishingAttempts);
 		registryByteBuf.writeInt(this.reservingAttempts);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
+		ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).encode(registryByteBuf, this.interactionHand);
 	}
 
 	@Override

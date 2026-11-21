@@ -7,6 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 public record BanishRogueLootEntryPacket(
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
 		Optional<ItemStack> itemStack,
+		Optional<InteractionHand> interactionHand,
 		Identifier banishedRogueLootEntry,
 		Optional<ItemStack> banishingCost
 ) implements CustomPacketPayload {
@@ -24,6 +26,7 @@ public record BanishRogueLootEntryPacket(
 		this(
 				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).decode(registryByteBuf),
 				registryByteBuf.readIdentifier(),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
@@ -32,6 +35,7 @@ public record BanishRogueLootEntryPacket(
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
+		ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).encode(registryByteBuf, this.interactionHand);
 		registryByteBuf.writeIdentifier(this.banishedRogueLootEntry);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.banishingCost);
 	}

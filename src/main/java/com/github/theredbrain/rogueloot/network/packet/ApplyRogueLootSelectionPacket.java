@@ -7,6 +7,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.List;
@@ -15,7 +16,8 @@ import java.util.Optional;
 public record ApplyRogueLootSelectionPacket(
 		List<Identifier> chosenRogueLootEntries,
 		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
-		Optional<ItemStack> itemStack
+		Optional<ItemStack> itemStack,
+		Optional<InteractionHand> interactionHand
 ) implements CustomPacketPayload {
 	public static final Type<ApplyRogueLootSelectionPacket> PACKET_ID = new Type<>(RogueLoot.identifier("apply_rogue_loot_selection"));
 	public static final StreamCodec<RegistryFriendlyByteBuf, ApplyRogueLootSelectionPacket> PACKET_CODEC = StreamCodec.ofMember(ApplyRogueLootSelectionPacket::write, ApplyRogueLootSelectionPacket::new);
@@ -24,7 +26,8 @@ public record ApplyRogueLootSelectionPacket(
 		this(
 				registryByteBuf.readList(Identifier.STREAM_CODEC),
 				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
-				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
+				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
@@ -32,6 +35,7 @@ public record ApplyRogueLootSelectionPacket(
 		registryByteBuf.writeCollection(this.chosenRogueLootEntries, Identifier.STREAM_CODEC);
 		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
+		ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).encode(registryByteBuf, this.interactionHand);
 	}
 
 	@Override

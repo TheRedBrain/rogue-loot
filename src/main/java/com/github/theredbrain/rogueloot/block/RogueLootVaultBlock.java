@@ -53,7 +53,7 @@ public class RogueLootVaultBlock extends BaseEntityBlock {
 		} else if (level instanceof ServerLevel serverWorld) {
 			if (serverWorld.getBlockEntity(pos) instanceof RogueLootVaultBlockEntity rogueLootVaultBlockEntity && rogueLootVaultBlockEntity.getServerData() != null) {
 				RogueLootVaultBlockEntity.Server.tryInsertKey(
-						serverWorld, pos, state, rogueLootVaultBlockEntity.getConfig(level), rogueLootVaultBlockEntity.getServerData(), rogueLootVaultBlockEntity.getSharedData(), player, stack
+						serverWorld, pos, state, rogueLootVaultBlockEntity.getConfig(level), rogueLootVaultBlockEntity.getServerData(), rogueLootVaultBlockEntity.getSharedData(), player, stack, hand
 				);
 				return InteractionResult.SUCCESS;
 			} else {

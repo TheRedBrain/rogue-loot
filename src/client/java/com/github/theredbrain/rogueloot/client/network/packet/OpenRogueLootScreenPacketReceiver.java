@@ -14,7 +14,8 @@ public class OpenRogueLootScreenPacketReceiver implements ClientPlayNetworking.P
 				payload.rerollAttempts(),
 				payload.banishingAttempts(),
 				payload.reservingAttempts(),
-				payload.itemStack()
+				payload.itemStack(),
+				payload.interactionHand()
 		));
 	}
 }
