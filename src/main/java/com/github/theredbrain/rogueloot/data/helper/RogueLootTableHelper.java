@@ -21,6 +21,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
@@ -178,12 +182,18 @@ public class RogueLootTableHelper {
 			RogueLoot.info("generated rogue loot table has fewer unlocked entries than rolls requested");
 		}
 
+		LootContext context = new LootContext.Builder(
+				new LootParams.Builder(serverLevel)
+						.withParameter(LootContextParams.THIS_ENTITY, serverPlayer)
+						.withParameter(LootContextParams.ORIGIN, serverPlayer.position())
+						.create(LootContextParamSets.CHEST)
+		).create(rogueLootTable.randomSequence());
 		int chosenWeight;
 		int index;
 		int weightCounter;
 		int initialTempListSize = tempList.size();
 		for (int i = 0; i < Math.min(initialTempListSize, rolls); i++) {
-			chosenWeight = serverLevel.getRandom().nextInt(totalWeight);
+			chosenWeight = context.getRandom().nextInt(totalWeight);
 			index = -1;
 			weightCounter = 0;
 			for (int j = 0; j < tempList.size(); j++) {
