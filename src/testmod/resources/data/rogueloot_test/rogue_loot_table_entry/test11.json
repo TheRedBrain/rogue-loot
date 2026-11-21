@@ -1,11 +1,16 @@
 {
   "components": [
     {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:stick"
-      }
+      "type": "rogueloot:modify_equipment",
+      "equipment_slot_group": "mainhand",
+      "functions": [
+        {
+          "add": true,
+          "count": 10,
+          "function": "minecraft:set_count"
+        }
+      ]
     }
   ],
-  "label_text": "Test 11"
+  "label_text": "+10"
 }

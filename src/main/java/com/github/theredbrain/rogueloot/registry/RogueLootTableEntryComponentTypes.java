@@ -7,6 +7,7 @@ import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.Ba
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.DealDamageType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.HealToXPercentType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.HealXAmountType;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.ModifyEquipmentType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.ReserveRogueLootTableEntryType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.MobEffectInstanceType;
 import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.ItemStackType;
@@ -34,6 +35,7 @@ public class RogueLootTableEntryComponentTypes {
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("heal_x_amount"), HealXAmountType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("item_stack"), ItemStackType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("mob_effect_instance"), MobEffectInstanceType.MAP_CODEC);
+		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("modify_equipment"), ModifyEquipmentType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("play_sound"), PlaySoundType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("random_components"), RandomComponentsType.MAP_CODEC);
 		Registry.register(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY, RogueLoot.identifier("reserve_rogue_loot_table_entries"), ReserveRogueLootTableEntryType.MAP_CODEC);

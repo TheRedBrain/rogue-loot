@@ -1,11 +1,21 @@
 {
   "components": [
     {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:stick"
-      }
+      "type": "rogueloot:modify_equipment",
+      "equipment_slot_group": "mainhand",
+      "functions": [
+        {
+          "only_compatible": true,
+          "function": "minecraft:enchant_randomly"
+        }
+      ],
+      "random_sequence": "rogueloot:rogue_loot_table_entries/modify_equipment/test12"
     }
   ],
-  "label_text": "Test 12"
+  "display_stack": {
+    "id": "minecraft:enchanted_book"
+  },
+  "tooltip_label_lines": [
+    "Randomly enchants item in main hand."
+  ]
 }
