@@ -40,7 +40,7 @@ public class RogueLootTableHelper {
 			return;
 		}
 		Optional<BlockPos> optionalBlockPos = generatedRogueLootTableIdentifier.optionalBlockPos();
-		List<Identifier> generatedRogueLootEntries = new ArrayList<>();
+		List<Identifier> generatedRogueLootEntries;
 		if (optionalBlockPos.isPresent()) {
 			BlockEntity blockEntity = serverLevel.getBlockEntity(optionalBlockPos.get());
 			if (blockEntity instanceof SuppliesRogueLootTable suppliesRogueLootTable) {
@@ -55,9 +55,12 @@ public class RogueLootTableHelper {
 				return;
 			}
 		}
-		// TODO save generatedRogueLootEntries to player attached data
-		generatedRogueLootEntries = generateRogueLootEntries(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls());
+		generatedRogueLootEntries = new ArrayList<>(DataAttachmentHelper.getGeneratedRogueLootEntries(serverPlayer, generatedRogueLootTableIdentifier.toIdentifier()));
+		if (generatedRogueLootEntries.isEmpty()) {
+			generatedRogueLootEntries = generateRogueLootEntries(serverLevel, rogueLootTable, serverPlayer, generatedRogueLootTableIdentifier.rolls());
+		}
 		if (!generatedRogueLootEntries.isEmpty()) {
+			DataAttachmentHelper.setGeneratedRogueLootEntries(serverPlayer, generatedRogueLootTableIdentifier.toIdentifier(), generatedRogueLootEntries);
 			openRogueLootScreen(serverLevel, serverPlayer, generatedRogueLootTableIdentifier, generatedRogueLootEntries, itemStack, interactionHand);
 		}
 
@@ -89,7 +92,7 @@ public class RogueLootTableHelper {
 				suppliesRogueLootTable.removeGeneratedRogueLootEntries(serverPlayer);
 			}
 		} else {
-			// TODO remove entries from player attached data
+			DataAttachmentHelper.removeGeneratedRogueLootEntries(serverPlayer, generatedRogueLootTableIdentifier.toIdentifier());
 		}
 	}
 

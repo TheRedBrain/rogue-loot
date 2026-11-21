@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.registry;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.data.attached.BanishedRogueLootEntriesAttachedData;
+import com.github.theredbrain.rogueloot.data.attached.GeneratedRogueLootAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.ReservedRogueLootEntriesAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.RogueLootEntryUsesAttachedData;
 import net.fabricmc.fabric.api.attachment.v1.AttachmentRegistry;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 public class RogueLootDataAttachments {
 
 	private static final AttachmentType<BanishedRogueLootEntriesAttachedData> BANISHED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA;
+	private static final AttachmentType<GeneratedRogueLootAttachedData> GENERATED_ROGUE_LOOT_ATTACHED_DATA;
 	private static final AttachmentType<ReservedRogueLootEntriesAttachedData> RESERVED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA;
 	private static final AttachmentType<RogueLootEntryUsesAttachedData> ROGUE_LOOT_ENTRY_USES_ATTACHED_DATA;
 
@@ -25,6 +27,14 @@ public class RogueLootDataAttachments {
 
 	public static void setBanishedRogueLootEntriesAttachedData(final Player player, final BanishedRogueLootEntriesAttachedData banishedRogueLootEntriesAttachedData) {
 		player.setAttached(BANISHED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA, banishedRogueLootEntriesAttachedData);
+	}
+
+	public static GeneratedRogueLootAttachedData getGeneratedRogueLootAttachedData(final Player player) {
+		return player.getAttachedOrCreate(GENERATED_ROGUE_LOOT_ATTACHED_DATA);
+	}
+
+	public static void setGeneratedRogueLootAttachedData(final Player player, final GeneratedRogueLootAttachedData generatedRogueLootAttachedData) {
+		player.setAttached(GENERATED_ROGUE_LOOT_ATTACHED_DATA, generatedRogueLootAttachedData);
 	}
 
 	public static ReservedRogueLootEntriesAttachedData getReservedRogueLootEntriesAttachedData(final Player player) {
@@ -50,6 +60,12 @@ public class RogueLootDataAttachments {
 				.persistent(BanishedRogueLootEntriesAttachedData.CODEC)
 				.copyOnDeath()
 				.syncWith(BanishedRogueLootEntriesAttachedData.STREAM_CODEC, AttachmentSyncPredicate.targetOnly())
+		);
+		GENERATED_ROGUE_LOOT_ATTACHED_DATA = AttachmentRegistry.create(RogueLoot.identifier("generated_rogue_loot_attached_data"), builder -> builder
+				.initializer(() -> GeneratedRogueLootAttachedData.DEFAULT)
+				.persistent(GeneratedRogueLootAttachedData.CODEC)
+				.copyOnDeath()
+				.syncWith(GeneratedRogueLootAttachedData.STREAM_CODEC, AttachmentSyncPredicate.targetOnly())
 		);
 		RESERVED_ROGUE_LOOT_ENTRIES_ATTACHED_DATA = AttachmentRegistry.create(RogueLoot.identifier("reserved_rogue_loot_entries_attached_data"), builder -> builder
 				.initializer(() -> ReservedRogueLootEntriesAttachedData.DEFAULT)

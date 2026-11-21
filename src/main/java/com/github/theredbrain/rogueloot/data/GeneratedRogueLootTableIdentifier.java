@@ -60,4 +60,8 @@ public record GeneratedRogueLootTableIdentifier(
 		return false;
 	}
 
+	public Identifier toIdentifier() {
+		return Identifier.fromNamespaceAndPath(this.rogueLootTableIdentifier.getNamespace(), this.rogueLootTableIdentifier.getPath() + "_" + (this.optionalBlockPos.isPresent() ? this.optionalBlockPos.get().toShortString() + "_" : "") + "_" + this.rolls + "_" + this.minChoices + "_" + this.maxChoices);
+	}
+
 }

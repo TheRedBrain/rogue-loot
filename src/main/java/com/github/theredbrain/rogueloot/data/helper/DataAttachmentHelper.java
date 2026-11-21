@@ -1,6 +1,7 @@
 package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.data.attached.BanishedRogueLootEntriesAttachedData;
+import com.github.theredbrain.rogueloot.data.attached.GeneratedRogueLootAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.ReservedRogueLootEntriesAttachedData;
 import com.github.theredbrain.rogueloot.data.attached.RogueLootEntryUsesAttachedData;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
@@ -66,6 +67,28 @@ public class DataAttachmentHelper {
 		} else {
 			RogueLootDataAttachments.setReservedRogueLootEntriesAttachedData(serverPlayer, ReservedRogueLootEntriesAttachedData.DEFAULT);
 		}
+	}
+
+	public static List<Identifier> getGeneratedRogueLootEntries(final ServerPlayer serverPlayer, final Identifier generatedRogueLootTableIdentifier) {
+		return RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverPlayer).generatedRogueLootData().getOrDefault(generatedRogueLootTableIdentifier, GeneratedRogueLootAttachedData.GeneratedRogueLootEntries.DEFAULT).generatedRogueLootEntries();
+	}
+
+	public static void setGeneratedRogueLootEntries(final ServerPlayer serverPlayer, final Identifier generatedRogueLootTableIdentifier, final List<Identifier> entryIdentifierList) {
+		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverPlayer));
+		Map<Identifier, GeneratedRogueLootAttachedData.GeneratedRogueLootEntries> newGeneratedRogueLoot = new HashMap<>(newGeneratedRogueLootAttachedData.generatedRogueLootData());
+
+		newGeneratedRogueLoot.put(generatedRogueLootTableIdentifier, new GeneratedRogueLootAttachedData.GeneratedRogueLootEntries(entryIdentifierList));
+
+		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverPlayer, new GeneratedRogueLootAttachedData(newGeneratedRogueLoot));
+	}
+
+	public static void removeGeneratedRogueLootEntries(final ServerPlayer serverPlayer, final Identifier generatedRogueLootTableIdentifier) {
+		GeneratedRogueLootAttachedData newGeneratedRogueLootAttachedData = GeneratedRogueLootAttachedData.copy(RogueLootDataAttachments.getGeneratedRogueLootAttachedData(serverPlayer));
+		Map<Identifier, GeneratedRogueLootAttachedData.GeneratedRogueLootEntries> newGeneratedRogueLoot = new HashMap<>(newGeneratedRogueLootAttachedData.generatedRogueLootData());
+
+		newGeneratedRogueLoot.remove(generatedRogueLootTableIdentifier);
+
+		RogueLootDataAttachments.setGeneratedRogueLootAttachedData(serverPlayer, new GeneratedRogueLootAttachedData(newGeneratedRogueLoot));
 	}
 
 	public static boolean isRogueLootEntryBanished(@Nullable Player player, final Optional<Identifier> entryIdentifier) {
@@ -167,12 +190,12 @@ public class DataAttachmentHelper {
 			RogueLootEntryUsesAttachedData newRogueLootEntryUsesAttachedData = RogueLootEntryUsesAttachedData.copy(RogueLootDataAttachments.getRogueLootEntryUsesAttachedData(serverPlayer));
 			Map<Identifier, Integer> newRogueLootEntryUses = new HashMap<>(newRogueLootEntryUsesAttachedData.rogueLootEntryUses());
 
-				int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(entryIdentifier, 0);
-				if (oldUse > 1 && !removeAllUses) {
-					newRogueLootEntryUses.put(entryIdentifier, oldUse - 1);
-				} else {
-					newRogueLootEntryUses.remove(entryIdentifier);
-				}
+			int oldUse = newRogueLootEntryUsesAttachedData.rogueLootEntryUses().getOrDefault(entryIdentifier, 0);
+			if (oldUse > 1 && !removeAllUses) {
+				newRogueLootEntryUses.put(entryIdentifier, oldUse - 1);
+			} else {
+				newRogueLootEntryUses.remove(entryIdentifier);
+			}
 
 			RogueLootDataAttachments.setRogueLootEntryUsesAttachedData(serverPlayer, new RogueLootEntryUsesAttachedData(newRogueLootEntryUses));
 		} else {
