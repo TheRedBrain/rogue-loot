@@ -1,9 +1,11 @@
 package com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component;
 
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 
@@ -11,7 +13,7 @@ import java.util.List;
 
 public record RandomComponentsType(
 		List<ComponentTypeListWithWeight> weightedComponentLists
-) implements RogueLootTableEntryComponentType {
+) implements RogueLootTableEntryComponentType, OpensRogueLootDisplayScreen {
 	public static final MapCodec<RandomComponentsType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
 							ComponentTypeListWithWeight.CODEC.listOf().fieldOf("weighted_component_lists").forGetter(x -> x.weightedComponentLists)
@@ -22,6 +24,15 @@ public record RandomComponentsType(
 	@Override
 	public MapCodec<RandomComponentsType> codec() {
 		return MAP_CODEC;
+	}
+
+	@Override
+	public void openRogueLootDisplayScreen(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final List<Identifier> additionalEntryIdentifiers) {
+		// TODO implement LootDisplayScreen to visualize the random choice, eg like a slot machine
+		apply(serverLevel, serverPlayer);
+		if (!additionalEntryIdentifiers.isEmpty()) {
+			RogueLootTableHelper.applyRogueLootTableEntries(serverLevel, serverPlayer, additionalEntryIdentifiers);
+		}
 	}
 
 	@Override

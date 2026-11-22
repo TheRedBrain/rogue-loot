@@ -83,7 +83,11 @@ public class RogueLoot implements ModInitializer {
 	}
 
 	public static void info(final String message) {
-		LOGGER.info("[" + MOD_ID + "] [info]: " + message);
+		LOGGER.info("[" + MOD_ID + "] [info]: {}", message);
+	}
+
+	public static void error(final String message) {
+		LOGGER.error("[" + MOD_ID + "] [info]: {}", message);
 	}
 
 }

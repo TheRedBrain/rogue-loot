@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public record RogueLootTableEntry(
 		Optional<ContextAwarePredicate> unlockPredicate,
-		List<RogueLootTableEntryComponentType> rogueLootTableEntryComponentTypes,
+		RogueLootTableEntryComponentType rogueLootTableEntryComponentType,
 		Optional<ItemStackTemplate> displayStack,
 		String iconTexturePath,
 		String labelText,
@@ -32,7 +32,7 @@ public record RogueLootTableEntry(
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
-			RogueLootTableEntryComponentType.CODEC.listOf().fieldOf("components").forGetter(x -> x.rogueLootTableEntryComponentTypes),
+			RogueLootTableEntryComponentType.CODEC.fieldOf("component").forGetter(x -> x.rogueLootTableEntryComponentType),
 			ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
 			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
 			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),

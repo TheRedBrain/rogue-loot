@@ -8,6 +8,8 @@ import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
 import com.github.theredbrain.rogueloot.data.RogueLootTable;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntry;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.OpensRogueLootDisplayScreen;
+import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.RogueLootTableEntryComponentType;
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -286,4 +288,28 @@ public class RogueLootTableHelper {
 		);
 	}
 
+	public static void applyRogueLootTableEntries(ServerLevel serverLevel, ServerPlayer serverPlayer, List<Identifier> identifierList) {
+		List<Identifier> remainingEntryIdentifiers = new ArrayList<>(identifierList);
+
+		if (!identifierList.isEmpty()) {
+			Identifier currentEntryIdentifier = identifierList.getFirst();
+			remainingEntryIdentifiers.removeFirst();
+			RogueLootTableEntry rogueLootTableEntry = RogueLootTableEntry.getRogueLootTableEntry(serverLevel.registryAccess(), currentEntryIdentifier);
+
+			if (rogueLootTableEntry != null) {
+				if (rogueLootTableEntry.useLimit() > 0) {
+					DataAttachmentHelper.useRogueLootEntry(serverPlayer, currentEntryIdentifier);
+				}
+				RogueLootTableEntryComponentType rogueLootTableEntryComponentType = rogueLootTableEntry.rogueLootTableEntryComponentType();
+				if (rogueLootTableEntryComponentType instanceof OpensRogueLootDisplayScreen opensRogueLootDisplayScreen) {
+					opensRogueLootDisplayScreen.openRogueLootDisplayScreen(serverLevel, serverPlayer, remainingEntryIdentifiers);
+				} else {
+					rogueLootTableEntryComponentType.apply(serverLevel, serverPlayer);
+					if (!remainingEntryIdentifiers.isEmpty()) {
+						applyRogueLootTableEntries(serverLevel, serverPlayer, remainingEntryIdentifiers);
+					}
+				}
+			}
+		}
+	}
 }
