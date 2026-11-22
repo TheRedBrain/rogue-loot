@@ -1,12 +1,10 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:stick"
-      }
+  "component": {
+    "type": "rogueloot:item_stack",
+    "item_stack": {
+      "id": "minecraft:stick"
     }
-  ],
+  },
   "icon_texture_path": "minecraft:textures/item/stick.png",
   "rarity": "rogueloot_test:common"
 }

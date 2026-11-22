@@ -8,8 +8,8 @@
   "banishing_cost": {
     "id": "minecraft:emerald"
   },
-  "enable_entry_locking": true,
-  "locking_cost": {
+  "enable_entry_reserving": true,
+  "reserving_cost": {
     "id": "minecraft:iron_ingot",
     "count": 10
   }

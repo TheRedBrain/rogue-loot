@@ -1,12 +1,10 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:shield"
-      }
+  "component": {
+    "type": "rogueloot:item_stack",
+    "item_stack": {
+      "id": "minecraft:shield"
     }
-  ],
+  },
   "display_stack": {
     "id": "minecraft:shield"
   },

@@ -1,18 +1,21 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:coal"
+  "component": {
+    "type": "rogueloot:list",
+    "components": [
+      {
+        "type": "rogueloot:item_stack",
+        "item_stack": {
+          "id": "minecraft:coal"
+        }
+      },
+      {
+        "type": "rogueloot:play_sound",
+        "sound_event": "minecraft:entity.item.pickup",
+        "volume": 0.2,
+        "pitch": 1.2
       }
-    },
-    {
-      "type": "rogueloot:play_sound",
-      "sound_event": "minecraft:entity.item.pickup",
-      "volume": 0.2,
-      "pitch": 1.2
-    }
-  ],
+    ]
+  },
   "display_stack": {
     "id": "minecraft:coal"
   },

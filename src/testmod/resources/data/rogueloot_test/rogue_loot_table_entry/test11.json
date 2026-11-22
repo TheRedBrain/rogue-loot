@@ -1,16 +1,14 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:modify_equipment",
-      "equipment_slot_group": "mainhand",
-      "functions": [
-        {
-          "add": true,
-          "count": 10,
-          "function": "minecraft:set_count"
-        }
-      ]
-    }
-  ],
+  "component": {
+    "type": "rogueloot:modify_equipment",
+    "equipment_slot_group": "mainhand",
+    "functions": [
+      {
+        "add": true,
+        "count": 10,
+        "function": "minecraft:set_count"
+      }
+    ]
+  },
   "label_text": "+10"
 }

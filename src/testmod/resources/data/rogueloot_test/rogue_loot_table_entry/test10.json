@@ -1,11 +1,9 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:stick"
-      }
+  "component": {
+    "type": "rogueloot:item_stack",
+    "item_stack": {
+      "id": "minecraft:stick"
     }
-  ],
+  },
   "label_text": "Test 10"
 }

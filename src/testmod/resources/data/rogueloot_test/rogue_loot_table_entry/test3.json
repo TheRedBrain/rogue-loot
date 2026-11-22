@@ -1,12 +1,10 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:item_stack",
-      "item_stack": {
-        "id": "minecraft:iron_sword"
-      }
+  "component": {
+    "type": "rogueloot:item_stack",
+    "item_stack": {
+      "id": "minecraft:iron_sword"
     }
-  ],
+  },
   "display_stack": {
     "id": "minecraft:iron_sword"
   },

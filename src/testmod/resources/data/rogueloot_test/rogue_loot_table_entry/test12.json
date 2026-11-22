@@ -1,20 +1,18 @@
 {
-  "components": [
-    {
-      "type": "rogueloot:modify_equipment",
-      "equipment_slot_group": "mainhand",
-      "condition": {
-        "items": "#minecraft:swords"
-      },
-      "functions": [
-        {
-          "only_compatible": true,
-          "function": "minecraft:enchant_randomly"
-        }
-      ],
-      "random_sequence": "rogueloot:rogue_loot_table_entries/modify_equipment/test12"
-    }
-  ],
+  "component": {
+    "type": "rogueloot:modify_equipment",
+    "equipment_slot_group": "mainhand",
+    "condition": {
+      "items": "#minecraft:swords"
+    },
+    "functions": [
+      {
+        "only_compatible": true,
+        "function": "minecraft:enchant_randomly"
+      }
+    ],
+    "random_sequence": "rogueloot:rogue_loot_table_entries/modify_equipment/test12"
+  },
   "display_stack": {
     "id": "minecraft:enchanted_book"
   },
