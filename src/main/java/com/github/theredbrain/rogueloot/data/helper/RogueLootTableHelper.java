@@ -17,11 +17,14 @@ import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -187,6 +190,13 @@ public class RogueLootTableHelper {
 						}
 					}
 					weight = rarity.defaultWeight();
+					if (rarity.weightInfluencingAttribute().isPresent()) {
+						Optional<Holder.Reference<Attribute>> optionalAttributeReference = BuiltInRegistries.ATTRIBUTE.get(ResourceKey.create(Registries.ATTRIBUTE, rarity.weightInfluencingAttribute().get()));
+						if (optionalAttributeReference.isPresent()) {
+							double influencingAttributeValue = serverPlayer.getAttributeValue(optionalAttributeReference.get());
+							weight = (int) Math.clamp(Math.floor(rarity.defaultWeight() + (influencingAttributeValue * rarity.influenceMultiplier())), rarity.minWeight(), rarity.maxWeight());
+						}
+					}
 				}
 			}
 			tempList.add(new MutablePair<>(weight, entryIdentifier));
