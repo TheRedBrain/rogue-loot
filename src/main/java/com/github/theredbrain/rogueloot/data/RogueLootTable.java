@@ -17,7 +17,7 @@ import java.util.Optional;
 
 public record RogueLootTable(
 		HolderSet<RogueLootTableEntry> rogueLootTableEntries,
-		Map<Identifier, Integer> rarityOverrides,
+		Map<Identifier, Identifier> rarityOverrides,
 		String rogueLootGuiSettingsIdString,
 		boolean enableRerolling,
 		Optional<ItemStackTemplate> rerollCost,
@@ -29,7 +29,7 @@ public record RogueLootTable(
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
-			Codec.unboundedMap(Identifier.CODEC, Codec.INT).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
+			Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
 			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
 			Codec.BOOL.optionalFieldOf("enable_rerolling", false).forGetter(x -> x.enableRerolling),
 			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),

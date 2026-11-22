@@ -179,7 +179,14 @@ public class RogueLootTableHelper {
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
 				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
 				if (rarity != null) {
-					weight = rogueLootTable.rarityOverrides().getOrDefault(rarityIdentifier, rarity.defaultWeight());
+					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rarityIdentifier);
+					if (rarityOverrideIdentifier != null) {
+						RogueLootTableEntryRarity rarityOverride = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityOverrideIdentifier);
+						if (rarityOverride != null) {
+							rarity = rarityOverride;
+						}
+					}
+					weight = rarity.defaultWeight();
 				}
 			}
 			tempList.add(new MutablePair<>(weight, entryIdentifier));
@@ -251,6 +258,13 @@ public class RogueLootTableHelper {
 			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
 				RogueLootTableEntryRarity rogueLootTableEntryRarity1 = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
 				if (rogueLootTableEntryRarity1 != null) {
+					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rarityIdentifier);
+					if (rarityOverrideIdentifier != null) {
+						RogueLootTableEntryRarity rarityOverride = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityOverrideIdentifier);
+						if (rarityOverride != null) {
+							rogueLootTableEntryRarity1 = rarityOverride;
+						}
+					}
 					rogueLootTableEntryRarity = rogueLootTableEntryRarity1;
 				}
 			}

@@ -1,3 +1,6 @@
 {
-  "rogue_loot_table_entries": "#rogueloot_test:test"
+  "rogue_loot_table_entries": "#rogueloot_test:test",
+  "rarity_overrides": {
+    "rogueloot_test:epic": "rogueloot_test:common"
+  }
 }
