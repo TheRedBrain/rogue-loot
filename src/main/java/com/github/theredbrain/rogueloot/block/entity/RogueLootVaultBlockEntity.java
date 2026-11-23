@@ -380,7 +380,7 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 						int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, lootTableIdentifier, config.rolls());
 						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, lootTableIdentifier, config.minChoices());
 						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, lootTableIdentifier, config.maxChoices());
-						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(lootTableIdentifier, Identifier.fromNamespaceAndPath(lootTableIdentifier.getNamespace(), lootTableIdentifier.getPath() + "_" + pos.toShortString()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(lootTableIdentifier, Identifier.fromNamespaceAndPath(lootTableIdentifier.getNamespace(), lootTableIdentifier.getPath() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
 					} else {
 						RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 						serverData.markPlayerAsRewarded(player);

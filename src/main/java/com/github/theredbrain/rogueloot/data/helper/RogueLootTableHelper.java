@@ -48,8 +48,8 @@ public class RogueLootTableHelper {
 				if (generatedRogueLootEntries.isEmpty()) {
 					rogueLootTableIdentifier = GeneratedRogueLootData.builder(rogueLootTableIdentifier)
 							.withModifiedRolls(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultRolls()))
-							.withModifiedMinChoices(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMinChoices()))
-							.withModifiedMaxChoices(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMaxChoices()))
+							.withModifiedMinChoices(calculateModifiedMinChoices(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMinChoices()))
+							.withModifiedMaxChoices(calculateModifiedMaxChoices(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMaxChoices()))
 							.build();
 					generatedRogueLootEntries = generateRogueLootEntries(serverLevel, serverPlayer, rogueLootTable, rogueLootTableIdentifier.modifiedRolls());
 				}
@@ -64,8 +64,8 @@ public class RogueLootTableHelper {
 		if (generatedRogueLootEntries.isEmpty()) {
 			rogueLootTableIdentifier = GeneratedRogueLootData.builder(rogueLootTableIdentifier)
 					.withModifiedRolls(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultRolls()))
-					.withModifiedMinChoices(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMinChoices()))
-					.withModifiedMaxChoices(calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMaxChoices()))
+					.withModifiedMinChoices(calculateModifiedMinChoices(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMinChoices()))
+					.withModifiedMaxChoices(calculateModifiedMaxChoices(serverLevel, serverPlayer, rogueLootTableIdentifier.rogueLootTableIdentifier(), rogueLootTableIdentifier.defaultMaxChoices()))
 					.build();
 			generatedRogueLootEntries = generateRogueLootEntries(serverLevel, serverPlayer, rogueLootTable, rogueLootTableIdentifier.modifiedRolls());
 		}
@@ -105,7 +105,7 @@ public class RogueLootTableHelper {
 			return defaultRolls;
 		}
 
-		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultRolls);
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, rogueLootTable.rollAmountModifier(), defaultRolls);
 	}
 
 	public static int calculateModifiedMinChoices(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, final int defaultMinChoices) {
@@ -114,7 +114,7 @@ public class RogueLootTableHelper {
 			return defaultMinChoices;
 		}
 
-		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultMinChoices);
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, rogueLootTable.minChoicesModifier(), defaultMinChoices);
 	}
 
 	public static int calculateModifiedMaxChoices(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, final int defaultMaxChoices) {
@@ -123,7 +123,7 @@ public class RogueLootTableHelper {
 			return defaultMaxChoices;
 		}
 
-		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultMaxChoices);
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, rogueLootTable.maxChoicesModifier(), defaultMaxChoices);
 	}
 
 	private static int calculateRerollAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {

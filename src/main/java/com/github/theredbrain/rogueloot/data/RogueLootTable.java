@@ -22,6 +22,9 @@ public record RogueLootTable(
 		HolderSet<RogueLootTableEntry> rogueLootTableEntries,
 		Map<Identifier, Identifier> rarityOverrides,
 		String rogueLootGuiSettingsIdString,
+		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> rollAmountModifier,
+		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> minChoicesModifier,
+		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> maxChoicesModifier,
 		Optional<CommonDataStructures.RogueLootTableInteraction> rerolling,
 		Optional<CommonDataStructures.RogueLootTableInteraction> banishing,
 		Optional<CommonDataStructures.RogueLootTableInteraction> reserving,
@@ -31,9 +34,12 @@ public record RogueLootTable(
 			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
 			Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
 			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
-			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerolling),
-			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishing),
-			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reserving),
+			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("roll_amount_modifier").forGetter(x -> x.rollAmountModifier),
+			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("min_choices_modifier").forGetter(x -> x.minChoicesModifier),
+			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("max_choices_modifier").forGetter(x -> x.maxChoicesModifier),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("rerolling").forGetter(x -> x.rerolling),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("banishing").forGetter(x -> x.banishing),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reserving").forGetter(x -> x.reserving),
 			Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(x -> x.randomSequence)
 	).apply(instance, RogueLootTable::new));
 
