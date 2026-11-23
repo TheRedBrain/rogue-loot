@@ -16,8 +16,6 @@ import java.util.Optional;
 public record GeneratedRogueLoot(
 		RogueLootGuiSettings rogueLootGuiSettings,
 		List<VisibleRogueLootTableEntry> entryList,
-		int minChoices,
-		int maxChoices,
 		boolean enableRerolling,
 		Optional<ItemStackTemplate> rerollCost,
 		boolean enableEntryBanishing,
@@ -28,8 +26,6 @@ public record GeneratedRogueLoot(
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RogueLootGuiSettings.CODEC.fieldOf("rogue_loot_gui_settings").forGetter(x -> x.rogueLootGuiSettings),
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
-			Codec.INT.fieldOf("min_choices").forGetter(x -> x.minChoices),
-			Codec.INT.fieldOf("max_choices").forGetter(x -> x.maxChoices),
 			Codec.BOOL.fieldOf("enable_rerolling").forGetter(x -> x.enableRerolling),
 			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
 			Codec.BOOL.fieldOf("enable_entry_banishing").forGetter(x -> x.enableEntryBanishing),
@@ -44,8 +40,6 @@ public record GeneratedRogueLoot(
 		this(
 				RogueLootGuiSettings.STREAM_CODEC.decode(registryFriendlyByteBuf),
 				registryFriendlyByteBuf.readList(VisibleRogueLootTableEntry.STREAM_CODEC),
-				ByteBufCodecs.INT.decode(registryFriendlyByteBuf),
-				ByteBufCodecs.INT.decode(registryFriendlyByteBuf),
 				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
 				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf),
 				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
@@ -58,8 +52,6 @@ public record GeneratedRogueLoot(
 	private void write(final FriendlyByteBuf friendlyByteBuf) {
 		RogueLootGuiSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootGuiSettings);
 		friendlyByteBuf.writeCollection(this.entryList, VisibleRogueLootTableEntry.STREAM_CODEC);
-		ByteBufCodecs.INT.encode(friendlyByteBuf, this.minChoices);
-		ByteBufCodecs.INT.encode(friendlyByteBuf, this.maxChoices);
 		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableRerolling);
 		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rerollCost);
 		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryBanishing);
@@ -76,8 +68,6 @@ public record GeneratedRogueLoot(
 		return new GeneratedRogueLoot(
 				RogueLootGuiSettings.copy(generatedRogueLoot.rogueLootGuiSettings()),
 				newVisibleRogueLootTableEntryList,
-				generatedRogueLoot.minChoices(),
-				generatedRogueLoot.maxChoices(),
 				generatedRogueLoot.enableRerolling(),
 				generatedRogueLoot.rerollCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.rerollCost().get().create())) : Optional.empty(),
 				generatedRogueLoot.enableEntryBanishing(),

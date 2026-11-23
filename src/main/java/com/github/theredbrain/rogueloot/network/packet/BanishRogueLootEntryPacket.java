@@ -1,21 +1,18 @@
 package com.github.theredbrain.rogueloot.network.packet;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
-import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
 
 public record BanishRogueLootEntryPacket(
-		GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier,
-		Optional<ItemStack> itemStack,
-		Optional<InteractionHand> interactionHand,
+		GeneratedRogueLootData generatedRogueLootData,
 		Identifier banishedRogueLootEntry,
 		Optional<ItemStack> banishingCost
 ) implements CustomPacketPayload {
@@ -24,18 +21,14 @@ public record BanishRogueLootEntryPacket(
 
 	public BanishRogueLootEntryPacket(final RegistryFriendlyByteBuf registryByteBuf) {
 		this(
-				GeneratedRogueLootTableIdentifier.STREAM_CODEC.decode(registryByteBuf),
-				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf),
-				ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).decode(registryByteBuf),
+				GeneratedRogueLootData.STREAM_CODEC.decode(registryByteBuf),
 				registryByteBuf.readIdentifier(),
 				ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
 
 	private void write(final RegistryFriendlyByteBuf registryByteBuf) {
-		GeneratedRogueLootTableIdentifier.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootTableIdentifier);
-		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.itemStack);
-		ByteBufCodecs.optional(InteractionHand.STREAM_CODEC).encode(registryByteBuf, this.interactionHand);
+		GeneratedRogueLootData.STREAM_CODEC.encode(registryByteBuf, this.generatedRogueLootData);
 		registryByteBuf.writeIdentifier(this.banishedRogueLootEntry);
 		ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(registryByteBuf, this.banishingCost);
 	}

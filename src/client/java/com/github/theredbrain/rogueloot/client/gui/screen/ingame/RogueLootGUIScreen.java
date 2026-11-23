@@ -3,7 +3,7 @@ package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.config.ClientConfig;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
-import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
 import com.github.theredbrain.rogueloot.data.RogueLootTableEntryRarity;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
@@ -25,7 +25,6 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -38,13 +37,11 @@ public class RogueLootGUIScreen extends Screen {
 
 	private static final int MAX_OPTIONS_AMOUNT = 12;
 	private final GeneratedRogueLoot generatedRogueLoot;
-	private final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier;
+	private final GeneratedRogueLootData generatedRogueLootData;
 	private final RogueLootGuiSettings rogueLootGuiSettings;
 	private final int banishingAttempts;
 	private final int rerollAttempts;
 	private final int reservingAttempts;
-	private final Optional<ItemStack> itemStack;
-	private final Optional<InteractionHand> interactionHand;
 
 	private Button selectLootOption0Button;
 	private Button selectLootOption1Button;
@@ -72,16 +69,14 @@ public class RogueLootGUIScreen extends Screen {
 	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[]{};
 	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[]{};
 
-	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootTableIdentifier generatedRogueLootTableIdentifier, final int rerollAttempts, final int banishingAttempts, final int reservingAttempts, final Optional<ItemStack> itemStack, final Optional<InteractionHand> interactionHand) {
+	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootData generatedRogueLootData, final int rerollAttempts, final int banishingAttempts, final int reservingAttempts) {
 		super(GameNarrator.NO_TITLE);
 		this.generatedRogueLoot = generatedRogueLoot;
 		this.rogueLootGuiSettings = this.generatedRogueLoot.rogueLootGuiSettings();
-		this.generatedRogueLootTableIdentifier = generatedRogueLootTableIdentifier;
+		this.generatedRogueLootData = generatedRogueLootData;
 		this.rerollAttempts = rerollAttempts;
 		this.banishingAttempts = banishingAttempts;
 		this.reservingAttempts = reservingAttempts;
-		this.itemStack = itemStack;
-		this.interactionHand = interactionHand;
 		Arrays.fill(this.selectedOptions, false);
 
 	}
@@ -130,7 +125,7 @@ public class RogueLootGUIScreen extends Screen {
 				// TODO play sound?
 				this.updateWidgets();
 			} else {
-				if (this.selectedOptionsAmount < this.generatedRogueLoot.maxChoices()) {
+				if (this.selectedOptionsAmount < this.generatedRogueLootData.modifiedMaxChoices()) {
 					((LootOptionButton) button).setSelected(true);
 					this.selectedOptions[index] = true;
 					// TODO play sound?
@@ -590,15 +585,15 @@ public class RogueLootGUIScreen extends Screen {
 
 		this.confirmButton.setMessage(getConfirmChoicesButonLabel());
 
-		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLoot.maxChoices() && this.selectedOptionsAmount >= this.generatedRogueLoot.minChoices() && !this.banishingEnabled && !this.reservingEnabled;
+		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLootData.modifiedMaxChoices() && this.selectedOptionsAmount >= this.generatedRogueLootData.modifiedMinChoices() && !this.banishingEnabled && !this.reservingEnabled;
 
 	}
 
 	private Component getConfirmChoicesButonLabel() {
 		MutableComponent confirmChoicesButtonLabel = Component.empty();
 
-		int minChoices = this.generatedRogueLoot.minChoices();
-		int maxChoices = this.generatedRogueLoot.maxChoices();
+		int minChoices = this.generatedRogueLootData.modifiedMinChoices();
+		int maxChoices = this.generatedRogueLootData.modifiedMaxChoices();
 		if (minChoices > maxChoices) {
 			return confirmChoicesButtonLabel;
 		}
@@ -664,9 +659,7 @@ public class RogueLootGUIScreen extends Screen {
 			Optional<Identifier> optionalIdentifier = this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId();
 			if (optionalIdentifier.isPresent()) {
 				ClientPlayNetworking.send(new BanishRogueLootEntryPacket(
-						this.generatedRogueLootTableIdentifier,
-						this.itemStack,
-						this.interactionHand,
+						this.generatedRogueLootData,
 						optionalIdentifier.get(),
 						optionalBanishingCost
 				));
@@ -683,9 +676,7 @@ public class RogueLootGUIScreen extends Screen {
 			Optional<Identifier> optionalIdentifier = this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId();
 			if (optionalIdentifier.isPresent()) {
 				ClientPlayNetworking.send(new ReserveRogueLootEntryPacket(
-						this.generatedRogueLootTableIdentifier,
-						this.itemStack,
-						this.interactionHand,
+						this.generatedRogueLootData,
 						optionalIdentifier.get(),
 						optionalReservingCost
 				));
@@ -701,9 +692,7 @@ public class RogueLootGUIScreen extends Screen {
 				optionalRerollCost = Optional.of(this.generatedRogueLoot.rerollCost().get().create());
 			}
 			ClientPlayNetworking.send(new RerollRogueLootScreenPacket(
-					this.generatedRogueLootTableIdentifier,
-					this.itemStack,
-					this.interactionHand,
+					this.generatedRogueLootData,
 					optionalRerollCost
 			));
 		}
@@ -712,9 +701,7 @@ public class RogueLootGUIScreen extends Screen {
 	private void confirmSelection() {
 		ClientPlayNetworking.send(new ApplyRogueLootSelectionPacket(
 				getChosenRogueLootEntries(),
-				this.generatedRogueLootTableIdentifier,
-				this.itemStack,
-				this.interactionHand
+				this.generatedRogueLootData
 		));
 		this.onClose();
 	}

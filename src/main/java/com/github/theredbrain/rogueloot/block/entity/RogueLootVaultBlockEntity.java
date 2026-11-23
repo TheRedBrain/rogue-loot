@@ -6,11 +6,11 @@ import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultCli
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultServerData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultSharedData;
 import com.github.theredbrain.rogueloot.block.rogue_loot_vault.RogueLootVaultState;
-import com.github.theredbrain.rogueloot.data.GeneratedRogueLootTableIdentifier;
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.RogueLootVaultConfig;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
-import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.github.theredbrain.rogueloot.registry.RogueLootEntities;
+import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -370,16 +370,19 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_INSERT_ITEM_FAIL);
 				} else if (serverData.hasRewardedPlayer(player)) {
 					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
-				} else if (player instanceof ServerPlayer serverPlayerEntity) {
-					Identifier identifier = Identifier.tryParse(config.lootTableIdentifier());
-					if (identifier == null) {
-						serverPlayerEntity.sendSystemMessage(Component.translatable("hud.message.rogue_loot_vault_block.invalid_loot_table_id").withStyle(ChatFormatting.RED), true);
+				} else if (player instanceof ServerPlayer serverPlayer) {
+					Identifier lootTableIdentifier = Identifier.tryParse(config.lootTableIdentifier());
+					if (lootTableIdentifier == null) {
+						serverPlayer.sendSystemMessage(Component.translatable("hud.message.rogue_loot_vault_block.invalid_loot_table_id").withStyle(ChatFormatting.RED), true);
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayerEntity, new GeneratedRogueLootTableIdentifier(identifier, Optional.of(pos), config.rolls(), config.minChoices(), config.maxChoices()), Optional.of(stack), Optional.of(interactionHand));
+						int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, lootTableIdentifier, config.rolls());
+						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, lootTableIdentifier, config.minChoices());
+						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, lootTableIdentifier, config.maxChoices());
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(lootTableIdentifier, Identifier.fromNamespaceAndPath(lootTableIdentifier.getNamespace(), lootTableIdentifier.getPath() + "_" + pos.toShortString()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
 					} else {
-						RogueLoot.supplyLootableLoot(identifier, serverLevel, serverPlayerEntity, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
+						RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 						serverData.markPlayerAsRewarded(player);
 						sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
 					}

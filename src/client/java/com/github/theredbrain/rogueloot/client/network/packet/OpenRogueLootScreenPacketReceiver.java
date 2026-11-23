@@ -10,12 +10,10 @@ public class OpenRogueLootScreenPacketReceiver implements ClientPlayNetworking.P
 	public void receive(final OpenRogueLootScreenPacket payload, final ClientPlayNetworking.Context context) {
 		context.client().setScreen(new RogueLootGUIScreen(
 				payload.generatedRogueLoot(),
-				payload.generatedRogueLootTableIdentifier(),
+				payload.generatedRogueLootData(),
 				payload.rerollAttempts(),
 				payload.banishingAttempts(),
-				payload.reservingAttempts(),
-				payload.itemStack(),
-				payload.interactionHand()
+				payload.reservingAttempts()
 		));
 	}
 }
