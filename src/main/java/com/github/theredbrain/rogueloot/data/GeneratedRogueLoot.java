@@ -16,22 +16,16 @@ import java.util.Optional;
 public record GeneratedRogueLoot(
 		RogueLootGuiSettings rogueLootGuiSettings,
 		List<VisibleRogueLootTableEntry> entryList,
-		boolean enableRerolling,
-		Optional<ItemStackTemplate> rerollCost,
-		boolean enableEntryBanishing,
-		Optional<ItemStackTemplate> banishingCost,
-		boolean enableEntryReserving,
-		Optional<ItemStackTemplate> reservingCost
+		Optional<CommonDataStructures.RogueLootTableInteraction> rerolling,
+		Optional<CommonDataStructures.RogueLootTableInteraction> banishing,
+		Optional<CommonDataStructures.RogueLootTableInteraction> reserving
 ) {
 	public static final Codec<GeneratedRogueLoot> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RogueLootGuiSettings.CODEC.fieldOf("rogue_loot_gui_settings").forGetter(x -> x.rogueLootGuiSettings),
 			VisibleRogueLootTableEntry.CODEC.listOf().fieldOf("entry_list").forGetter(x -> x.entryList),
-			Codec.BOOL.fieldOf("enable_rerolling").forGetter(x -> x.enableRerolling),
-			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
-			Codec.BOOL.fieldOf("enable_entry_banishing").forGetter(x -> x.enableEntryBanishing),
-			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost),
-			Codec.BOOL.optionalFieldOf("enable_entry_reserving", false).forGetter(x -> x.enableEntryReserving),
-			ItemStackTemplate.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reservingCost)
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerolling),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishing),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reserving)
 	).apply(instance, GeneratedRogueLoot::new));
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, GeneratedRogueLoot> STREAM_CODEC = StreamCodec.ofMember(GeneratedRogueLoot::write, GeneratedRogueLoot::new);
@@ -40,24 +34,18 @@ public record GeneratedRogueLoot(
 		this(
 				RogueLootGuiSettings.STREAM_CODEC.decode(registryFriendlyByteBuf),
 				registryFriendlyByteBuf.readList(VisibleRogueLootTableEntry.STREAM_CODEC),
-				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
-				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf),
-				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
-				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf),
-				ByteBufCodecs.BOOL.decode(registryFriendlyByteBuf),
-				ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryFriendlyByteBuf)
+				ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).decode(registryFriendlyByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).decode(registryFriendlyByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).decode(registryFriendlyByteBuf)
 		);
 	}
 
 	private void write(final FriendlyByteBuf friendlyByteBuf) {
 		RogueLootGuiSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootGuiSettings);
 		friendlyByteBuf.writeCollection(this.entryList, VisibleRogueLootTableEntry.STREAM_CODEC);
-		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableRerolling);
-		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rerollCost);
-		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryBanishing);
-		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.banishingCost);
-		ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.enableEntryReserving);
-		ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.reservingCost);
+		ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rerolling);
+		ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.banishing);
+		ByteBufCodecs.optional(CommonDataStructures.RogueLootTableInteraction.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.reserving);
 	}
 
 	public static GeneratedRogueLoot copy(final GeneratedRogueLoot generatedRogueLoot) {
@@ -68,12 +56,9 @@ public record GeneratedRogueLoot(
 		return new GeneratedRogueLoot(
 				RogueLootGuiSettings.copy(generatedRogueLoot.rogueLootGuiSettings()),
 				newVisibleRogueLootTableEntryList,
-				generatedRogueLoot.enableRerolling(),
-				generatedRogueLoot.rerollCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.rerollCost().get().create())) : Optional.empty(),
-				generatedRogueLoot.enableEntryBanishing(),
-				generatedRogueLoot.banishingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.banishingCost().get().create())) : Optional.empty(),
-				generatedRogueLoot.enableEntryReserving(),
-				generatedRogueLoot.reservingCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(generatedRogueLoot.reservingCost().get().create())) : Optional.empty()
+				generatedRogueLoot.rerolling(),
+				generatedRogueLoot.banishing(),
+				generatedRogueLoot.reserving()
 		);
 	}
 

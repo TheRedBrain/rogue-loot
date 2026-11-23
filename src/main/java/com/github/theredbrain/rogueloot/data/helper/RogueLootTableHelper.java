@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.data.helper;
 
 import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.entity.SuppliesRogueLootTable;
+import com.github.theredbrain.rogueloot.data.CommonDataStructures;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
@@ -16,13 +17,10 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.Holder;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -102,25 +100,37 @@ public class RogueLootTableHelper {
 	}
 
 	public static int calculateModifiedRolls(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, final int defaultRolls) {
-		// TODO
-		return defaultRolls;
+		RogueLootTable rogueLootTable = RogueLootTable.getRogueLootTable(serverLevel.registryAccess(), rogueLootTableIdentifier);
+		if (rogueLootTable == null) {
+			return defaultRolls;
+		}
+
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultRolls);
 	}
 
 	public static int calculateModifiedMinChoices(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, final int defaultMinChoices) {
-		// TODO
-		return defaultMinChoices;
+		RogueLootTable rogueLootTable = RogueLootTable.getRogueLootTable(serverLevel.registryAccess(), rogueLootTableIdentifier);
+		if (rogueLootTable == null) {
+			return defaultMinChoices;
+		}
+
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultMinChoices);
 	}
 
 	public static int calculateModifiedMaxChoices(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, final int defaultMaxChoices) {
-		// TODO
-		return defaultMaxChoices;
+		RogueLootTable rogueLootTable = RogueLootTable.getRogueLootTable(serverLevel.registryAccess(), rogueLootTableIdentifier);
+		if (rogueLootTable == null) {
+			return defaultMaxChoices;
+		}
+
+		return CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, Optional.empty(), defaultMaxChoices);
 	}
 
 	private static int calculateRerollAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int rerollAttempts = -1;
-		if (rogueLootTable.enableRerolling() && rogueLootTable.rerollCost().isPresent()) {
-			ItemStack rerollCostStack = rogueLootTable.rerollCost().get().create();
+		if (rogueLootTable.rerolling().isPresent() && rogueLootTable.rerolling().get().enabled() && rogueLootTable.rerolling().get().optionalCost().isPresent()) {
+			ItemStack rerollCostStack = rogueLootTable.rerolling().get().optionalCost().get().create();
 
 			if (!rerollCostStack.isEmpty()) {
 				rerollAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, rerollCostStack);
@@ -132,8 +142,8 @@ public class RogueLootTableHelper {
 	private static int calculateBanishingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int banishingAttempts = -1;
-		if (rogueLootTable.enableEntryBanishing() && rogueLootTable.banishingCost().isPresent()) {
-			ItemStack banishingCostStack = rogueLootTable.banishingCost().get().create();
+		if (rogueLootTable.banishing().isPresent() && rogueLootTable.banishing().get().enabled() && rogueLootTable.banishing().get().optionalCost().isPresent()) {
+			ItemStack banishingCostStack = rogueLootTable.banishing().get().optionalCost().get().create();
 
 			if (!banishingCostStack.isEmpty()) {
 				banishingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, banishingCostStack);
@@ -145,8 +155,8 @@ public class RogueLootTableHelper {
 	private static int calculateReservingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int lockingAttempts = -1;
-		if (rogueLootTable.enableEntryReserving() && rogueLootTable.reservingCost().isPresent()) {
-			ItemStack lockingCostStack = rogueLootTable.reservingCost().get().create();
+		if (rogueLootTable.reserving().isPresent() && rogueLootTable.reserving().get().enabled() && rogueLootTable.reserving().get().optionalCost().isPresent()) {
+			ItemStack lockingCostStack = rogueLootTable.reserving().get().optionalCost().get().create();
 
 			if (!lockingCostStack.isEmpty()) {
 				lockingAttempts = PlayerHelper.countAffordableTransactions(serverPlayer, lockingCostStack);
@@ -204,14 +214,7 @@ public class RogueLootTableHelper {
 							rarity = rarityOverride;
 						}
 					}
-					weight = rarity.defaultWeight();
-					if (rarity.weightInfluencingAttribute().isPresent()) {
-						Optional<Holder.Reference<Attribute>> optionalAttributeReference = BuiltInRegistries.ATTRIBUTE.get(ResourceKey.create(Registries.ATTRIBUTE, rarity.weightInfluencingAttribute().get()));
-						if (optionalAttributeReference.isPresent()) {
-							double influencingAttributeValue = serverPlayer.getAttributeValue(optionalAttributeReference.get());
-							weight = (int) Math.clamp(Math.floor(rarity.defaultWeight() + (influencingAttributeValue * rarity.influenceMultiplier())), rarity.minWeight(), rarity.maxWeight());
-						}
-					}
+					weight = CommonDataStructures.AttributeInfluencedIntegerModifier.calculateAttributeInfluencedIntegerValue(serverPlayer, rarity.optionalWeightModifier(), rarity.weight());
 				}
 			}
 			tempList.add(new MutablePair<>(weight, entryIdentifier));
@@ -316,12 +319,9 @@ public class RogueLootTableHelper {
 		return new GeneratedRogueLoot(
 				rogueLootGuiSettings,
 				visibleRogueLootTableEntries,
-				rogueLootTable.enableRerolling(),
-				rogueLootTable.rerollCost(),
-				rogueLootTable.enableEntryBanishing(),
-				rogueLootTable.banishingCost(),
-				rogueLootTable.enableEntryReserving(),
-				rogueLootTable.reservingCost()
+				rogueLootTable.rerolling(),
+				rogueLootTable.banishing(),
+				rogueLootTable.reserving()
 		);
 	}
 

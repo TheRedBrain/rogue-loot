@@ -8,6 +8,9 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistryCodecs;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
 import org.jspecify.annotations.Nullable;
@@ -19,24 +22,18 @@ public record RogueLootTable(
 		HolderSet<RogueLootTableEntry> rogueLootTableEntries,
 		Map<Identifier, Identifier> rarityOverrides,
 		String rogueLootGuiSettingsIdString,
-		boolean enableRerolling,
-		Optional<ItemStackTemplate> rerollCost,
-		boolean enableEntryBanishing,
-		Optional<ItemStackTemplate> banishingCost,
-		boolean enableEntryReserving,
-		Optional<ItemStackTemplate> reservingCost,
+		Optional<CommonDataStructures.RogueLootTableInteraction> rerolling,
+		Optional<CommonDataStructures.RogueLootTableInteraction> banishing,
+		Optional<CommonDataStructures.RogueLootTableInteraction> reserving,
 		Optional<Identifier> randomSequence
 ) {
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
 			Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
 			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
-			Codec.BOOL.optionalFieldOf("enable_rerolling", false).forGetter(x -> x.enableRerolling),
-			ItemStackTemplate.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerollCost),
-			Codec.BOOL.optionalFieldOf("enable_entry_banishing", false).forGetter(x -> x.enableEntryBanishing),
-			ItemStackTemplate.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishingCost),
-			Codec.BOOL.optionalFieldOf("enable_entry_reserving", false).forGetter(x -> x.enableEntryReserving),
-			ItemStackTemplate.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reservingCost),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reroll_cost").forGetter(x -> x.rerolling),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("banishing_cost").forGetter(x -> x.banishing),
+			CommonDataStructures.RogueLootTableInteraction.CODEC.optionalFieldOf("reserving_cost").forGetter(x -> x.reserving),
 			Identifier.CODEC.optionalFieldOf("random_sequence").forGetter(x -> x.randomSequence)
 	).apply(instance, RogueLootTable::new));
 

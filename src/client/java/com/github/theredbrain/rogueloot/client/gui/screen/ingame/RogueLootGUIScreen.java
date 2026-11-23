@@ -63,8 +63,8 @@ public class RogueLootGUIScreen extends Screen {
 	private final boolean[] selectedOptions = new boolean[MAX_OPTIONS_AMOUNT];
 
 	private int selectedOptionsAmount;
-	private boolean banishingEnabled = false;
-	private boolean reservingEnabled = false;
+	private boolean banishingActive = false;
+	private boolean reservingActive = false;
 
 	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[]{};
 	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[]{};
@@ -86,13 +86,13 @@ public class RogueLootGUIScreen extends Screen {
 			return;
 		}
 		ClientConfig clientConfig = RogueLootConfigs.CLIENT_CONFIG;
-		if (this.banishingEnabled && this.generatedRogueLoot.enableEntryBanishing()) {
+		if (this.banishingActive && this.generatedRogueLoot.banishing().isPresent() && this.generatedRogueLoot.banishing().get().enabled()) {
 			if (this.generatedRogueLoot.entryList().get(index).allowBanishing() && this.banishingAttempts != 0) {
 				if (((LootOptionButton) button).isSelected() && clientConfig.enable_banishing_selected_options.get()) {
 					((LootOptionButton) button).setSelected(false);
 					this.selectedOptions[index] = false;
 				}
-				this.banishingEnabled = false;
+				this.banishingActive = false;
 				this.toggleBanishingButton.setValue(false);
 				button.active = false;
 				button.visible = clientConfig.show_banished_loot_options.get();
@@ -102,13 +102,13 @@ public class RogueLootGUIScreen extends Screen {
 			} else {
 				// TODO play sound?
 			}
-		} else if (this.reservingEnabled && this.generatedRogueLoot.enableEntryReserving()) {
+		} else if (this.reservingActive && this.generatedRogueLoot.reserving().isPresent() && this.generatedRogueLoot.reserving().get().enabled()) {
 			if (this.generatedRogueLoot.entryList().get(index).allowReserving() && this.reservingAttempts != 0) {
 				if (((LootOptionButton) button).isSelected() && clientConfig.enable_reserving_selected_options.get()) {
 					((LootOptionButton) button).setSelected(false);
 					this.selectedOptions[index] = false;
 				}
-				this.reservingEnabled = false;
+				this.reservingActive = false;
 				this.toggleReservingButton.setValue(false);
 				button.active = false;
 				button.visible = clientConfig.show_reserved_loot_options.get();
@@ -194,21 +194,22 @@ public class RogueLootGUIScreen extends Screen {
 			enableReservingButtonLabelComponent.withoutShadow();
 		}
 
+		boolean banishingEnabled = this.generatedRogueLoot.banishing().isPresent() && this.generatedRogueLoot.banishing().get().enabled();
 		this.toggleReservingButton = this.addRenderableWidget(
 				CycleButton.booleanBuilder(
 								disableReservingButtonLabelComponent,
 								enableReservingButtonLabelComponent,
-								this.reservingEnabled
+								this.reservingActive
 						)
 						.displayOnlyValue()
 						.create(
-								this.generatedRogueLoot.enableEntryBanishing() ? firstButtonX : soloButtonX,
+								banishingEnabled ? firstButtonX : soloButtonX,
 								firstRowY,
-								this.generatedRogueLoot.enableEntryBanishing() ? dualButtonWidth : soloButtonWidth,
+								banishingEnabled ? dualButtonWidth : soloButtonWidth,
 								20,
 								Component.empty(),
-								(button, reservingEnabled) -> {
-									this.reservingEnabled = reservingEnabled;
+								(button, reservingActive) -> {
+									this.reservingActive = reservingActive;
 									this.updateWidgets();
 								}
 						)
@@ -249,21 +250,22 @@ public class RogueLootGUIScreen extends Screen {
 			enableBanishingButtonLabelComponent.withoutShadow();
 		}
 
+		boolean reservingEnabled = this.generatedRogueLoot.reserving().isPresent() && this.generatedRogueLoot.reserving().get().enabled();
 		this.toggleBanishingButton = this.addRenderableWidget(
 				CycleButton.booleanBuilder(
 								disableBanishingButtonLabelComponent,
 								enableBanishingButtonLabelComponent,
-								this.banishingEnabled
+								this.banishingActive
 						)
 						.displayOnlyValue()
 						.create(
-								this.generatedRogueLoot.enableEntryReserving() ? secondButtonX : soloButtonX,
+								reservingEnabled ? secondButtonX : soloButtonX,
 								firstRowY,
-								this.generatedRogueLoot.enableEntryReserving() ? dualButtonWidth : soloButtonWidth,
+								reservingEnabled ? dualButtonWidth : soloButtonWidth,
 								20,
 								Component.empty(),
-								(button, banishingEnabled) -> {
-									this.banishingEnabled = banishingEnabled;
+								(button, banishingActive) -> {
+									this.banishingActive = banishingActive;
 									this.updateWidgets();
 								}
 						)
@@ -318,12 +320,13 @@ public class RogueLootGUIScreen extends Screen {
 		);
 		// endregion rerolling
 
+		boolean rerollingEnabled = this.generatedRogueLoot.rerolling().isPresent() && this.generatedRogueLoot.rerolling().get().enabled();
 		this.confirmButton = this.addRenderableWidget(
 				Button.builder(Component.empty(), button -> this.confirmSelection())
 						.bounds(
-								this.generatedRogueLoot.enableRerolling() ? secondButtonX : soloButtonX,
+								rerollingEnabled ? secondButtonX : soloButtonX,
 								secondRowY,
-								this.generatedRogueLoot.enableRerolling() ? dualButtonWidth : soloButtonWidth,
+								rerollingEnabled ? dualButtonWidth : soloButtonWidth,
 								20)
 						.build()
 		);
@@ -356,13 +359,13 @@ public class RogueLootGUIScreen extends Screen {
 			entriesAssetPathAddition = this.rogueLootGuiSettings.entriesAssetPathAddition() + "/";
 		}
 
-		this.rerollButton.visible = this.generatedRogueLoot.enableRerolling();
+		this.rerollButton.visible = this.generatedRogueLoot.rerolling().isPresent() && this.generatedRogueLoot.rerolling().get().enabled();
 		this.rerollButton.active = this.rerollAttempts != 0;
 
-		this.toggleBanishingButton.visible = this.generatedRogueLoot.enableEntryBanishing();
+		this.toggleBanishingButton.visible = this.generatedRogueLoot.banishing().isPresent() && this.generatedRogueLoot.banishing().get().enabled();
 		this.toggleBanishingButton.active = this.banishingAttempts != 0;
 
-		this.toggleReservingButton.visible = this.generatedRogueLoot.enableEntryReserving();
+		this.toggleReservingButton.visible = this.generatedRogueLoot.reserving().isPresent() && this.generatedRogueLoot.reserving().get().enabled();
 		this.toggleReservingButton.active = this.reservingAttempts != 0;
 
 		int visibleOptionsAmount = Math.min(this.generatedRogueLoot.entryList().size(), MAX_OPTIONS_AMOUNT);
@@ -585,7 +588,7 @@ public class RogueLootGUIScreen extends Screen {
 
 		this.confirmButton.setMessage(getConfirmChoicesButonLabel());
 
-		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLootData.modifiedMaxChoices() && this.selectedOptionsAmount >= this.generatedRogueLootData.modifiedMinChoices() && !this.banishingEnabled && !this.reservingEnabled;
+		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLootData.modifiedMaxChoices() && this.selectedOptionsAmount >= this.generatedRogueLootData.modifiedMinChoices() && !this.banishingActive && !this.reservingActive;
 
 	}
 
@@ -613,8 +616,8 @@ public class RogueLootGUIScreen extends Screen {
 		boolean selected3 = ((LootOptionButton) this.selectLootOption3Button).isSelected();
 		boolean selected4 = ((LootOptionButton) this.selectLootOption4Button).isSelected();
 		boolean selected5 = ((LootOptionButton) this.selectLootOption5Button).isSelected();
-		boolean banishingEnabled = this.banishingEnabled;
-		boolean reservingEnabled = this.reservingEnabled;
+		boolean banishingActive = this.banishingActive;
+		boolean reservingActive = this.reservingActive;
 		this.init(width, height);
 		((LootOptionButton) this.selectLootOption0Button).setSelected(selected0);
 		((LootOptionButton) this.selectLootOption1Button).setSelected(selected1);
@@ -622,10 +625,10 @@ public class RogueLootGUIScreen extends Screen {
 		((LootOptionButton) this.selectLootOption3Button).setSelected(selected3);
 		((LootOptionButton) this.selectLootOption4Button).setSelected(selected4);
 		((LootOptionButton) this.selectLootOption5Button).setSelected(selected5);
-		this.banishingEnabled = banishingEnabled;
-		this.toggleBanishingButton.setValue(this.banishingEnabled);
-		this.reservingEnabled = reservingEnabled;
-		this.toggleReservingButton.setValue(this.reservingEnabled);
+		this.banishingActive = banishingActive;
+		this.toggleBanishingButton.setValue(this.banishingActive);
+		this.reservingActive = reservingActive;
+		this.toggleReservingButton.setValue(this.reservingActive);
 	}
 
 	@Override
@@ -651,10 +654,10 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private void banishEntry(final int index) {
-		if (this.generatedRogueLoot.enableEntryBanishing() && index < this.generatedRogueLoot.entryList().size()) {
+		if (this.generatedRogueLoot.banishing().isPresent() && this.generatedRogueLoot.banishing().get().enabled() && index < this.generatedRogueLoot.entryList().size()) {
 			Optional<ItemStack> optionalBanishingCost = Optional.empty();
-			if (this.generatedRogueLoot.banishingCost().isPresent()) {
-				optionalBanishingCost = Optional.of(this.generatedRogueLoot.banishingCost().get().create());
+			if (this.generatedRogueLoot.banishing().get().optionalCost().isPresent()) {
+				optionalBanishingCost = Optional.of(this.generatedRogueLoot.banishing().get().optionalCost().get().create());
 			}
 			Optional<Identifier> optionalIdentifier = this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId();
 			if (optionalIdentifier.isPresent()) {
@@ -668,10 +671,10 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private void reserveEntry(final int index) {
-		if (this.generatedRogueLoot.enableEntryReserving() && index < this.generatedRogueLoot.entryList().size()) {
+		if (this.generatedRogueLoot.reserving().isPresent() && this.generatedRogueLoot.reserving().get().enabled() && index < this.generatedRogueLoot.entryList().size()) {
 			Optional<ItemStack> optionalReservingCost = Optional.empty();
-			if (this.generatedRogueLoot.reservingCost().isPresent()) {
-				optionalReservingCost = Optional.of(this.generatedRogueLoot.reservingCost().get().create());
+			if (this.generatedRogueLoot.reserving().get().optionalCost().isPresent()) {
+				optionalReservingCost = Optional.of(this.generatedRogueLoot.reserving().get().optionalCost().get().create());
 			}
 			Optional<Identifier> optionalIdentifier = this.generatedRogueLoot.entryList().get(index).parentRogueLootTableEntryId();
 			if (optionalIdentifier.isPresent()) {
@@ -685,11 +688,11 @@ public class RogueLootGUIScreen extends Screen {
 	}
 
 	private void reroll() {
-		if (this.generatedRogueLoot.enableRerolling() && this.rerollAttempts != 0) {
+		if (this.generatedRogueLoot.rerolling().isPresent() && this.generatedRogueLoot.rerolling().get().enabled() && this.rerollAttempts != 0) {
 			// TODO play sound?
 			Optional<ItemStack> optionalRerollCost = Optional.empty();
-			if (this.generatedRogueLoot.rerollCost().isPresent()) {
-				optionalRerollCost = Optional.of(this.generatedRogueLoot.rerollCost().get().create());
+			if (this.generatedRogueLoot.rerolling().get().optionalCost().isPresent()) {
+				optionalRerollCost = Optional.of(this.generatedRogueLoot.rerolling().get().optionalCost().get().create());
 			}
 			ClientPlayNetworking.send(new RerollRogueLootScreenPacket(
 					this.generatedRogueLootData,
