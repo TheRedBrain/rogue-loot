@@ -1,6 +1,6 @@
 {
   "asset_path_addition": "epic",
-  "default_weight": 1,
+  "weight": 1,
   "banished_label": {
     "formatting": [
       "light_purple"

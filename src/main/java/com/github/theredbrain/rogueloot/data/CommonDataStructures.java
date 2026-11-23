@@ -57,16 +57,14 @@ public class CommonDataStructures {
 	}
 
 	public record AttributeInfluencedIntegerModifier(
-			int defaultValue,
 			int minValue,
 			int maxValue,
 			Optional<Identifier> influencingAttributeIdentifier,
 			double influenceMultiplier
 	) {
 
-		public static final AttributeInfluencedIntegerModifier DEFAULT = new AttributeInfluencedIntegerModifier(1, 1, 1, Optional.empty(), 1.0);
+		public static final AttributeInfluencedIntegerModifier DEFAULT = new AttributeInfluencedIntegerModifier(1, 1, Optional.empty(), 1.0);
 		public static final Codec<AttributeInfluencedIntegerModifier> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Codec.INT.optionalFieldOf("default_value", 1).forGetter(x -> x.defaultValue),
 				Codec.INT.optionalFieldOf("min_value", 1).forGetter(x -> x.minValue),
 				Codec.INT.optionalFieldOf("max_value", 1).forGetter(x -> x.maxValue),
 				Identifier.CODEC.optionalFieldOf("influencing_attribute_identifier").forGetter(x -> x.influencingAttributeIdentifier),
@@ -79,14 +77,12 @@ public class CommonDataStructures {
 			this(
 					ByteBufCodecs.INT.decode(registryByteBuf),
 					ByteBufCodecs.INT.decode(registryByteBuf),
-					ByteBufCodecs.INT.decode(registryByteBuf),
 					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(registryByteBuf),
 					ByteBufCodecs.DOUBLE.decode(registryByteBuf)
 			);
 		}
 
 		private void write(final FriendlyByteBuf registryByteBuf) {
-			ByteBufCodecs.INT.encode(registryByteBuf, this.defaultValue);
 			ByteBufCodecs.INT.encode(registryByteBuf, this.minValue);
 			ByteBufCodecs.INT.encode(registryByteBuf, this.maxValue);
 			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.influencingAttributeIdentifier);

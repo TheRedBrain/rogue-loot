@@ -1,6 +1,6 @@
 {
   "asset_path_addition": "common",
-  "default_weight": 15,
+  "weight": 15,
   "banished_label": {
     "formatting": [
       "gray"

@@ -1,16 +1,22 @@
 {
   "rogue_loot_table_entries": "#rogueloot_test:test",
-  "enable_rerolling": true,
-  "reroll_cost": {
-    "id": "minecraft:lapis_lazuli"
+  "rerolling": {
+    "enabled": true,
+    "cost": {
+      "id": "minecraft:lapis_lazuli"
+    }
   },
-  "enable_entry_banishing": true,
-  "banishing_cost": {
-    "id": "minecraft:emerald"
+  "banishing": {
+    "enabled": true,
+    "cost": {
+      "id": "minecraft:emerald"
+    }
   },
-  "enable_entry_reserving": true,
-  "reserving_cost": {
-    "id": "minecraft:iron_ingot",
-    "count": 10
+  "reserving": {
+    "enabled": true,
+    "cost": {
+      "id": "minecraft:iron_ingot",
+      "count": 10
+    }
   }
 }

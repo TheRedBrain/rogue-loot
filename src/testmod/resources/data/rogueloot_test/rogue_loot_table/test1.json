@@ -1,5 +1,9 @@
 {
   "rogue_loot_table_entries": "#rogueloot_test:test",
-  "enable_entry_banishing": true,
-  "enable_entry_reserving": true
+  "banishing": {
+    "enabled": true
+  },
+  "reserving": {
+    "enabled": true
+  }
 }

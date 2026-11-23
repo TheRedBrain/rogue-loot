@@ -1,6 +1,6 @@
 {
   "asset_path_addition": "rare",
-  "default_weight": 5,
+  "weight": 5,
   "banished_label": {
     "formatting": [
       "aqua"
