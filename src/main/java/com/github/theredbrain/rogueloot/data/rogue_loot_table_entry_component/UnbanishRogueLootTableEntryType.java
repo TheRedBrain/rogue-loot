@@ -38,7 +38,7 @@ public record UnbanishRogueLootTableEntryType(
 				continue;
 			}
 			Identifier entryIdentifier = optionalResourceKey.get().identifier();
-			DataAttachmentHelper.unbanishRogueLootEntry(serverPlayer, entryIdentifier);
+			DataAttachmentHelper.unbanishRogueLootEntry(serverPlayer, Optional.of(entryIdentifier));
 		}
 	}
 }

@@ -18,7 +18,7 @@ public class RogueLootServerEvents {
 	public static void initializeEvents() {
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
 			if (entity instanceof ServerPlayer serverPlayer) {
-				DataAttachmentHelper.unbanishRogueLootEntry(serverPlayer, null);
+				DataAttachmentHelper.unbanishRogueLootEntry(serverPlayer, Optional.empty());
 			}
 		});
 		UseItemCallback.EVENT.register((player, level, hand) -> {

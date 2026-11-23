@@ -95,7 +95,7 @@ public class RogueLootTableHelper {
 				suppliesRogueLootTable.removeGeneratedRogueLootEntries(serverPlayer);
 			}
 		} else {
-			DataAttachmentHelper.removeGeneratedRogueLootEntries(serverPlayer, generatedRogueLootData.savingToken());
+			DataAttachmentHelper.removeGeneratedRogueLootEntry(serverPlayer, Optional.of(generatedRogueLootData.savingToken()));
 		}
 	}
 
@@ -193,7 +193,7 @@ public class RogueLootTableHelper {
 
 			if (DataAttachmentHelper.isRogueLootEntryReserved(serverPlayer, Optional.of(entryIdentifier))) {
 				generatedRogueLootEntries.add(entryIdentifier);
-				DataAttachmentHelper.unreserveRogueLootEntry(serverPlayer, entryIdentifier);
+				DataAttachmentHelper.unreserveRogueLootEntry(serverPlayer, Optional.of(entryIdentifier));
 				continue;
 			}
 

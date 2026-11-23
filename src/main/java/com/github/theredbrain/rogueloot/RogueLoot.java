@@ -3,6 +3,7 @@ package com.github.theredbrain.rogueloot;
 import com.github.theredbrain.rogueloot.compatibility.LootablesCompat;
 import com.github.theredbrain.rogueloot.compatibility.ManaAttributesCompat;
 import com.github.theredbrain.rogueloot.compatibility.StaminaAttributesCompat;
+import com.github.theredbrain.rogueloot.registry.RogueLootCommands;
 import com.github.theredbrain.rogueloot.registry.RogueLootBlocks;
 import com.github.theredbrain.rogueloot.registry.RogueLootConfigs;
 import com.github.theredbrain.rogueloot.registry.RogueLootDataAttachments;
@@ -69,6 +70,7 @@ public class RogueLoot implements ModInitializer {
 		RogueLootTableEntryComponentTypes.init();
 		initCompatibilityRogueLootTableEntryComponentTypes();
 		RogueLootServerEvents.initializeEvents();
+		RogueLootCommands.init();
 		RogueLootServerPackets.init();
 
 		RogueLootBlocks.bootstrap();
