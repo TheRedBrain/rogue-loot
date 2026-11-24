@@ -31,7 +31,7 @@ public class RogueLootServerEvents {
 						int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, rogueLootTableIdentifier, supplyRogueLootOnUseDataComponent.rolls());
 						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, rogueLootTableIdentifier, supplyRogueLootOnUseDataComponent.minChoices());
 						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, rogueLootTableIdentifier, supplyRogueLootOnUseDataComponent.maxChoices());
-						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(rogueLootTableIdentifier, Identifier.fromNamespaceAndPath(rogueLootTableIdentifier.getNamespace(), rogueLootTableIdentifier.getPath() + "_" + supplyRogueLootOnUseDataComponent.uniqueSavingToken()), supplyRogueLootOnUseDataComponent.rolls(), modifiedRolls, supplyRogueLootOnUseDataComponent.minChoices(), modifiedMinChoices, supplyRogueLootOnUseDataComponent.maxChoices(), modifiedMaxChoices, Optional.empty(), Optional.of(itemStack), Optional.of(hand)));
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(rogueLootTableIdentifier, Identifier.fromNamespaceAndPath(rogueLootTableIdentifier.getNamespace(), rogueLootTableIdentifier.getPath() + "_" + supplyRogueLootOnUseDataComponent.savingToken()), supplyRogueLootOnUseDataComponent.rolls(), modifiedRolls, supplyRogueLootOnUseDataComponent.minChoices(), modifiedMinChoices, supplyRogueLootOnUseDataComponent.maxChoices(), modifiedMaxChoices, Optional.empty(), Optional.of(itemStack), Optional.of(hand)));
 						return InteractionResult.SUCCESS;
 					}
 					return InteractionResult.SUCCESS;
