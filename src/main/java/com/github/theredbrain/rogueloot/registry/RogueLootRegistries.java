@@ -16,11 +16,11 @@ import net.minecraft.resources.ResourceKey;
 public class RogueLootRegistries {
 
 	public static final ResourceKey<Registry<MapCodec<? extends RogueLootTableEntryComponentType>>> ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_table_entry_component_type"));
-	public static final ResourceKey<Registry<RogueLootGuiSettings>> ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_gui_settings"));
-	public static final ResourceKey<Registry<RogueLootTable>> ROGUE_LOOT_TABLE_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_table"));
-	public static final ResourceKey<Registry<RogueLootTableEntry>> ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_table_entry"));
-	public static final ResourceKey<Registry<RogueLootTableEntryRarity>> ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_table_entry_rarity"));
-	public static final ResourceKey<Registry<RogueLootVaultConfig>> ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot_vault_config"));
+	public static final ResourceKey<Registry<RogueLootGuiSettings>> ROGUE_LOOT_GUI_SETTINGS_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot/gui_settings"));
+	public static final ResourceKey<Registry<RogueLootTable>> ROGUE_LOOT_TABLE_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot/table"));
+	public static final ResourceKey<Registry<RogueLootTableEntry>> ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot/table_entry"));
+	public static final ResourceKey<Registry<RogueLootTableEntryRarity>> ROGUE_LOOT_TABLE_ENTRY_RARITY_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot/entry_rarity"));
+	public static final ResourceKey<Registry<RogueLootVaultConfig>> ROGUE_LOOT_VAULT_CONFIG_REGISTRY_KEY = ResourceKey.createRegistryKey(Identifier.withDefaultNamespace("rogue_loot/vault_config"));
 
 	public static Registry<MapCodec<? extends RogueLootTableEntryComponentType>> ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY = FabricRegistryBuilder.create(ROGUE_LOOT_TABLE_ENTRY_COMPONENT_TYPE_REGISTRY_KEY).buildAndRegister();
 
