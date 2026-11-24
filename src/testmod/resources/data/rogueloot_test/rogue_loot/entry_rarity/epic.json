@@ -1,24 +1,24 @@
 {
-  "asset_path_addition": "uncommon",
-  "weight": 8,
+  "asset_path_addition": "epic",
+  "weight": 1,
   "banished_label": {
     "formatting": [
-      "yellow"
+      "light_purple"
     ]
   },
   "default_label": {
     "formatting": [
-      "yellow"
+      "light_purple"
     ]
   },
-  "locked_label": {
+  "reserved_label": {
     "formatting": [
-      "yellow"
+      "light_purple"
     ]
   },
   "selected_label": {
     "formatting": [
-      "yellow"
+      "light_purple"
     ]
   }
 }

@@ -1,24 +1,24 @@
 {
-  "asset_path_addition": "common",
-  "weight": 15,
+  "asset_path_addition": "uncommon",
+  "weight": 8,
   "banished_label": {
     "formatting": [
-      "gray"
+      "yellow"
     ]
   },
   "default_label": {
     "formatting": [
-      "gray"
+      "yellow"
     ]
   },
-  "locked_label": {
+  "reserved_label": {
     "formatting": [
-      "gray"
+      "yellow"
     ]
   },
   "selected_label": {
     "formatting": [
-      "gray"
+      "yellow"
     ]
   }
 }
