@@ -1,7 +1,14 @@
 package com.github.theredbrain.rogueloot.registry;
 
+import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
+import com.github.theredbrain.rogueloot.data.RogueLootTable;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
+import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
+import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -41,18 +48,9 @@ public class RogueLootCommands {
 																				.then(
 																						Commands.argument("entry_identifier", IdentifierArgument.id())
 																								.then(
-																										Commands.literal("remove_all_uses")
-																												.then(
-																														Commands.literal("true")
-																																.executes(
-																																		(ctx) -> resetEntryUses(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.of(IdentifierArgument.getId(ctx, "entry_identifier")), true)
-																																)
-																												)
-																												.then(
-																														Commands.literal("false")
-																																.executes(
-																																		(ctx) -> resetEntryUses(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.of(IdentifierArgument.getId(ctx, "entry_identifier")), false)
-																																)
+																										Commands.literal("remove_only_one_use")
+																												.executes(
+																														(ctx) -> resetEntryUses(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.of(IdentifierArgument.getId(ctx, "entry_identifier")), false)
 																												)
 																								)
 																								.executes(
@@ -133,7 +131,72 @@ public class RogueLootCommands {
 																)
 												)
 								)
+								.then(
+										Commands.literal("roll_rogue_loot_table")
+												.then(
+														Commands.argument("player", EntityArgument.player())
+																.then(
+																		Commands.argument("rogue_loot_table_identifier", IdentifierArgument.id())
+																				.then(
+																						Commands.argument("saving_token", StringArgumentType.string())
+																								.then(
+																										Commands.argument("default_rolls", IntegerArgumentType.integer(1))
+																												.then(
+																														Commands.argument("default_min_choices", IntegerArgumentType.integer(1))
+																																.then(
+																																		Commands.argument("default_max_choices", IntegerArgumentType.integer(1))
+																																				.then(
+																																						Commands.literal("show_success_message")
+																																								.executes(
+																																										(ctx) -> rollRogueLootTable(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), IdentifierArgument.getId(ctx, "rogue_loot_table_identifier"), StringArgumentType.getString(ctx, "saving_token"), IntegerArgumentType.getInteger(ctx, "default_rolls"), IntegerArgumentType.getInteger(ctx, "default_min_choices"), IntegerArgumentType.getInteger(ctx, "default_max_choices"), true)
+																																								)
+																																				)
+																																				.executes(
+																																						(ctx) -> rollRogueLootTable(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), IdentifierArgument.getId(ctx, "rogue_loot_table_identifier"), StringArgumentType.getString(ctx, "saving_token"), IntegerArgumentType.getInteger(ctx, "default_rolls"), IntegerArgumentType.getInteger(ctx, "default_min_choices"), IntegerArgumentType.getInteger(ctx, "default_max_choices"), false)
+																																				)
+																																)
+																												)
+																								)
+																				)
+																)
+												)
+								)
 				));
+	}
+
+	private static int rollRogueLootTable(final CommandSourceStack source, final ServerPlayer serverPlayer, final Identifier rogueLootTableIdentifier, String savingToken, int defaultRolls, int defaultMinChoices, int defaultMaxChoices, boolean showSuccessMessage) {
+		if (RogueLootTable.getRogueLootTable(source.getLevel().registryAccess(), rogueLootTableIdentifier) == null) {
+			source.sendFailure(Component.translatable("commands.rogueloot.roll_table.invalid_identifier", rogueLootTableIdentifier.toString()));
+			return 0;
+		}
+		if (defaultMaxChoices < defaultMinChoices) {
+			source.sendFailure(Component.translatable("commands.rogueloot.roll_table.max_choices_smaller_than_min_choices", defaultMaxChoices, defaultMinChoices));
+			return 0;
+		}
+		RogueLootTableHelper.supplyRogueLootTable(
+				source.getLevel(),
+				serverPlayer,
+				new GeneratedRogueLootData(
+						rogueLootTableIdentifier,
+						Identifier.fromNamespaceAndPath(
+								rogueLootTableIdentifier.getNamespace(),
+								rogueLootTableIdentifier.getPath() + "_" + savingToken
+						),
+						defaultRolls,
+						RogueLootTableHelper.calculateModifiedRolls(source.getLevel(), serverPlayer, rogueLootTableIdentifier, defaultRolls),
+						defaultMinChoices,
+						RogueLootTableHelper.calculateModifiedMinChoices(source.getLevel(), serverPlayer, rogueLootTableIdentifier, defaultMinChoices),
+						defaultMaxChoices,
+						RogueLootTableHelper.calculateModifiedMaxChoices(source.getLevel(), serverPlayer, rogueLootTableIdentifier, defaultMaxChoices),
+						Optional.empty(),
+						Optional.empty(),
+						Optional.empty()
+				)
+		);
+		if (showSuccessMessage) {
+			source.sendSuccess(() -> Component.translatable("commands.rogueloot.roll_table.success", rogueLootTableIdentifier.toString(), serverPlayer.getDisplayName()), true);
+		}
+		return 1;
 	}
 
 	private static int banishEntry(final CommandSourceStack source, final ServerPlayer serverPlayer, final Identifier entryIdentifier) {

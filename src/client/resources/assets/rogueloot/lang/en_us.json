@@ -1,4 +1,7 @@
 {
+	"commands.rogueloot.roll_table.success": "Supplied Rogue Loot Table %s for %s!",
+	"commands.rogueloot.roll_table.invalid_identifier": "%s is not a valid Rogue Loot Table!",
+	"commands.rogueloot.roll_table.max_choices_smaller_than_min_choices": "default_max_choices (is %s) must not be smaller than default_min_choices (is %s)!",
 	"commands.rogueloot.banish_entry.success": "Banished Rogue Loot Entry %s for %s!",
 	"commands.rogueloot.reserve_entry.success": "Reserved Rogue Loot Entry %s for %s!",
 	"commands.rogueloot.use_entry.success": "Increased uses of Rogue Loot Entry %s for %s!",
