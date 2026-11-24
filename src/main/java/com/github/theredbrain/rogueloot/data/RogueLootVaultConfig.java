@@ -59,8 +59,8 @@ public record RogueLootVaultConfig(
 	}
 
 	public enum Mode implements StringRepresentable {
-		LOOTABLE_CHOICE("lootable_choice"),
-		LOOTABLE_RANDOM("lootable_random"),
+//		LOOTABLE_CHOICE("lootable_choice"), // lootables compat
+//		LOOTABLE_RANDOM("lootable_random"), // lootables compat
 		ROGUE_LOOT("rogue_loot");
 
 		public static final Codec<Mode> CODEC = StringRepresentable.fromEnum(Mode::values);

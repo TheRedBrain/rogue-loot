@@ -144,14 +144,14 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 			this.minChoicesField.setVisible(true);
 			this.maxChoicesField.setVisible(true);
 
-		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
-
-			this.rollsField.setVisible(true);
-			this.minChoicesField.setVisible(true);
-
-		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
-
-			this.rollsField.setVisible(true);
+//		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) { // lootables compat
+//
+//			this.rollsField.setVisible(true);
+//			this.minChoicesField.setVisible(true);
+//
+//		} else if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) { // lootables compat
+//
+//			this.rollsField.setVisible(true);
 
 		}
 
@@ -228,8 +228,8 @@ public class InteractiveRogueLootBlockScreen extends Screen {
 		}
 
 		boolean isRogueLootMode = this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT;
-
-		if (this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE || isRogueLootMode) {
+		// lootables compat
+		if (/*this.lootBlockMode == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE || */isRogueLootMode) {
 			graphics.text(this.font, isRogueLootMode ? MIN_CHOICES_LABEL_TEXT : CHOICES_LABEL_TEXT, this.width / 2 - 75, 79, -6250336);
 			this.minChoicesField.extractRenderState(graphics, mouseX, mouseY, a);
 		}

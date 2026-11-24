@@ -249,8 +249,8 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity implements Supp
 	private void removeLootTableUses(final ServerLevel serverLevel, @Nullable final ServerPlayer serverPlayer) {
 		if (this.mode == Mode.ROGUE_LOOT) {
 			removeGeneratedRogueLootEntries(serverPlayer);
-		} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) {
-			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
+//		} else if (this.mode == Mode.LOOTABLE_CHOICE || this.mode == Mode.LOOTABLE_RANDOM) { // lootable compat
+//			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(this.worldPosition), this.lootTableIdentifierString, null);
 		}
 	}
 
@@ -288,9 +288,10 @@ public class InteractiveRogueLootBlockEntity extends BlockEntity implements Supp
 
 	public enum Mode implements StringRepresentable {
 		VANILLA("vanilla"),
-		ROGUE_LOOT("rogue_loot"),
-		LOOTABLE_CHOICE("lootable_choice"),
-		LOOTABLE_RANDOM("lootable_random");
+		ROGUE_LOOT("rogue_loot")/*,
+		LOOTABLE_CHOICE("lootable_choice"), // lootable compat
+		LOOTABLE_RANDOM("lootable_random")*/ // lootable compat
+		;
 
 		public static final Codec<Mode> CODEC = StringRepresentable.fromEnum(Mode::values);
 

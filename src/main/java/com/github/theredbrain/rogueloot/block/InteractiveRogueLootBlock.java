@@ -1,6 +1,5 @@
 package com.github.theredbrain.rogueloot.block;
 
-import com.github.theredbrain.rogueloot.RogueLoot;
 import com.github.theredbrain.rogueloot.block.entity.InteractiveRogueLootBlockEntity;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
@@ -81,11 +80,13 @@ public class InteractiveRogueLootBlock extends BaseEntityBlock {
 					} else {
 						Identifier lootTableIdentifier = Identifier.tryParse(interactiveRogueLootBlockEntity.getLootTableIdentifierString());
 						if (!interactiveRogueLootBlockEntity.getLootTableIdentifierString().isEmpty() && lootTableIdentifier != null) {
-							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
+							// lootables compat
+							/*if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_CHOICE) {
 								RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), true, null);
 							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.LOOTABLE_RANDOM) {
 								RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(interactiveRogueLootBlockEntity.getBlockPos()), interactiveRogueLootBlockEntity.getRolls(), interactiveRogueLootBlockEntity.getMinChoices(), false, null);
-							} else if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
+							} else */
+							if (interactiveRogueLootBlockEntity.getMode() == InteractiveRogueLootBlockEntity.Mode.ROGUE_LOOT) {
 								int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, lootTableIdentifier, interactiveRogueLootBlockEntity.getRolls());
 								int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, lootTableIdentifier, interactiveRogueLootBlockEntity.getMinChoices());
 								int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, lootTableIdentifier, interactiveRogueLootBlockEntity.getMaxChoices());

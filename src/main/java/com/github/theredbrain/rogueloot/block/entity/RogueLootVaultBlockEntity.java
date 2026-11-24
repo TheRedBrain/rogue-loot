@@ -185,8 +185,8 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 	private void removeLootableUses(final ServerLevel serverLevel, final BlockPos pos, @Nullable final ServerPlayer serverPlayer, final RogueLootVaultConfig config) {
 		if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
 			removeGeneratedRogueLootEntries(serverPlayer);
-		} else {
-			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(pos), config.lootTableIdentifier(), serverPlayer);
+//		} else { // lootable compat
+//			RogueLoot.removeLootableUses(serverLevel, Vec3.atLowerCornerOf(pos), config.lootTableIdentifier(), serverPlayer);
 		}
 	}
 
@@ -381,10 +381,10 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, lootTableIdentifier, config.minChoices());
 						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, lootTableIdentifier, config.maxChoices());
 						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(lootTableIdentifier, Identifier.fromNamespaceAndPath(lootTableIdentifier.getNamespace(), lootTableIdentifier.getPath() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
-					} else {
-						RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
-						serverData.markPlayerAsRewarded(player);
-						sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
+//					} else { // lootable compat
+//						RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
+//						serverData.markPlayerAsRewarded(player);
+//						sharedData.updateConnectedPlayers(serverLevel, pos, serverData, config, config.deactivationRange());
 					}
 				}
 			}
