@@ -10,7 +10,7 @@ The entire system is data-driven, allowing for maximal customization.
 
 ## How to roll a Rogue Loot Table
 
-A Rogue Loot Table can be supplied in various ways.
+A Rogue Loot Table can be supplied to players in various ways.
 
 ### Block Interactions
 
@@ -56,7 +56,7 @@ When interacted with in survival or adventure mode the block supplies a rogue/va
 
 ### Item Interactions
 
-When using items with the "rogueloot:" data component, a rogue loot table is supplied to the player. The exact specifications are set in the component.
+When using items with the "rogueloot:supply_rogue_loot_on_use" data component, a rogue loot table is supplied to the player. The exact specifications are set in the component.
 
 Example /give command:
 ```
@@ -66,6 +66,103 @@ Example /give command:
 ### Commands
 
 The "/rogue_loot" command allows (among other things) to supply a rogue loot table to players.
+
+Examples:
+```
+/rogue_loot roll_rogue_loot_table @s rogueloot_test:test saving_token 3 1 1 show_success_message
+```
+
+## Optional Functionality
+
+### Banishing
+
+If enabled by the Rogue Loot Table, Table Entries can be banished. They will no longer appear in any newly rolled Rogue Loot Table that contains this entry. Banished entries can no longer be selected in Rogue Loot Table choices that have already been rolled. Depending on a client config option, banished Table Entries are either hidden or visible, but not interactable. Table Entries can be defined to be unbanishable.
+
+If banishing is enabled, a new button appears in the UI, which toggles "banishing mode". While in this mode, clicking on a Table Entry banishes that entry and exits banishing mode. Clicking on the button again also exits banishing mode.
+
+Banishing optionally has an item cost. In that case, the cost is removed from the inventory when a Table Entry is banished. The currently available amount of banishments is displayed on the button.
+
+The "/rogue_loot" command allows (un)banishing Table Entries. Using the command does not cost any items, but requires the Game Master permission level.
+
+Examples:
+```
+/rogue_loot banish_entry @s rogueloot_test:test
+```
+
+```
+/rogue_loot reset @s banished_entries rogueloot_test:test
+```
+
+---
+
+### Rerolling
+
+If enabled by the Rogue Loot Table, they can be rerolled. If enabled, a new button appears in the UI. Rerolling takes into account all currently banished and reserved Table Entries.
+
+Rerolling optionally has an item cost. In that case, the cost is removed from the inventory when a Rogue Loot Table is rerolled. The currently available amount of rerolls is displayed on the button.
+
+---
+
+### Reserving
+
+If enabled by the Rogue Loot Table, Table Entries can be reserved. They are now guaranteed to appear in any newly rolled Rogue Loot Table that contains this entry. Reserved entries can no longer be selected in Rogue Loot Table choices that have already been rolled. Depending on a client config option, reserved Table Entries are either hidden or visible, but not interactable. When a reserved Table Entries appears in a newly rolled Rogue Loot Table, it will no longer be reserved. Table Entries can be defined to be unreservable.
+
+If reserving is enabled, a new button appears in the UI, which toggles "reserving mode". While in this mode, clicking on a Table Entry reserves that entry and exits reserving mode. Clicking on the button again also exits reserving mode.
+
+Reserving optionally has an item cost. In that case, the cost is removed from the inventory when a Table Entry is reserved. The currently available amount of reservings is displayed on the button.
+
+The "/rogue_loot" command allows (un)banishing Table Entries. Using the command does not cost any items, but requires the Game Master permission level.
+
+Example:
+```
+/rogue_loot reserve_entry @s rogueloot_test:test
+```
+
+```
+/rogue_loot reset @s reserved_entries rogueloot_test:test
+```
+
+---
+
+### Use Limit
+
+Table Entries can define a use limit. When they are chosen, their use counter increases by 1. If the use limit is reached, then the entry will no longer appear in newly rolled Rogue Loot Tables. Entries which reached their use limit can no longer be selected in Rogue Loot Table choices that have already been rolled. Depending on a client config option, reserved Table Entries are either hidden or visible, but not interactable. When a reserved Table Entries appears in a newly rolled Rogue Loot Table, it will no longer be reserved. Table Entries can be defined to be unreservable.
+
+If reserving is enabled, a new button appears in the UI, which toggles "reserving mode". While in this mode, clicking on a Table Entry reserves that entry and exits reserving mode. Clicking on the button again also exits reserving mode.
+
+Entries ith a use limit show their remaining uses in their tooltip.
+
+Reserving optionally has an item cost. In that case, the cost is removed from the inventory when a Table Entry is reserved. The currently available amount of reservings is displayed on the button.
+
+The "/rogue_loot" command allows increasing/decreasing the uses of Table Entries. This requires the Game Master permission level.
+
+Example:
+```
+/rogue_loot use_entry @s rogueloot_test:test
+```
+
+```
+/rogue_loot reset @s entry_uses rogueloot_test:test
+```
+
+---
+
+### Permanent Entries
+
+Table Entries can be permanent. These entries will always appear in any Rogue Loot Tables that contains it. However, this is only true if the entry is unlocked according to their unlock predicate, if it has not reached its use limit and if it's not banished.
+
+
+
+TODO
+
+```
+/rogue_loot reset @s generated_entries rogueloot_test:test
+```
+
+```
+/rogue_loot reset @s everything
+```
+
 
 ## How to create rogue loot tables?
 
@@ -224,49 +321,49 @@ A Table Entry defines a list of rewards, which are granted to the player when th
 
 Component Types:
 
-- "rogueloot:add_experience_level"
-- "rogueloot:add_experience_point"
-- "rogueloot:advancement_criterion"
-- "rogueloot:banish_rogue_loot_table_entries"
-- "rogueloot:deal_damage"
-- "rogueloot:heal_to_x_percent"
-- "rogueloot:heal_x_amount"
-- "rogueloot:item_stack"
-- "rogueloot:list"
-- "rogueloot:mob_effect_instance"
-- "rogueloot:modify_equipment"
-- "rogueloot:play_sound"
-- "rogueloot:random_components"
-- "rogueloot:reserve_rogue_loot_table_entries"
-- "rogueloot:set_experience_level"
-- "rogueloot:set_experience_point"
-- "rogueloot:unbanish_rogue_loot_table_entries"
-- "rogueloot:unreserve_rogue_loot_table_entries"
-- "rogueloot:unuse_rogue_loot_table_entries"
-- "rogueloot:use_rogue_loot_table_entries"
-- "rogueloot:vanilla_loot_table"
+- "rogueloot:add_experience_level", adds the specified amount of experience levels
+- "rogueloot:add_experience_point", adds the specified amount of experience points
+- "rogueloot:advancement_criterion", grants the specified criterion of the specified advancement
+- "rogueloot:banish_rogue_loot_table_entries", banishes the specified Table Entry (tag)
+- "rogueloot:deal_damage", deals the specified amount of damage with the specified damage type to the player
+- "rogueloot:heal_to_x_percent", sets the player's health to the specified percentage
+- "rogueloot:heal_x_amount", heals the player by the specified amount
+- "rogueloot:item_stack", adds the specified item stack to the player's inventory (or drops it on the ground when no space is left)
+- "rogueloot:list", grants all specified Entry Components
+- "rogueloot:mob_effect_instance", applies the specified mob effect instance
+- "rogueloot:modify_equipment", applies the specified list of loot item functions to all items in the specified equipment slots (optionally filtered by a condition)
+- "rogueloot:play_sound", plays the specified sound at the player's location
+- "rogueloot:random_components", grants a random reward out of a list of Entry Components, each having a weight.
+- "rogueloot:reserve_rogue_loot_table_entries", reserves the specified Table Entry (tag)
+- "rogueloot:set_experience_level", sets the player's experience level To the specified amount
+- "rogueloot:set_experience_point", sets the player's experience points To the specified amount
+- "rogueloot:unbanish_rogue_loot_table_entries", unbanishes the specified Table Entry (tag)
+- "rogueloot:unreserve_rogue_loot_table_entries", unreserves the specified Table Entry (tag)
+- "rogueloot:unuse_rogue_loot_table_entries", removes one use (optionally all uses) of the specified Table Entry (tag)
+- "rogueloot:use_rogue_loot_table_entries", adds one use to the specified Table Entry (tag)
+- "rogueloot:vanilla_loot_table", rolls the specified vanilla loot table and adds the items to the player's inventory (or drops them on the ground when no space is left)
 
 Component Types can easily be added by third-party mods. Rogue Loot also adds several component types that depend on third-party mods.
 
 Mana Attributes:
-- "rogueloot:compat/manaattributes/add_mana"
-- "rogueloot:compat/manaattributes/set_mana"
+- "rogueloot:compat/manaattributes/add_mana", adds the specified amount of mana
+- "rogueloot:compat/manaattributes/set_mana", sets the player's mana to the specified percentage
 
 Pufferfish's Skills:
-- "rogueloot:compat/puffish_skills/add_experience_level"
-- "rogueloot:compat/puffish_skills/add_experience"
-- "rogueloot:compat/puffish_skills/add_points"
-- "rogueloot:compat/puffish_skills/lock_category"
-- "rogueloot:compat/puffish_skills/lock_skill"
-- "rogueloot:compat/puffish_skills/set_experience_level"
-- "rogueloot:compat/puffish_skills/set_experience"
-- "rogueloot:compat/puffish_skills/set_points"
-- "rogueloot:compat/puffish_skills/unlock_category"
-- "rogueloot:compat/puffish_skills/unlock_skill"
+- "rogueloot:compat/puffish_skills/add_experience_level", adds the specified amount of experience levels to the specified category
+- "rogueloot:compat/puffish_skills/add_experience", adds the specified amount of experience to the specified category
+- "rogueloot:compat/puffish_skills/add_points", adds the specified amount of skill points from the specified point source to the specified category, either with or without announcement
+- "rogueloot:compat/puffish_skills/lock_category", locks the specified category
+- "rogueloot:compat/puffish_skills/lock_skill", locks the specified skill in the specified category
+- "rogueloot:compat/puffish_skills/set_experience_level", sets the player's experience level in the specified category to the specified amount
+- "rogueloot:compat/puffish_skills/set_experience", sets the player's experience in the specified category to the specified amount
+- "rogueloot:compat/puffish_skills/set_points", sets the player's skill points from the specified point source in the specified category to the specified amount, either with or without announcement
+- "rogueloot:compat/puffish_skills/unlock_category", unlocks the specified category
+- "rogueloot:compat/puffish_skills/unlock_skill", unlocks the specified skill in the specified category
 
 Stamina Attributes:
-- "rogueloot:compat/staminaattributes/add_stamina"
-- "rogueloot:compat/staminaattributes/set_stamina"
+- "rogueloot:compat/staminaattributes/add_stamina", adds the specified amount of stamina
+- "rogueloot:compat/staminaattributes/set_stamina", sets the player's stamina to the specified percentage
 
 
 ### Common Data Structures
