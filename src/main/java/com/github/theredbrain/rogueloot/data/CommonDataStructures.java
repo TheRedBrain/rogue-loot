@@ -47,11 +47,11 @@ public class CommonDataStructures {
 			ByteBufCodecs.BOOL.encode(registryByteBuf, this.hasShadow);
 		}
 
-		public static LabelSettings copy(final LabelSettings labelSettings) {
-			return new LabelSettings(
-					new ArrayList<>(labelSettings.formatting()),
-					labelSettings.hasShadow()
-			);
+		public static LabelSettings copy(final Optional<LabelSettings> labelSettings) {
+			return labelSettings.isPresent() ? new LabelSettings(
+					new ArrayList<>(labelSettings.get().formatting()),
+					labelSettings.get().hasShadow()
+			) : LabelSettings.DEFAULT;
 		}
 
 	}
@@ -69,7 +69,7 @@ public class CommonDataStructures {
 				Codec.INT.optionalFieldOf("max_value", 1).forGetter(x -> x.maxValue),
 				Identifier.CODEC.optionalFieldOf("influencing_attribute_identifier").forGetter(x -> x.influencingAttributeIdentifier),
 				Codec.DOUBLE.optionalFieldOf("influence_multiplier", 1.0).forGetter(x -> x.influenceMultiplier)
-				).apply(instance, AttributeInfluencedIntegerModifier::new));
+		).apply(instance, AttributeInfluencedIntegerModifier::new));
 
 		public static final StreamCodec<RegistryFriendlyByteBuf, AttributeInfluencedIntegerModifier> STREAM_CODEC = StreamCodec.ofMember(AttributeInfluencedIntegerModifier::write, AttributeInfluencedIntegerModifier::new);
 

@@ -19,21 +19,21 @@ public record RogueLootTableEntryRarity(
 		String assetPathAddition,
 		int weight,
 		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> optionalWeightModifier,
-		CommonDataStructures.LabelSettings banishedLabel,
-		CommonDataStructures.LabelSettings defaultLabel,
-		CommonDataStructures.LabelSettings reservedLabel,
-		CommonDataStructures.LabelSettings selectedLabel,
+		Optional<CommonDataStructures.LabelSettings> banishedLabel,
+		Optional<CommonDataStructures.LabelSettings> defaultLabel,
+		Optional<CommonDataStructures.LabelSettings> reservedLabel,
+		Optional<CommonDataStructures.LabelSettings> selectedLabel,
 		Optional<Identifier> tooltipStyle
 ) {
-	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, Optional.empty(), CommonDataStructures.LabelSettings.DEFAULT, CommonDataStructures.LabelSettings.DEFAULT, CommonDataStructures.LabelSettings.DEFAULT, CommonDataStructures.LabelSettings.DEFAULT, Optional.empty());
+	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	public static final Codec<RogueLootTableEntryRarity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.optionalFieldOf("asset_path_addition", "").forGetter(x -> x.assetPathAddition),
-			Codec.INT.optionalFieldOf("weight", 1).forGetter(x -> x.weight),
+			Codec.INT.fieldOf("weight").forGetter(x -> x.weight),
 			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("weight_modifier").forGetter(x -> x.optionalWeightModifier),
-			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("banished_label", CommonDataStructures.LabelSettings.DEFAULT).forGetter(x -> x.banishedLabel),
-			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("default_label", CommonDataStructures.LabelSettings.DEFAULT).forGetter(x -> x.defaultLabel),
-			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("reserved_label", CommonDataStructures.LabelSettings.DEFAULT).forGetter(x -> x.reservedLabel),
-			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("selected_label", CommonDataStructures.LabelSettings.DEFAULT).forGetter(x -> x.selectedLabel),
+			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("banished_label").forGetter(x -> x.banishedLabel),
+			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("default_label").forGetter(x -> x.defaultLabel),
+			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("reserved_label").forGetter(x -> x.reservedLabel),
+			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("selected_label").forGetter(x -> x.selectedLabel),
 			Identifier.CODEC.optionalFieldOf("tooltip_style").forGetter(x -> x.tooltipStyle)
 	).apply(instance, RogueLootTableEntryRarity::new));
 
@@ -44,10 +44,10 @@ public record RogueLootTableEntryRarity(
 				ByteBufCodecs.STRING_UTF8.decode(registryByteBuf),
 				ByteBufCodecs.INT.decode(registryByteBuf),
 				ByteBufCodecs.optional(CommonDataStructures.AttributeInfluencedIntegerModifier.STREAM_CODEC).decode(registryByteBuf),
-				CommonDataStructures.LabelSettings.STREAM_CODEC.decode(registryByteBuf),
-				CommonDataStructures.LabelSettings.STREAM_CODEC.decode(registryByteBuf),
-				CommonDataStructures.LabelSettings.STREAM_CODEC.decode(registryByteBuf),
-				CommonDataStructures.LabelSettings.STREAM_CODEC.decode(registryByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).decode(registryByteBuf),
+				ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).decode(registryByteBuf),
 				ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(registryByteBuf)
 		);
 	}
@@ -56,10 +56,10 @@ public record RogueLootTableEntryRarity(
 		ByteBufCodecs.STRING_UTF8.encode(registryByteBuf, this.assetPathAddition);
 		ByteBufCodecs.INT.encode(registryByteBuf, this.weight);
 		ByteBufCodecs.optional(CommonDataStructures.AttributeInfluencedIntegerModifier.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.optionalWeightModifier);
-		CommonDataStructures.LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.banishedLabel);
-		CommonDataStructures.LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.defaultLabel);
-		CommonDataStructures.LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.reservedLabel);
-		CommonDataStructures.LabelSettings.STREAM_CODEC.encode((RegistryFriendlyByteBuf) registryByteBuf, this.selectedLabel);
+		ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.banishedLabel);
+		ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.defaultLabel);
+		ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.reservedLabel);
+		ByteBufCodecs.optional(CommonDataStructures.LabelSettings.STREAM_CODEC).encode((RegistryFriendlyByteBuf) registryByteBuf, this.selectedLabel);
 		ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(registryByteBuf, this.tooltipStyle);
 	}
 
