@@ -12,11 +12,11 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.List;
 
 public record RandomComponentsType(
-		List<ComponentTypeListWithWeight> weightedComponentLists
+		List<ComponentTypeWithWeight> weightedComponents
 ) implements RogueLootTableEntryComponentType, OpensRogueLootDisplayScreen {
 	public static final MapCodec<RandomComponentsType> MAP_CODEC = RecordCodecBuilder.mapCodec(
 			instance -> instance.group(
-							ComponentTypeListWithWeight.CODEC.listOf().fieldOf("weighted_component_lists").forGetter(x -> x.weightedComponentLists)
+							ComponentTypeWithWeight.CODEC.listOf().fieldOf("weighted_components").forGetter(x -> x.weightedComponents)
 					)
 					.apply(instance, RandomComponentsType::new)
 	);
@@ -28,7 +28,6 @@ public record RandomComponentsType(
 
 	@Override
 	public void openRogueLootDisplayScreen(final ServerLevel serverLevel, final ServerPlayer serverPlayer, final List<Identifier> additionalEntryIdentifiers) {
-		// TODO implement LootDisplayScreen to visualize the random choice, eg like a slot machine
 		apply(serverLevel, serverPlayer);
 		if (!additionalEntryIdentifiers.isEmpty()) {
 			RogueLootTableHelper.applyRogueLootTableEntries(serverLevel, serverPlayer, additionalEntryIdentifiers);
@@ -38,17 +37,15 @@ public record RandomComponentsType(
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
 		int totalWeight = 0;
-		for (ComponentTypeListWithWeight entry : this.weightedComponentLists) {
+		for (ComponentTypeWithWeight entry : this.weightedComponents) {
 			totalWeight += entry.weight;
 		}
 		int randomInt = serverPlayer.getRandom().nextInt(totalWeight);
 		int discardedWeight = 0;
-		for (ComponentTypeListWithWeight entry : this.weightedComponentLists) {
+		for (ComponentTypeWithWeight entry : this.weightedComponents) {
 
 			if (randomInt < discardedWeight + entry.weight) {
-				for (RogueLootTableEntryComponentType component : entry.componentList) {
-					component.apply(serverLevel, serverPlayer);
-				}
+				entry.component.apply(serverLevel, serverPlayer);
 				break;
 			} else {
 				discardedWeight += entry.weight;
@@ -56,17 +53,25 @@ public record RandomComponentsType(
 		}
 	}
 
-	public record ComponentTypeListWithWeight(
-			List<RogueLootTableEntryComponentType> componentList,
+	public record ComponentTypeWithWeight(
+			RogueLootTableEntryComponentType component,
 			int weight
 	) {
-		public static final MapCodec<ComponentTypeListWithWeight> MAP_CODEC = RecordCodecBuilder.mapCodec(
+		public static final MapCodec<ComponentTypeWithWeight> MAP_CODEC = RecordCodecBuilder.mapCodec(
 				instance -> instance.group(
-								RogueLootTableEntryComponentType.CODEC.listOf().fieldOf("components").forGetter(ComponentTypeListWithWeight::componentList),
-								Codec.INT.validate(value -> value <= 0 ? DataResult.error(() -> "Weight can not be zero or smaller, but was " + value) : DataResult.success(value)).optionalFieldOf("weight", 1).forGetter(ComponentTypeListWithWeight::weight)
+								RogueLootTableEntryComponentType.CODEC.validate(ComponentTypeWithWeight::validate).fieldOf("component").forGetter(x -> x.component),
+								Codec.INT.validate(value -> value <= 0 ? DataResult.error(() -> "Weight can not be zero or smaller, but was " + value) : DataResult.success(value)).optionalFieldOf("weight", 1).forGetter(x -> x.weight)
 						)
-						.apply(instance, ComponentTypeListWithWeight::new)
+						.apply(instance, ComponentTypeWithWeight::new)
 		);
-		public static final Codec<ComponentTypeListWithWeight> CODEC = MAP_CODEC.codec();
+		public static final Codec<ComponentTypeWithWeight> CODEC = MAP_CODEC.codec();
+
+		private static DataResult<RogueLootTableEntryComponentType> validate(RogueLootTableEntryComponentType componentType) {
+			if (componentType instanceof OpensRogueLootDisplayScreen) {
+				return DataResult.error(() -> componentType + " is instance of OpensRogueLootDisplayScreen");
+			}
+			return DataResult.success(componentType);
+		}
+
 	}
 }

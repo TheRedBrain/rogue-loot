@@ -19,11 +19,8 @@ import java.util.Optional;
 public record RogueLootTableEntry(
 		Optional<ContextAwarePredicate> unlockPredicate,
 		RogueLootTableEntryComponentType rogueLootTableEntryComponentType,
-		Optional<ItemStackTemplate> displayStack,
-		String iconTexturePath,
-		String labelText,
-		Optional<ItemStackTemplate> tooltipStack,
-		List<String> tooltipLabelLines,
+		Optional<Display> display,
+		Optional<Tooltip> tooltip,
 		String rarityIdString,
 		int useLimit,
 		boolean allowBanishing,
@@ -33,12 +30,9 @@ public record RogueLootTableEntry(
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
 			RogueLootTableEntryComponentType.CODEC.fieldOf("component").forGetter(x -> x.rogueLootTableEntryComponentType),
-			ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
-			Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
-			Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText),
-			ItemStackTemplate.CODEC.optionalFieldOf("tooltip_stack").forGetter(x -> x.displayStack),
-			Codec.STRING.listOf().optionalFieldOf("tooltip_label_lines", List.of()).forGetter(x -> x.tooltipLabelLines),
-			Codec.STRING.optionalFieldOf("rarity", "").forGetter(x -> x.rarityIdString),
+			Display.CODEC.optionalFieldOf("display").forGetter(x -> x.display),
+			Tooltip.CODEC.optionalFieldOf("tooltip").forGetter(x -> x.tooltip),
+			Codec.STRING.optionalFieldOf("rarity_id", "").forGetter(x -> x.rarityIdString),
 			Codec.INT.optionalFieldOf("use_limit", 0).forGetter(x -> x.useLimit),
 			Codec.BOOL.optionalFieldOf("allow_banishing", true).forGetter(x -> x.allowBanishing),
 			Codec.BOOL.optionalFieldOf("allow_reserving", true).forGetter(x -> x.allowReserving),
@@ -56,5 +50,29 @@ public record RogueLootTableEntry(
 			}
 		}
 		return rogueLootTableEntry;
+	}
+
+	public record Display(
+			Optional<ItemStackTemplate> displayStack,
+			String iconTexturePath,
+			String labelText
+	) {
+		public static final Codec<Display> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
+				Codec.STRING.optionalFieldOf("icon_texture_path", "").forGetter(x -> x.iconTexturePath),
+				Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText)
+		).apply(instance, Display::new));
+
+	}
+
+	public record Tooltip(
+			Optional<ItemStackTemplate> tooltipStack,
+			List<String> tooltipLabelLines
+	) {
+		public static final Codec<Tooltip> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				ItemStackTemplate.CODEC.optionalFieldOf("tooltip_stack").forGetter(x -> x.tooltipStack),
+				Codec.STRING.listOf().optionalFieldOf("tooltip_label_lines", List.of()).forGetter(x -> x.tooltipLabelLines)
+		).apply(instance, Tooltip::new));
+
 	}
 }
