@@ -63,27 +63,21 @@ public record GeneratedRogueLoot(
 	}
 
 	public record VisibleRogueLootTableEntry(
-			Optional<ItemStackTemplate> displayStack,
-			Optional<Identifier> iconTextureIdentifier,
-			String labelText,
-			Optional<ItemStackTemplate> tooltipStack,
-			List<String> tooltipLabelLines,
+			Optional<CommonDataStructures.RogueLootTableEntryDisplay> display,
+			Optional<CommonDataStructures.RogueLootTableEntryTooltip> tooltip,
 			int usesLeft,
 			boolean allowBanishing,
 			boolean allowReserving,
-			RogueLootTableEntryRarity rogueLootTableEntryRarity,
+			Optional<RogueLootTableEntryRarity> rogueLootTableEntryRarity,
 			Optional<Identifier> parentRogueLootTableEntryId
 	) {
 		public static final Codec<VisibleRogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
-				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
-				Codec.STRING.fieldOf("label_text").forGetter(x -> x.labelText),
-				ItemStackTemplate.CODEC.optionalFieldOf("tooltip_stack").forGetter(x -> x.displayStack),
-				Codec.STRING.listOf().optionalFieldOf("tooltip_label_lines", List.of()).forGetter(x -> x.tooltipLabelLines),
+				CommonDataStructures.RogueLootTableEntryDisplay.CODEC.optionalFieldOf("display").forGetter(x -> x.display),
+				CommonDataStructures.RogueLootTableEntryTooltip.CODEC.optionalFieldOf("tooltip").forGetter(x -> x.tooltip),
 				Codec.INT.fieldOf("uses_left").forGetter(x -> x.usesLeft),
 				Codec.BOOL.fieldOf("allow_banishing").forGetter(x -> x.allowBanishing),
 				Codec.BOOL.fieldOf("allow_reserving").forGetter(x -> x.allowReserving),
-				RogueLootTableEntryRarity.CODEC.fieldOf("rogue_loot_table_entry_rarity").forGetter(x -> x.rogueLootTableEntryRarity),
+				RogueLootTableEntryRarity.CODEC.optionalFieldOf("rogue_loot_table_entry_rarity").forGetter(x -> x.rogueLootTableEntryRarity),
 				Identifier.CODEC.optionalFieldOf("parent_rogue_loot_table_entry_id").forGetter(x -> x.parentRogueLootTableEntryId)
 		).apply(instance, VisibleRogueLootTableEntry::new));
 
@@ -91,39 +85,30 @@ public record GeneratedRogueLoot(
 
 		public VisibleRogueLootTableEntry(final FriendlyByteBuf friendlyByteBuf) {
 			this(
-					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
-					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf),
-					ByteBufCodecs.STRING_UTF8.decode(friendlyByteBuf),
-					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
-					friendlyByteBuf.readList(ByteBufCodecs.STRING_UTF8),
+					ByteBufCodecs.optional(CommonDataStructures.RogueLootTableEntryDisplay.STREAM_CODEC).decode(friendlyByteBuf),
+					ByteBufCodecs.optional(CommonDataStructures.RogueLootTableEntryTooltip.STREAM_CODEC).decode(friendlyByteBuf),
 					ByteBufCodecs.INT.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
 					ByteBufCodecs.BOOL.decode(friendlyByteBuf),
-					RogueLootTableEntryRarity.STREAM_CODEC.decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					ByteBufCodecs.optional(RogueLootTableEntryRarity.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
 					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf)
 			);
 		}
 
 		private void write(final FriendlyByteBuf friendlyByteBuf) {
-			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.displayStack);
-			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(friendlyByteBuf, this.iconTextureIdentifier);
-			ByteBufCodecs.STRING_UTF8.encode(friendlyByteBuf, this.labelText);
-			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.tooltipStack);
-			friendlyByteBuf.writeCollection(this.tooltipLabelLines, ByteBufCodecs.STRING_UTF8);
+			ByteBufCodecs.optional(CommonDataStructures.RogueLootTableEntryDisplay.STREAM_CODEC).encode(friendlyByteBuf, this.display);
+			ByteBufCodecs.optional(CommonDataStructures.RogueLootTableEntryTooltip.STREAM_CODEC).encode(friendlyByteBuf, this.tooltip);
 			ByteBufCodecs.INT.encode(friendlyByteBuf, this.usesLeft);
 			ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.allowBanishing);
 			ByteBufCodecs.BOOL.encode(friendlyByteBuf, this.allowReserving);
-			RogueLootTableEntryRarity.STREAM_CODEC.encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootTableEntryRarity);
+			ByteBufCodecs.optional(RogueLootTableEntryRarity.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.rogueLootTableEntryRarity);
 			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(friendlyByteBuf, this.parentRogueLootTableEntryId);
 		}
 
 		public static VisibleRogueLootTableEntry copy(final VisibleRogueLootTableEntry visibleRogueLootTableEntry) {
 			return new VisibleRogueLootTableEntry(
-					visibleRogueLootTableEntry.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.displayStack().get().create())) : Optional.empty(),
-					visibleRogueLootTableEntry.iconTextureIdentifier(),
-					visibleRogueLootTableEntry.labelText(),
-					visibleRogueLootTableEntry.tooltipStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(visibleRogueLootTableEntry.tooltipStack().get().create())) : Optional.empty(),
-					new ArrayList<>(visibleRogueLootTableEntry.tooltipLabelLines()),
+					visibleRogueLootTableEntry.display().isPresent() ? Optional.of(CommonDataStructures.RogueLootTableEntryDisplay.copy(visibleRogueLootTableEntry.display().get())) : Optional.empty(),
+					visibleRogueLootTableEntry.tooltip().isPresent() ? Optional.of(CommonDataStructures.RogueLootTableEntryTooltip.copy(visibleRogueLootTableEntry.tooltip().get())) : Optional.empty(),
 					visibleRogueLootTableEntry.usesLeft(),
 					visibleRogueLootTableEntry.allowBanishing(),
 					visibleRogueLootTableEntry.allowReserving(),

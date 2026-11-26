@@ -202,12 +202,11 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
-			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
 			int weight = 1;
-			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
-				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+			if (rogueLootTableEntry.rarityIdentifier().isPresent()) {
+				RogueLootTableEntryRarity rarity = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rogueLootTableEntry.rarityIdentifier().get());
 				if (rarity != null) {
-					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rarityIdentifier);
+					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rogueLootTableEntry.rarityIdentifier().get());
 					if (rarityOverrideIdentifier != null) {
 						RogueLootTableEntryRarity rarityOverride = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityOverrideIdentifier);
 						if (rarityOverride != null) {
@@ -275,25 +274,18 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
-			Optional<Identifier> optionalIconTextureIdentifier = Optional.empty();
-			Identifier iconTextureIdentifier = Identifier.tryParse(rogueLootTableEntry.iconTexturePath());
-			if (!rogueLootTableEntry.iconTexturePath().isEmpty() && iconTextureIdentifier != null) {
-				optionalIconTextureIdentifier = Optional.of(iconTextureIdentifier);
-			}
-
-			RogueLootTableEntryRarity rogueLootTableEntryRarity = RogueLootTableEntryRarity.DEFAULT;
-			Identifier rarityIdentifier = Identifier.tryParse(rogueLootTableEntry.rarityIdString());
-			if (!rogueLootTableEntry.rarityIdString().isEmpty() && rarityIdentifier != null) {
-				RogueLootTableEntryRarity rogueLootTableEntryRarity1 = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityIdentifier);
+			Optional<RogueLootTableEntryRarity> optionalRarity = Optional.empty();
+			if (rogueLootTableEntry.rarityIdentifier().isPresent()) {
+				RogueLootTableEntryRarity rogueLootTableEntryRarity1 = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rogueLootTableEntry.rarityIdentifier().get());
 				if (rogueLootTableEntryRarity1 != null) {
-					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rarityIdentifier);
+					Identifier rarityOverrideIdentifier = rogueLootTable.rarityOverrides().get(rogueLootTableEntry.rarityIdentifier().get());
 					if (rarityOverrideIdentifier != null) {
 						RogueLootTableEntryRarity rarityOverride = RogueLootTableEntryRarity.getRogueLootTableEntryRarity(serverLevel.registryAccess(), rarityOverrideIdentifier);
 						if (rarityOverride != null) {
 							rogueLootTableEntryRarity1 = rarityOverride;
 						}
 					}
-					rogueLootTableEntryRarity = rogueLootTableEntryRarity1;
+					optionalRarity = Optional.of(rogueLootTableEntryRarity1);
 				}
 			}
 
@@ -303,15 +295,12 @@ public class RogueLootTableHelper {
 			}
 
 			visibleRogueLootTableEntries.add(new GeneratedRogueLoot.VisibleRogueLootTableEntry(
-					rogueLootTableEntry.displayStack(),
-					optionalIconTextureIdentifier,
-					rogueLootTableEntry.labelText(),
-					rogueLootTableEntry.tooltipStack(),
-					rogueLootTableEntry.tooltipLabelLines(),
+					rogueLootTableEntry.display(),
+					rogueLootTableEntry.tooltip(),
 					usesLeft,
 					rogueLootTableEntry.allowBanishing(),
 					rogueLootTableEntry.allowReserving(),
-					rogueLootTableEntryRarity,
+					optionalRarity,
 					Optional.of(entryIdentifier)
 			));
 		}

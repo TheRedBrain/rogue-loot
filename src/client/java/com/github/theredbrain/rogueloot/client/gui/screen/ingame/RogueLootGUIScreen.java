@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.client.gui.screen.ingame;
 
 import com.github.theredbrain.rogueloot.client.gui.components.LootOptionButton;
 import com.github.theredbrain.rogueloot.config.ClientConfig;
+import com.github.theredbrain.rogueloot.data.CommonDataStructures;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLoot;
 import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.RogueLootGuiSettings;
@@ -66,8 +67,10 @@ public class RogueLootGUIScreen extends Screen {
 	private boolean banishingActive = false;
 	private boolean reservingActive = false;
 
-	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[]{};
-	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[]{};
+	private ChatFormatting[] requirementsNotMetLabelFormatting = new ChatFormatting[0];
+	private boolean requirementsNotMetLabelHasShadow;
+	private ChatFormatting[] requirementsMetLabelFormatting = new ChatFormatting[0];
+	private boolean requirementsMetLabelHasShadow;
 
 	public RogueLootGUIScreen(final GeneratedRogueLoot generatedRogueLoot, final GeneratedRogueLootData generatedRogueLootData, final int rerollAttempts, final int banishingAttempts, final int reservingAttempts) {
 		super(GameNarrator.NO_TITLE);
@@ -162,32 +165,44 @@ public class RogueLootGUIScreen extends Screen {
 
 		// region reserving
 		MutableComponent disableReservingButtonLabelComponent = Component.translatable("gui.rogue_loot_screen.reserve.stop");
-		ChatFormatting[] disableReservingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.disableReserving().formatting().size()];
-		for (int i = 0; i < this.rogueLootGuiSettings.disableReserving().formatting().size(); i++) {
-			disableReservingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.disableReserving().formatting().get(i);
+		ChatFormatting[] disableReservingButtonLabelChatFormatting = new ChatFormatting[0];
+		boolean disableReservingButtonLabelHasShadow = true;
+
+		Optional<CommonDataStructures.LabelSettings> disableReserving = this.rogueLootGuiSettings.disableReserving();
+		if (disableReserving.isPresent()) {
+			disableReservingButtonLabelChatFormatting = new ChatFormatting[disableReserving.get().formatting().size()];
+			for (int i = 0; i < disableReserving.get().formatting().size(); i++) {
+				disableReservingButtonLabelChatFormatting[i] = disableReserving.get().formatting().get(i);
+			}
+			disableReservingButtonLabelHasShadow = disableReserving.get().hasShadow();
 		}
-		boolean disableReservingButtonLabelHasShadow = this.rogueLootGuiSettings.disableReserving().hasShadow();
 		disableReservingButtonLabelComponent.withStyle(disableReservingButtonLabelChatFormatting);
 		if (!disableReservingButtonLabelHasShadow) {
 			disableReservingButtonLabelComponent.withoutShadow();
 		}
 
 		MutableComponent enableReservingButtonLabelComponent = this.reservingAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.reserve.simple") : this.reservingAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.reserve.singular", this.reservingAttempts) : Component.translatable("gui.rogue_loot_screen.reserve.plural", this.reservingAttempts);
-		ChatFormatting[] enableReservingButtonLabelChatFormatting;
-		boolean enableReservingButtonLabelHasShadow;
+		ChatFormatting[] enableReservingButtonLabelChatFormatting = new ChatFormatting[0];
+		boolean enableReservingButtonLabelHasShadow = true;
 
 		if (this.reservingAttempts == 0) {
-			enableReservingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.enableReservingRequirementsNotMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.enableReservingRequirementsNotMet().formatting().size(); i++) {
-				enableReservingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.enableReservingRequirementsNotMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> enableReservingRequirementsNotMet = this.rogueLootGuiSettings.enableReservingRequirementsNotMet();
+			if (enableReservingRequirementsNotMet.isPresent()) {
+				enableReservingButtonLabelChatFormatting = new ChatFormatting[enableReservingRequirementsNotMet.get().formatting().size()];
+				for (int i = 0; i < enableReservingRequirementsNotMet.get().formatting().size(); i++) {
+					enableReservingButtonLabelChatFormatting[i] = enableReservingRequirementsNotMet.get().formatting().get(i);
+				}
+				enableReservingButtonLabelHasShadow = enableReservingRequirementsNotMet.get().hasShadow();
 			}
-			enableReservingButtonLabelHasShadow = this.rogueLootGuiSettings.enableReservingRequirementsNotMet().hasShadow();
 		} else {
-			enableReservingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.enableReservingRequirementsMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.enableReservingRequirementsMet().formatting().size(); i++) {
-				enableReservingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.enableReservingRequirementsMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> enableReservingRequirementsMet = this.rogueLootGuiSettings.enableReservingRequirementsMet();
+			if (enableReservingRequirementsMet.isPresent()) {
+				enableReservingButtonLabelChatFormatting = new ChatFormatting[enableReservingRequirementsMet.get().formatting().size()];
+				for (int i = 0; i < enableReservingRequirementsMet.get().formatting().size(); i++) {
+					enableReservingButtonLabelChatFormatting[i] = enableReservingRequirementsMet.get().formatting().get(i);
+				}
+				enableReservingButtonLabelHasShadow = enableReservingRequirementsMet.get().hasShadow();
 			}
-			enableReservingButtonLabelHasShadow = this.rogueLootGuiSettings.enableReservingRequirementsMet().hasShadow();
 		}
 		enableReservingButtonLabelComponent.withStyle(enableReservingButtonLabelChatFormatting);
 		if (!enableReservingButtonLabelHasShadow) {
@@ -218,32 +233,44 @@ public class RogueLootGUIScreen extends Screen {
 
 		// region banishing
 		MutableComponent disableBanishingButtonLabelComponent = Component.translatable("gui.rogue_loot_screen.banish.stop");
-		ChatFormatting[] disableBanishingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.disableBanishing().formatting().size()];
-		for (int i = 0; i < this.rogueLootGuiSettings.disableBanishing().formatting().size(); i++) {
-			disableBanishingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.disableBanishing().formatting().get(i);
+		ChatFormatting[] disableBanishingButtonLabelChatFormatting = new ChatFormatting[0];
+		boolean disableBanishingButtonLabelHasShadow = true;
+
+		Optional<CommonDataStructures.LabelSettings> disableBanishing = this.rogueLootGuiSettings.disableBanishing();
+		if (disableBanishing.isPresent()) {
+			disableBanishingButtonLabelChatFormatting = new ChatFormatting[disableBanishing.get().formatting().size()];
+			for (int i = 0; i < disableBanishing.get().formatting().size(); i++) {
+				disableBanishingButtonLabelChatFormatting[i] = disableBanishing.get().formatting().get(i);
+			}
+			disableBanishingButtonLabelHasShadow = disableBanishing.get().hasShadow();
 		}
-		boolean disableBanishingButtonLabelHasShadow = this.rogueLootGuiSettings.disableBanishing().hasShadow();
 		disableBanishingButtonLabelComponent.withStyle(disableBanishingButtonLabelChatFormatting);
 		if (!disableBanishingButtonLabelHasShadow) {
 			disableBanishingButtonLabelComponent.withoutShadow();
 		}
 
 		MutableComponent enableBanishingButtonLabelComponent = this.banishingAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.banish.simple") : this.banishingAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.banish.singular", this.banishingAttempts) : Component.translatable("gui.rogue_loot_screen.banish.plural", this.banishingAttempts);
-		ChatFormatting[] enableBanishingButtonLabelChatFormatting;
-		boolean enableBanishingButtonLabelHasShadow;
+		ChatFormatting[] enableBanishingButtonLabelChatFormatting = new ChatFormatting[0];
+		boolean enableBanishingButtonLabelHasShadow = true;
 
 		if (this.banishingAttempts == 0) {
-			enableBanishingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.enableBanishingRequirementsNotMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.enableBanishingRequirementsNotMet().formatting().size(); i++) {
-				enableBanishingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.enableBanishingRequirementsNotMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> enableBanishingRequirementsNotMet = this.rogueLootGuiSettings.enableBanishingRequirementsNotMet();
+			if (enableBanishingRequirementsNotMet.isPresent()) {
+				enableBanishingButtonLabelChatFormatting = new ChatFormatting[enableBanishingRequirementsNotMet.get().formatting().size()];
+				for (int i = 0; i < enableBanishingRequirementsNotMet.get().formatting().size(); i++) {
+					enableBanishingButtonLabelChatFormatting[i] = enableBanishingRequirementsNotMet.get().formatting().get(i);
+				}
+				enableBanishingButtonLabelHasShadow = enableBanishingRequirementsNotMet.get().hasShadow();
 			}
-			enableBanishingButtonLabelHasShadow = this.rogueLootGuiSettings.enableBanishingRequirementsNotMet().hasShadow();
 		} else {
-			enableBanishingButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.enableBanishingRequirementsMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.enableBanishingRequirementsMet().formatting().size(); i++) {
-				enableBanishingButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.enableBanishingRequirementsMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> enableBanishingRequirementsMet = this.rogueLootGuiSettings.enableBanishingRequirementsMet();
+			if (enableBanishingRequirementsMet.isPresent()) {
+				enableBanishingButtonLabelChatFormatting = new ChatFormatting[enableBanishingRequirementsMet.get().formatting().size()];
+				for (int i = 0; i < enableBanishingRequirementsMet.get().formatting().size(); i++) {
+					enableBanishingButtonLabelChatFormatting[i] = enableBanishingRequirementsMet.get().formatting().get(i);
+				}
+				enableBanishingButtonLabelHasShadow = enableBanishingRequirementsMet.get().hasShadow();
 			}
-			enableBanishingButtonLabelHasShadow = this.rogueLootGuiSettings.enableBanishingRequirementsMet().hasShadow();
 		}
 		enableBanishingButtonLabelComponent.withStyle(enableBanishingButtonLabelChatFormatting);
 		if (!enableBanishingButtonLabelHasShadow) {
@@ -287,21 +314,27 @@ public class RogueLootGUIScreen extends Screen {
 
 		// region rerolling
 		MutableComponent rerollButtonLabelComponent = this.rerollAttempts < 0 ? Component.translatable("gui.rogue_loot_screen.reroll.simple") : this.rerollAttempts == 0 ? Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts) : this.rerollAttempts == 1 ? Component.translatable("gui.rogue_loot_screen.reroll.singular", this.rerollAttempts) : Component.translatable("gui.rogue_loot_screen.reroll.plural", this.rerollAttempts);
-		ChatFormatting[] rerollButtonLabelChatFormatting;
-		boolean rerollButtonLabelHasShadow;
+		ChatFormatting[] rerollButtonLabelChatFormatting = new ChatFormatting[0];
+		boolean rerollButtonLabelHasShadow = true;
 
 		if (this.rerollAttempts == 0) {
-			rerollButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.rerollRequirementsNotMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.rerollRequirementsNotMet().formatting().size(); i++) {
-				rerollButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.rerollRequirementsNotMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> rerollRequirementsNotMet = this.rogueLootGuiSettings.rerollRequirementsNotMet();
+			if (rerollRequirementsNotMet.isPresent()) {
+				rerollButtonLabelChatFormatting = new ChatFormatting[rerollRequirementsNotMet.get().formatting().size()];
+				for (int i = 0; i < rerollRequirementsNotMet.get().formatting().size(); i++) {
+					rerollButtonLabelChatFormatting[i] = rerollRequirementsNotMet.get().formatting().get(i);
+				}
+				rerollButtonLabelHasShadow = rerollRequirementsNotMet.get().hasShadow();
 			}
-			rerollButtonLabelHasShadow = this.rogueLootGuiSettings.rerollRequirementsNotMet().hasShadow();
 		} else {
-			rerollButtonLabelChatFormatting = new ChatFormatting[this.rogueLootGuiSettings.rerollRequirementsMet().formatting().size()];
-			for (int i = 0; i < this.rogueLootGuiSettings.rerollRequirementsMet().formatting().size(); i++) {
-				rerollButtonLabelChatFormatting[i] = this.rogueLootGuiSettings.rerollRequirementsMet().formatting().get(i);
+			Optional<CommonDataStructures.LabelSettings> rerollRequirementsMet = this.rogueLootGuiSettings.rerollRequirementsMet();
+			if (rerollRequirementsMet.isPresent()) {
+				rerollButtonLabelChatFormatting = new ChatFormatting[rerollRequirementsMet.get().formatting().size()];
+				for (int i = 0; i < rerollRequirementsMet.get().formatting().size(); i++) {
+					rerollButtonLabelChatFormatting[i] = rerollRequirementsMet.get().formatting().get(i);
+				}
+				rerollButtonLabelHasShadow = rerollRequirementsMet.get().hasShadow();
 			}
-			rerollButtonLabelHasShadow = this.rogueLootGuiSettings.rerollRequirementsMet().hasShadow();
 		}
 		rerollButtonLabelComponent.withStyle(rerollButtonLabelChatFormatting);
 		if (!rerollButtonLabelHasShadow) {
@@ -345,13 +378,24 @@ public class RogueLootGUIScreen extends Screen {
 
 		ClientConfig clientConfig = RogueLootConfigs.CLIENT_CONFIG;
 
-		this.requirementsNotMetLabelFormatting = new ChatFormatting[this.rogueLootGuiSettings.confirmationRequirementsNotMet().formatting().size()];
-		for (int i = 0; i < this.rogueLootGuiSettings.confirmationRequirementsNotMet().formatting().size(); i++) {
-			this.requirementsNotMetLabelFormatting[i] = this.rogueLootGuiSettings.confirmationRequirementsNotMet().formatting().get(i);
+		this.requirementsNotMetLabelFormatting = new ChatFormatting[0];
+		Optional<CommonDataStructures.LabelSettings> confirmationRequirementsNotMet = this.rogueLootGuiSettings.confirmationRequirementsNotMet();
+		if (confirmationRequirementsNotMet.isPresent()) {
+			this.requirementsNotMetLabelFormatting = new ChatFormatting[confirmationRequirementsNotMet.get().formatting().size()];
+			for (int i = 0; i < confirmationRequirementsNotMet.get().formatting().size(); i++) {
+				this.requirementsNotMetLabelFormatting[i] = confirmationRequirementsNotMet.get().formatting().get(i);
+			}
+			this.requirementsNotMetLabelHasShadow = confirmationRequirementsNotMet.get().hasShadow();
 		}
-		this.requirementsMetLabelFormatting = new ChatFormatting[this.rogueLootGuiSettings.confirmationRequirementsMet().formatting().size()];
-		for (int i = 0; i < this.rogueLootGuiSettings.confirmationRequirementsMet().formatting().size(); i++) {
-			this.requirementsMetLabelFormatting[i] = this.rogueLootGuiSettings.confirmationRequirementsMet().formatting().get(i);
+
+		this.requirementsMetLabelFormatting = new ChatFormatting[0];
+		Optional<CommonDataStructures.LabelSettings> confirmationRequirementsMet = this.rogueLootGuiSettings.confirmationRequirementsMet();
+		if (confirmationRequirementsMet.isPresent()) {
+			this.requirementsMetLabelFormatting = new ChatFormatting[confirmationRequirementsMet.get().formatting().size()];
+			for (int i = 0; i < confirmationRequirementsMet.get().formatting().size(); i++) {
+				this.requirementsMetLabelFormatting[i] = confirmationRequirementsMet.get().formatting().get(i);
+			}
+			this.requirementsMetLabelHasShadow = confirmationRequirementsMet.get().hasShadow();
 		}
 
 		String entriesAssetPathAddition = "";
@@ -407,55 +451,75 @@ public class RogueLootGUIScreen extends Screen {
 
 	private void initLootOptionButton(Button lootoptionButton, GeneratedRogueLoot.VisibleRogueLootTableEntry visibleRogueLootTableEntry, String entriesAssetPathAddition, boolean showReservedLootOptions, boolean showBanishedLootOptions) {
 
-		RogueLootTableEntryRarity rogueLootTableEntryRarity = visibleRogueLootTableEntry.rogueLootTableEntryRarity();
+		Optional<RogueLootTableEntryRarity> optionalRarity = visibleRogueLootTableEntry.rogueLootTableEntryRarity();
 
 		String assetPathAddition0 = "";
-		if (!rogueLootTableEntryRarity.assetPathAddition().isEmpty()) {
-			assetPathAddition0 = rogueLootTableEntryRarity.assetPathAddition() + "/";
+		if (optionalRarity.isPresent() && !optionalRarity.get().assetPathAddition().isEmpty()) {
+			assetPathAddition0 = optionalRarity.get().assetPathAddition() + "/";
 		}
 		((LootOptionButton) lootoptionButton).setTextureIds(entriesAssetPathAddition + assetPathAddition0);
-		((LootOptionButton) lootoptionButton).setDisplayStack(visibleRogueLootTableEntry.displayStack());
-		((LootOptionButton) lootoptionButton).setIconTexture(visibleRogueLootTableEntry.iconTextureIdentifier());
-		if (!visibleRogueLootTableEntry.labelText().isEmpty()) {
-			ChatFormatting[] reservedLabelFormatting = new ChatFormatting[rogueLootTableEntryRarity.reservedLabel().formatting().size()];
-			for (int i = 0; i < rogueLootTableEntryRarity.reservedLabel().formatting().size(); i++) {
-				reservedLabelFormatting[i] = rogueLootTableEntryRarity.reservedLabel().formatting().get(i);
-			}
-			MutableComponent reservedMessage = Component.translatable(visibleRogueLootTableEntry.labelText()).withStyle(reservedLabelFormatting);
-			if (!rogueLootTableEntryRarity.reservedLabel().hasShadow()) {
-				reservedMessage.withoutShadow();
-			}
-			((LootOptionButton) lootoptionButton).setReservedMessage(reservedMessage);
+		if (visibleRogueLootTableEntry.display().isPresent()) {
+			((LootOptionButton) lootoptionButton).setDisplayStack(visibleRogueLootTableEntry.display().get().displayStack());
+			((LootOptionButton) lootoptionButton).setIconTexture(visibleRogueLootTableEntry.display().get().iconTextureIdentifier());
+			String labelText = visibleRogueLootTableEntry.display().get().labelText();
+			if (!labelText.isEmpty() && optionalRarity.isPresent()) {
 
-			ChatFormatting[] banishedLabelFormatting = new ChatFormatting[rogueLootTableEntryRarity.banishedLabel().formatting().size()];
-			for (int i = 0; i < rogueLootTableEntryRarity.banishedLabel().formatting().size(); i++) {
-				banishedLabelFormatting[i] = rogueLootTableEntryRarity.banishedLabel().formatting().get(i);
-			}
-			MutableComponent banishedMessage = Component.translatable(visibleRogueLootTableEntry.labelText()).withStyle(banishedLabelFormatting);
-			if (!rogueLootTableEntryRarity.banishedLabel().hasShadow()) {
-				banishedMessage.withoutShadow();
-			}
-			((LootOptionButton) lootoptionButton).setBanishedMessage(banishedMessage);
+				MutableComponent reservedMessage = Component.translatable(labelText);
+				Optional<CommonDataStructures.LabelSettings> reservedLabel = optionalRarity.get().reservedLabel();
+				if (reservedLabel.isPresent()) {
+					ChatFormatting[] reservedLabelFormatting = new ChatFormatting[reservedLabel.get().formatting().size()];
+					for (int i = 0; i < reservedLabel.get().formatting().size(); i++) {
+						reservedLabelFormatting[i] = reservedLabel.get().formatting().get(i);
+					}
+					reservedMessage.withStyle(reservedLabelFormatting);
+					if (!reservedLabel.get().hasShadow()) {
+						reservedMessage.withoutShadow();
+					}
+				}
+				((LootOptionButton) lootoptionButton).setReservedMessage(reservedMessage);
 
-			ChatFormatting[] defaultLabelFormatting = new ChatFormatting[rogueLootTableEntryRarity.defaultLabel().formatting().size()];
-			for (int i = 0; i < rogueLootTableEntryRarity.defaultLabel().formatting().size(); i++) {
-				defaultLabelFormatting[i] = rogueLootTableEntryRarity.defaultLabel().formatting().get(i);
-			}
-			MutableComponent defaultMessage = Component.translatable(visibleRogueLootTableEntry.labelText()).withStyle(defaultLabelFormatting);
-			if (!rogueLootTableEntryRarity.defaultLabel().hasShadow()) {
-				defaultMessage.withoutShadow();
-			}
-			((LootOptionButton) lootoptionButton).setDefaultMessage(defaultMessage);
+				MutableComponent banishedMessage = Component.translatable(labelText);
+				Optional<CommonDataStructures.LabelSettings> banishedLabelSettings = optionalRarity.get().banishedLabel();
+				if (banishedLabelSettings.isPresent()) {
+					ChatFormatting[] banishedLabelFormatting = new ChatFormatting[banishedLabelSettings.get().formatting().size()];
+					for (int i = 0; i < banishedLabelSettings.get().formatting().size(); i++) {
+						banishedLabelFormatting[i] = banishedLabelSettings.get().formatting().get(i);
+					}
+					banishedMessage.withStyle(banishedLabelFormatting);
+					if (!banishedLabelSettings.get().hasShadow()) {
+						banishedMessage.withoutShadow();
+					}
+				}
+				((LootOptionButton) lootoptionButton).setBanishedMessage(banishedMessage);
 
-			ChatFormatting[] selectedLabelFormatting = new ChatFormatting[rogueLootTableEntryRarity.selectedLabel().formatting().size()];
-			for (int i = 0; i < rogueLootTableEntryRarity.selectedLabel().formatting().size(); i++) {
-				selectedLabelFormatting[i] = rogueLootTableEntryRarity.selectedLabel().formatting().get(i);
+				MutableComponent defaultMessage = Component.translatable(labelText);
+				Optional<CommonDataStructures.LabelSettings> defaultLabelSettings = optionalRarity.get().defaultLabel();
+				if (defaultLabelSettings.isPresent()) {
+					ChatFormatting[] defaultLabelFormatting = new ChatFormatting[defaultLabelSettings.get().formatting().size()];
+					for (int i = 0; i < defaultLabelSettings.get().formatting().size(); i++) {
+						defaultLabelFormatting[i] = defaultLabelSettings.get().formatting().get(i);
+					}
+					defaultMessage.withStyle(defaultLabelFormatting);
+					if (!defaultLabelSettings.get().hasShadow()) {
+						defaultMessage.withoutShadow();
+					}
+				}
+				((LootOptionButton) lootoptionButton).setDefaultMessage(defaultMessage);
+
+				MutableComponent selectedMessage = Component.translatable(labelText);
+				Optional<CommonDataStructures.LabelSettings> selectedLabelSettings = optionalRarity.get().selectedLabel();
+				if (selectedLabelSettings.isPresent()) {
+					ChatFormatting[] selectedLabelFormatting = new ChatFormatting[selectedLabelSettings.get().formatting().size()];
+					for (int i = 0; i < selectedLabelSettings.get().formatting().size(); i++) {
+						selectedLabelFormatting[i] = selectedLabelSettings.get().formatting().get(i);
+					}
+					selectedMessage.withStyle(selectedLabelFormatting);
+					if (!selectedLabelSettings.get().hasShadow()) {
+						selectedMessage.withoutShadow();
+					}
+				}
+				((LootOptionButton) lootoptionButton).setSelectedMessage(selectedMessage);
 			}
-			MutableComponent selectedMessage = Component.translatable(visibleRogueLootTableEntry.labelText()).withStyle(selectedLabelFormatting);
-			if (!rogueLootTableEntryRarity.selectedLabel().hasShadow()) {
-				selectedMessage.withoutShadow();
-			}
-			((LootOptionButton) lootoptionButton).setSelectedMessage(selectedMessage);
 		}
 
 		boolean entryIsReserved = DataAttachmentHelper.isRogueLootEntryReserved(this.minecraft.player, visibleRogueLootTableEntry.parentRogueLootTableEntryId());
@@ -471,16 +535,19 @@ public class RogueLootGUIScreen extends Screen {
 		List<Component> list = new ArrayList<>();
 
 		ItemStack tooltipStack = ItemStack.EMPTY;
-		if (visibleRogueLootTableEntry.tooltipStack().isPresent()) {
-			tooltipStack = visibleRogueLootTableEntry.tooltipStack().get().create();
-		}
-		if (!tooltipStack.isEmpty()) {
-			list.addAll(Screen.getTooltipFromItem(this.minecraft, tooltipStack));
-		}
+		Optional<CommonDataStructures.RogueLootTableEntryTooltip> optionalRogueLootTableEntryTooltip = visibleRogueLootTableEntry.tooltip();
+		if (optionalRogueLootTableEntryTooltip.isPresent()) {
+			if (optionalRogueLootTableEntryTooltip.get().tooltipStack().isPresent()) {
+				tooltipStack = optionalRogueLootTableEntryTooltip.get().tooltipStack().get().create();
+			}
+			if (!tooltipStack.isEmpty()) {
+				list.addAll(Screen.getTooltipFromItem(this.minecraft, tooltipStack));
+			}
 
-		if (!visibleRogueLootTableEntry.tooltipLabelLines().isEmpty()) {
-			for (String string : visibleRogueLootTableEntry.tooltipLabelLines()) {
-				list.add(Component.translatable(string));
+			if (!optionalRogueLootTableEntryTooltip.get().tooltipLabelLines().isEmpty()) {
+				for (String string : optionalRogueLootTableEntryTooltip.get().tooltipLabelLines()) {
+					list.add(Component.translatable(string));
+				}
 			}
 		}
 
@@ -497,8 +564,8 @@ public class RogueLootGUIScreen extends Screen {
 		if (!list.isEmpty()) {
 			((LootOptionButton) lootoptionButton).setTooltipLines(list);
 		}
-		if (rogueLootTableEntryRarity.tooltipStyle().isPresent()) {
-			((LootOptionButton) lootoptionButton).setTooltipStyle(rogueLootTableEntryRarity.tooltipStyle().get());
+		if (optionalRarity.isPresent() && optionalRarity.get().tooltipStyle().isPresent()) {
+			((LootOptionButton) lootoptionButton).setTooltipStyle(optionalRarity.get().tooltipStyle().get());
 		}
 	}
 
@@ -586,13 +653,13 @@ public class RogueLootGUIScreen extends Screen {
 
 		this.selectedOptionsAmount = countSelectedOptions();
 
-		this.confirmButton.setMessage(getConfirmChoicesButonLabel());
+		this.confirmButton.setMessage(getConfirmChoicesButtonLabel());
 
 		this.confirmButton.active = this.selectedOptionsAmount <= this.generatedRogueLootData.modifiedMaxChoices() && this.selectedOptionsAmount >= this.generatedRogueLootData.modifiedMinChoices() && !this.banishingActive && !this.reservingActive;
 
 	}
 
-	private Component getConfirmChoicesButonLabel() {
+	private Component getConfirmChoicesButtonLabel() {
 		MutableComponent confirmChoicesButtonLabel = Component.empty();
 
 		int minChoices = this.generatedRogueLootData.modifiedMinChoices();
@@ -603,7 +670,17 @@ public class RogueLootGUIScreen extends Screen {
 		confirmChoicesButtonLabel = minChoices < maxChoices ? Component.translatable("gui.rogue_loot_screen.confirm_choices.range", this.selectedOptionsAmount, minChoices, maxChoices) :
 				Component.translatable(minChoices == 1 ? "gui.rogue_loot_screen.confirm_choices.singular" : "gui.rogue_loot_screen.confirm_choices.plural", this.selectedOptionsAmount, minChoices);
 
-		confirmChoicesButtonLabel.withStyle(this.selectedOptionsAmount < minChoices ? this.requirementsNotMetLabelFormatting : this.requirementsMetLabelFormatting);
+		if (this.selectedOptionsAmount < minChoices) {
+			confirmChoicesButtonLabel.withStyle(this.requirementsNotMetLabelFormatting);
+			if (!this.requirementsNotMetLabelHasShadow) {
+				confirmChoicesButtonLabel.withoutShadow();
+			}
+		} else {
+			confirmChoicesButtonLabel.withStyle(this.requirementsMetLabelFormatting);
+			if (!this.requirementsMetLabelHasShadow) {
+				confirmChoicesButtonLabel.withoutShadow();
+			}
+		}
 
 		return confirmChoicesButtonLabel;
 	}

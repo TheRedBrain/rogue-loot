@@ -142,4 +142,71 @@ public class CommonDataStructures {
 
 	}
 
+	public record RogueLootTableEntryDisplay(
+			Optional<ItemStackTemplate> displayStack,
+			Optional<Identifier> iconTextureIdentifier,
+			String labelText
+	) {
+		public static final Codec<RogueLootTableEntryDisplay> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				ItemStackTemplate.CODEC.optionalFieldOf("display_stack").forGetter(x -> x.displayStack),
+				Identifier.CODEC.optionalFieldOf("icon_texture_identifier").forGetter(x -> x.iconTextureIdentifier),
+				Codec.STRING.optionalFieldOf("label_text", "").forGetter(x -> x.labelText)
+		).apply(instance, RogueLootTableEntryDisplay::new));
+
+		public static final StreamCodec<FriendlyByteBuf, RogueLootTableEntryDisplay> STREAM_CODEC = StreamCodec.ofMember(RogueLootTableEntryDisplay::write, RogueLootTableEntryDisplay::new);
+
+		public RogueLootTableEntryDisplay(final FriendlyByteBuf friendlyByteBuf) {
+			this(
+					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					ByteBufCodecs.optional(Identifier.STREAM_CODEC).decode(friendlyByteBuf),
+					ByteBufCodecs.STRING_UTF8.decode(friendlyByteBuf)
+			);
+		}
+
+		private void write(final FriendlyByteBuf friendlyByteBuf) {
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.displayStack);
+			ByteBufCodecs.optional(Identifier.STREAM_CODEC).encode(friendlyByteBuf, this.iconTextureIdentifier);
+			ByteBufCodecs.STRING_UTF8.encode(friendlyByteBuf, this.labelText);
+		}
+
+		public static RogueLootTableEntryDisplay copy(final RogueLootTableEntryDisplay rogueLootTableEntryDisplay) {
+			return new RogueLootTableEntryDisplay(
+					rogueLootTableEntryDisplay.displayStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(rogueLootTableEntryDisplay.displayStack().get().create())) : Optional.empty(),
+					rogueLootTableEntryDisplay.iconTextureIdentifier(),
+					rogueLootTableEntryDisplay.labelText()
+			);
+		}
+	}
+
+	public record RogueLootTableEntryTooltip(
+			Optional<ItemStackTemplate> tooltipStack,
+			List<String> tooltipLabelLines
+	) {
+		public static final Codec<RogueLootTableEntryTooltip> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+				ItemStackTemplate.CODEC.optionalFieldOf("tooltip_stack").forGetter(x -> x.tooltipStack),
+				Codec.STRING.listOf().optionalFieldOf("tooltip_label_lines", List.of()).forGetter(x -> x.tooltipLabelLines)
+		).apply(instance, RogueLootTableEntryTooltip::new));
+
+		public static final StreamCodec<FriendlyByteBuf, RogueLootTableEntryTooltip> STREAM_CODEC = StreamCodec.ofMember(RogueLootTableEntryTooltip::write, RogueLootTableEntryTooltip::new);
+
+		public RogueLootTableEntryTooltip(final FriendlyByteBuf friendlyByteBuf) {
+			this(
+					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode((RegistryFriendlyByteBuf) friendlyByteBuf),
+					friendlyByteBuf.readList(ByteBufCodecs.STRING_UTF8)
+			);
+		}
+
+		private void write(final FriendlyByteBuf friendlyByteBuf) {
+			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode((RegistryFriendlyByteBuf) friendlyByteBuf, this.tooltipStack);
+			friendlyByteBuf.writeCollection(this.tooltipLabelLines, ByteBufCodecs.STRING_UTF8);
+		}
+
+		public static RogueLootTableEntryTooltip copy(final RogueLootTableEntryTooltip rogueLootTableEntryTooltip) {
+			return new RogueLootTableEntryTooltip(
+					rogueLootTableEntryTooltip.tooltipStack().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(rogueLootTableEntryTooltip.tooltipStack().get().create())) : Optional.empty(),
+					new ArrayList<>(rogueLootTableEntryTooltip.tooltipLabelLines())
+			);
+		}
+	}
+
 }
