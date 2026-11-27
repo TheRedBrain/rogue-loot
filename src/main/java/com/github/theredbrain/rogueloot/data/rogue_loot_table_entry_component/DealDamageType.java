@@ -40,7 +40,7 @@ public record DealDamageType(
 	@Override
 	public void apply(final ServerLevel serverLevel, final ServerPlayer serverPlayer) {
 		// TODO this needs to be documented
-		float amount = Math.min(0.0F, this.amount.getInt(new LootContext.Builder(
+		float amount = Math.max(0.0F, this.amount.getInt(new LootContext.Builder(
 						new LootParams.Builder(serverLevel)
 								.withParameter(LootContextParams.THIS_ENTITY, serverPlayer)
 								.withParameter(LootContextParams.ORIGIN, serverPlayer.position())

@@ -27,6 +27,7 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.ArrayList;
@@ -186,8 +187,8 @@ public class RogueLootTableHelper {
 				continue;
 			}
 
-			Optional<ContextAwarePredicate> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
-			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().matches(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
+			Optional<LootItemCondition> optionalUnlockPredicate = rogueLootTableEntry.unlockPredicate();
+			if (optionalUnlockPredicate.isPresent() && !optionalUnlockPredicate.get().test(EntityPredicate.createContext(serverPlayer, serverPlayer))) {
 				continue;
 			}
 

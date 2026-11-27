@@ -11,13 +11,14 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 import java.util.Optional;
 
 public record RogueLootTableEntry(
-		Optional<ContextAwarePredicate> unlockPredicate,
+		Optional<LootItemCondition> unlockPredicate,
 		RogueLootTableEntryComponentType rogueLootTableEntryComponentType,
 		Optional<CommonDataStructures.RogueLootTableEntryDisplay> display,
 		Optional<CommonDataStructures.RogueLootTableEntryTooltip> tooltip,
@@ -28,7 +29,7 @@ public record RogueLootTableEntry(
 		boolean isPermanent
 ) {
 	public static final Codec<RogueLootTableEntry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			EntityPredicate.ADVANCEMENT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
+			LootItemCondition.DIRECT_CODEC.optionalFieldOf("unlock_predicate").forGetter(x -> x.unlockPredicate),
 			RogueLootTableEntryComponentType.CODEC.fieldOf("component").forGetter(x -> x.rogueLootTableEntryComponentType),
 			CommonDataStructures.RogueLootTableEntryDisplay.CODEC.optionalFieldOf("display").forGetter(x -> x.display),
 			CommonDataStructures.RogueLootTableEntryTooltip.CODEC.optionalFieldOf("tooltip").forGetter(x -> x.tooltip),

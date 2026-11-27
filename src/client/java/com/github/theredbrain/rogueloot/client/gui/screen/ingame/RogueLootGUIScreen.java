@@ -462,62 +462,64 @@ public class RogueLootGUIScreen extends Screen {
 			((LootOptionButton) lootoptionButton).setDisplayStack(visibleRogueLootTableEntry.display().get().displayStack());
 			((LootOptionButton) lootoptionButton).setIconTexture(visibleRogueLootTableEntry.display().get().iconTextureIdentifier());
 			String labelText = visibleRogueLootTableEntry.display().get().labelText();
-			if (!labelText.isEmpty() && optionalRarity.isPresent()) {
-
+			if (!labelText.isEmpty()) {
 				MutableComponent reservedMessage = Component.translatable(labelText);
-				Optional<CommonDataStructures.LabelSettings> reservedLabel = optionalRarity.get().reservedLabel();
-				if (reservedLabel.isPresent()) {
-					ChatFormatting[] reservedLabelFormatting = new ChatFormatting[reservedLabel.get().formatting().size()];
-					for (int i = 0; i < reservedLabel.get().formatting().size(); i++) {
-						reservedLabelFormatting[i] = reservedLabel.get().formatting().get(i);
+				MutableComponent banishedMessage = Component.translatable(labelText);
+				MutableComponent defaultMessage = Component.translatable(labelText);
+				MutableComponent selectedMessage = Component.translatable(labelText);
+
+				if (optionalRarity.isPresent()) {
+					Optional<CommonDataStructures.LabelSettings> reservedLabel = optionalRarity.get().reservedLabel();
+					if (reservedLabel.isPresent()) {
+						ChatFormatting[] reservedLabelFormatting = new ChatFormatting[reservedLabel.get().formatting().size()];
+						for (int i = 0; i < reservedLabel.get().formatting().size(); i++) {
+							reservedLabelFormatting[i] = reservedLabel.get().formatting().get(i);
+						}
+						reservedMessage.withStyle(reservedLabelFormatting);
+						if (!reservedLabel.get().hasShadow()) {
+							reservedMessage.withoutShadow();
+						}
 					}
-					reservedMessage.withStyle(reservedLabelFormatting);
-					if (!reservedLabel.get().hasShadow()) {
-						reservedMessage.withoutShadow();
+
+					Optional<CommonDataStructures.LabelSettings> banishedLabelSettings = optionalRarity.get().banishedLabel();
+					if (banishedLabelSettings.isPresent()) {
+						ChatFormatting[] banishedLabelFormatting = new ChatFormatting[banishedLabelSettings.get().formatting().size()];
+						for (int i = 0; i < banishedLabelSettings.get().formatting().size(); i++) {
+							banishedLabelFormatting[i] = banishedLabelSettings.get().formatting().get(i);
+						}
+						banishedMessage.withStyle(banishedLabelFormatting);
+						if (!banishedLabelSettings.get().hasShadow()) {
+							banishedMessage.withoutShadow();
+						}
+					}
+
+					Optional<CommonDataStructures.LabelSettings> defaultLabelSettings = optionalRarity.get().defaultLabel();
+					if (defaultLabelSettings.isPresent()) {
+						ChatFormatting[] defaultLabelFormatting = new ChatFormatting[defaultLabelSettings.get().formatting().size()];
+						for (int i = 0; i < defaultLabelSettings.get().formatting().size(); i++) {
+							defaultLabelFormatting[i] = defaultLabelSettings.get().formatting().get(i);
+						}
+						defaultMessage.withStyle(defaultLabelFormatting);
+						if (!defaultLabelSettings.get().hasShadow()) {
+							defaultMessage.withoutShadow();
+						}
+					}
+
+					Optional<CommonDataStructures.LabelSettings> selectedLabelSettings = optionalRarity.get().selectedLabel();
+					if (selectedLabelSettings.isPresent()) {
+						ChatFormatting[] selectedLabelFormatting = new ChatFormatting[selectedLabelSettings.get().formatting().size()];
+						for (int i = 0; i < selectedLabelSettings.get().formatting().size(); i++) {
+							selectedLabelFormatting[i] = selectedLabelSettings.get().formatting().get(i);
+						}
+						selectedMessage.withStyle(selectedLabelFormatting);
+						if (!selectedLabelSettings.get().hasShadow()) {
+							selectedMessage.withoutShadow();
+						}
 					}
 				}
 				((LootOptionButton) lootoptionButton).setReservedMessage(reservedMessage);
-
-				MutableComponent banishedMessage = Component.translatable(labelText);
-				Optional<CommonDataStructures.LabelSettings> banishedLabelSettings = optionalRarity.get().banishedLabel();
-				if (banishedLabelSettings.isPresent()) {
-					ChatFormatting[] banishedLabelFormatting = new ChatFormatting[banishedLabelSettings.get().formatting().size()];
-					for (int i = 0; i < banishedLabelSettings.get().formatting().size(); i++) {
-						banishedLabelFormatting[i] = banishedLabelSettings.get().formatting().get(i);
-					}
-					banishedMessage.withStyle(banishedLabelFormatting);
-					if (!banishedLabelSettings.get().hasShadow()) {
-						banishedMessage.withoutShadow();
-					}
-				}
 				((LootOptionButton) lootoptionButton).setBanishedMessage(banishedMessage);
-
-				MutableComponent defaultMessage = Component.translatable(labelText);
-				Optional<CommonDataStructures.LabelSettings> defaultLabelSettings = optionalRarity.get().defaultLabel();
-				if (defaultLabelSettings.isPresent()) {
-					ChatFormatting[] defaultLabelFormatting = new ChatFormatting[defaultLabelSettings.get().formatting().size()];
-					for (int i = 0; i < defaultLabelSettings.get().formatting().size(); i++) {
-						defaultLabelFormatting[i] = defaultLabelSettings.get().formatting().get(i);
-					}
-					defaultMessage.withStyle(defaultLabelFormatting);
-					if (!defaultLabelSettings.get().hasShadow()) {
-						defaultMessage.withoutShadow();
-					}
-				}
 				((LootOptionButton) lootoptionButton).setDefaultMessage(defaultMessage);
-
-				MutableComponent selectedMessage = Component.translatable(labelText);
-				Optional<CommonDataStructures.LabelSettings> selectedLabelSettings = optionalRarity.get().selectedLabel();
-				if (selectedLabelSettings.isPresent()) {
-					ChatFormatting[] selectedLabelFormatting = new ChatFormatting[selectedLabelSettings.get().formatting().size()];
-					for (int i = 0; i < selectedLabelSettings.get().formatting().size(); i++) {
-						selectedLabelFormatting[i] = selectedLabelSettings.get().formatting().get(i);
-					}
-					selectedMessage.withStyle(selectedLabelFormatting);
-					if (!selectedLabelSettings.get().hasShadow()) {
-						selectedMessage.withoutShadow();
-					}
-				}
 				((LootOptionButton) lootoptionButton).setSelectedMessage(selectedMessage);
 			}
 		}
