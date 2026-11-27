@@ -101,21 +101,12 @@ public class CommonDataStructures {
 			return attributeInfluencedIntegerValue;
 		}
 
-//		public static LabelSettings copy(final LabelSettings labelSettings) {
-//			return new LabelSettings(
-//					new ArrayList<>(labelSettings.formatting()),
-//					labelSettings.hasShadow()
-//			);
-//		}
-
 	}
 
 	public record RogueLootTableInteraction(
-			boolean enabled,
 			Optional<ItemStackTemplate> optionalCost
 	) {
 		public static final Codec<RogueLootTableInteraction> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-				Codec.BOOL.optionalFieldOf("enabled", false).forGetter(x -> x.enabled),
 				ItemStackTemplate.CODEC.optionalFieldOf("cost").forGetter(x -> x.optionalCost)
 		).apply(instance, RogueLootTableInteraction::new));
 
@@ -123,19 +114,16 @@ public class CommonDataStructures {
 
 		public RogueLootTableInteraction(final RegistryFriendlyByteBuf registryByteBuf) {
 			this(
-					ByteBufCodecs.BOOL.decode(registryByteBuf),
 					ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(registryByteBuf)
 			);
 		}
 
 		private void write(final RegistryFriendlyByteBuf registryByteBuf) {
-			ByteBufCodecs.BOOL.encode(registryByteBuf, this.enabled);
 			ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(registryByteBuf, this.optionalCost);
 		}
 
 		public static RogueLootTableInteraction copy(final RogueLootTableInteraction rogueLootTableInteraction) {
 			return new RogueLootTableInteraction(
-					rogueLootTableInteraction.enabled(),
 					rogueLootTableInteraction.optionalCost().isPresent() ? Optional.of(ItemStackTemplate.fromNonEmptyStack(rogueLootTableInteraction.optionalCost().get().create())) : Optional.empty()
 			);
 		}

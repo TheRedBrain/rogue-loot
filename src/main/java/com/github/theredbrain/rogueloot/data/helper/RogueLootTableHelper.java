@@ -129,7 +129,7 @@ public class RogueLootTableHelper {
 	private static int calculateRerollAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int rerollAttempts = -1;
-		if (rogueLootTable.rerolling().isPresent() && rogueLootTable.rerolling().get().enabled() && rogueLootTable.rerolling().get().optionalCost().isPresent()) {
+		if (rogueLootTable.rerolling().isPresent() && rogueLootTable.rerolling().get().optionalCost().isPresent()) {
 			ItemStack rerollCostStack = rogueLootTable.rerolling().get().optionalCost().get().create();
 
 			if (!rerollCostStack.isEmpty()) {
@@ -142,7 +142,7 @@ public class RogueLootTableHelper {
 	private static int calculateBanishingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int banishingAttempts = -1;
-		if (rogueLootTable.banishing().isPresent() && rogueLootTable.banishing().get().enabled() && rogueLootTable.banishing().get().optionalCost().isPresent()) {
+		if (rogueLootTable.banishing().isPresent() && rogueLootTable.banishing().get().optionalCost().isPresent()) {
 			ItemStack banishingCostStack = rogueLootTable.banishing().get().optionalCost().get().create();
 
 			if (!banishingCostStack.isEmpty()) {
@@ -155,7 +155,7 @@ public class RogueLootTableHelper {
 	private static int calculateReservingAttempts(final ServerPlayer serverPlayer, final RogueLootTable rogueLootTable) {
 
 		int lockingAttempts = -1;
-		if (rogueLootTable.reserving().isPresent() && rogueLootTable.reserving().get().enabled() && rogueLootTable.reserving().get().optionalCost().isPresent()) {
+		if (rogueLootTable.reserving().isPresent() && rogueLootTable.reserving().get().optionalCost().isPresent()) {
 			ItemStack lockingCostStack = rogueLootTable.reserving().get().optionalCost().get().create();
 
 			if (!lockingCostStack.isEmpty()) {
