@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.data;
 
 import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -32,7 +33,7 @@ public record RogueLootGuiSettings(
 	public static final RogueLootGuiSettings DEFAULT = new RogueLootGuiSettings("", "", Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	public static final Codec<RogueLootGuiSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			Codec.STRING.optionalFieldOf("background_texture_path", "").forGetter(x -> x.backgroundTexturePath),
-			Codec.STRING.optionalFieldOf("entries_asset_path_addition", "").forGetter(x -> x.entriesAssetPathAddition),
+			Codec.STRING.optionalFieldOf("entries_asset_path_addition", "").validate(RogueLootGuiSettings::validateEntriesAssetPathAddition).forGetter(x -> x.entriesAssetPathAddition),
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("reroll_requirements_not_met").forGetter(x -> x.rerollRequirementsNotMet),
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("reroll_requirements_met").forGetter(x -> x.rerollRequirementsMet),
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("enable_banishing_requirements_not_met").forGetter(x -> x.enableBanishingRequirementsNotMet),
@@ -44,6 +45,24 @@ public record RogueLootGuiSettings(
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("confirmation_requirements_not_met").forGetter(x -> x.confirmationRequirementsNotMet),
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("confirmation_requirements_met").forGetter(x -> x.confirmationRequirementsMet)
 	).apply(instance, RogueLootGuiSettings::new));
+
+	private static DataResult<String> validateEntriesAssetPathAddition(final String string) {
+		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_] character in entries_asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of entries_asset_path_addition is not allowed") : DataResult.success(string);
+	}
+
+	private static boolean isInvalidPathAddition(final String path) {
+		for (int i = 0; i < path.length(); i++) {
+			if (!validPathAdditionChar(path.charAt(i))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean validPathAdditionChar(final char c) {
+		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/';
+	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RogueLootGuiSettings> STREAM_CODEC = StreamCodec.ofMember(RogueLootGuiSettings::write, RogueLootGuiSettings::new);
 

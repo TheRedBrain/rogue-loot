@@ -2,6 +2,7 @@ package com.github.theredbrain.rogueloot.data;
 
 import com.github.theredbrain.rogueloot.registry.RogueLootRegistries;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.Registry;
@@ -27,7 +28,7 @@ public record RogueLootTableEntryRarity(
 ) {
 	public static final RogueLootTableEntryRarity DEFAULT = new RogueLootTableEntryRarity("", 1, Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty(), Optional.empty());
 	public static final Codec<RogueLootTableEntryRarity> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-			Codec.STRING.optionalFieldOf("asset_path_addition", "").forGetter(x -> x.assetPathAddition),
+			Codec.STRING.optionalFieldOf("asset_path_addition", "").validate(RogueLootTableEntryRarity::validateAssetPathAddition).forGetter(x -> x.assetPathAddition),
 			Codec.INT.fieldOf("weight").forGetter(x -> x.weight),
 			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("weight_modifier").forGetter(x -> x.optionalWeightModifier),
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("banished_label").forGetter(x -> x.banishedLabel),
@@ -36,6 +37,24 @@ public record RogueLootTableEntryRarity(
 			CommonDataStructures.LabelSettings.CODEC.optionalFieldOf("selected_label").forGetter(x -> x.selectedLabel),
 			Identifier.CODEC.optionalFieldOf("tooltip_style").forGetter(x -> x.tooltipStyle)
 	).apply(instance, RogueLootTableEntryRarity::new));
+
+	private static DataResult<String> validateAssetPathAddition(final String string) {
+		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_] character in asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of asset_path_addition is not allowed") : DataResult.success(string);
+	}
+
+	private static boolean isInvalidPathAddition(final String path) {
+		for (int i = 0; i < path.length(); i++) {
+			if (!validPathAdditionChar(path.charAt(i))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static boolean validPathAdditionChar(final char c) {
+		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/';
+	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RogueLootTableEntryRarity> STREAM_CODEC = StreamCodec.ofMember(RogueLootTableEntryRarity::write, RogueLootTableEntryRarity::new);
 
