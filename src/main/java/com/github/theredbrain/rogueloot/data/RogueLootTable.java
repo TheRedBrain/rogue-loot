@@ -8,11 +8,7 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.RegistryCodecs;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.item.ItemStackTemplate;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
@@ -21,7 +17,7 @@ import java.util.Optional;
 public record RogueLootTable(
 		HolderSet<RogueLootTableEntry> rogueLootTableEntries,
 		Map<Identifier, Identifier> rarityOverrides,
-		String rogueLootGuiSettingsIdString,
+		Optional<Identifier> rogueLootGuiSettingsIdentifier,
 		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> rollAmountModifier,
 		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> minChoicesModifier,
 		Optional<CommonDataStructures.AttributeInfluencedIntegerModifier> maxChoicesModifier,
@@ -33,7 +29,7 @@ public record RogueLootTable(
 	public static final Codec<RogueLootTable> CODEC = RecordCodecBuilder.create(instance -> instance.group(
 			RegistryCodecs.homogeneousList(RogueLootRegistries.ROGUE_LOOT_TABLE_ENTRY_REGISTRY_KEY).fieldOf("rogue_loot_table_entries").forGetter(x -> x.rogueLootTableEntries),
 			Codec.unboundedMap(Identifier.CODEC, Identifier.CODEC).optionalFieldOf("rarity_overrides", Map.of()).forGetter(x -> x.rarityOverrides),
-			Codec.STRING.optionalFieldOf("gui_settings_id", "").forGetter(x -> x.rogueLootGuiSettingsIdString),
+			Identifier.CODEC.optionalFieldOf("gui_settings_identifier").forGetter(x -> x.rogueLootGuiSettingsIdentifier),
 			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("roll_amount_modifier").forGetter(x -> x.rollAmountModifier),
 			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("min_choices_modifier").forGetter(x -> x.minChoicesModifier),
 			CommonDataStructures.AttributeInfluencedIntegerModifier.CODEC.optionalFieldOf("max_choices_modifier").forGetter(x -> x.maxChoicesModifier),

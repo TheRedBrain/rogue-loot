@@ -14,7 +14,6 @@ import com.github.theredbrain.rogueloot.data.rogue_loot_table_entry_component.Ro
 import com.github.theredbrain.rogueloot.entity.player.PlayerHelper;
 import com.github.theredbrain.rogueloot.network.packet.OpenRogueLootScreenPacket;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.advancements.criterion.ContextAwarePredicate;
 import net.minecraft.advancements.criterion.EntityPredicate;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.Identifier;
@@ -259,9 +258,8 @@ public class RogueLootTableHelper {
 
 		RogueLootGuiSettings rogueLootGuiSettings = RogueLootGuiSettings.DEFAULT;
 
-		Identifier rogueLootGuiSettingsIdentifier = Identifier.tryParse(rogueLootTable.rogueLootGuiSettingsIdString());
-		if (!rogueLootTable.rogueLootGuiSettingsIdString().isEmpty() && rogueLootGuiSettingsIdentifier != null) {
-			RogueLootGuiSettings rogueLootGuiSettings1 = RogueLootGuiSettings.getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootGuiSettingsIdentifier);
+		if (rogueLootTable.rogueLootGuiSettingsIdentifier().isPresent()) {
+			RogueLootGuiSettings rogueLootGuiSettings1 = RogueLootGuiSettings.getRogueLootGuiSettings(serverLevel.registryAccess(), rogueLootTable.rogueLootGuiSettingsIdentifier().get());
 			if (rogueLootGuiSettings1 != null) {
 				rogueLootGuiSettings = RogueLootGuiSettings.copy(rogueLootGuiSettings1);
 			}
