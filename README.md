@@ -20,26 +20,19 @@ This block looks like the vanilla Vault Block and behaves almost exactly like it
 
 The block configuration is data-driven, similar to the vanilla Vault Block.
 
-Example:
+> Examples for all data-driven features are available in the test mod files on GitHub.
 
-> Note that the data used in all examples is implemented in the test mod visible on GitHub.
+Structure:
 
-```json5
-{
-  "loot_table_identifier": "rogueloot_test:test", // the identifier of the supplied rogue loot table
-  "loot_table_mode": "rogue_loot", // the mode of the rogue loot vault ("rogue_loot" is currently the only valid option, this option exists for integration with other mods
-  "rolls": 3, // amount of rolls
-  "min_choices": 1, // minimum amount of choices
-  "max_choices": 1, // maximum amount of choices
-  "activation_range": 4.0, // must be <= 'deactivation_range'
-  "deactivation_range": 4.5,
-  "key_item": {
-      "id": "minecraft:trial_key",
-      "count": 1
-  },
-  "display_loot_table_identifier": "rogueloot_test:chests/test_display" // the identifier of the display loot_table, refers to a vanilla loot table
-}
-```
+- "loot_table_identifier", an optional identifier field, empty by default. The identifier of the supplied Rogue Loot Table.
+- "loot_table_mode", an optional String field, "rogue_loot" by default. The mode of the rogue loot vault. "rogue_loot" is currently the only valid option, this option exists for integration with other mods.
+- "rolls", a required int field, 3 by default.
+- "min_choices", a required int field, 1 by default.
+- "max_choices", a required int field, 1 by default.
+- "activation_range", a required double field, 4.0 by default.
+- "deactivation_range", a required double field, 4.5 by default. Must be >= "activation_range".
+- "key_item", a required item stack field, {"id": "minecraft:trial_key","count": 1} by default.
+- "display_loot_table_identifier", an optional identifier field, empty by default. The identifier of the display loot table. 
 
 Example /give command:
 ```
@@ -101,6 +94,20 @@ If enabled by the Rogue Loot Table, they can be rerolled. If enabled, a new butt
 
 Rerolling optionally has an item cost. In that case, the cost is removed from the inventory when a Rogue Loot Table is rerolled. The currently available amount of rerolls is displayed on the button.
 
+When a Rogue Loot Table is rolled, the entries are saved to prevent rerolling by simply exiting the Rogue Loot Screen.
+
+Rogue Loot Tables supplied by blocks are saved by the block itself.
+
+Rogue Loot Tables supplied by items or commands are saved as player data. This data can be reset using a command.
+
+Both the data component and the command for rolling a Rogue Loot Table provide a "saving_token". This is a simple string used to identify the rolled Rogue Loot Table together with the Rogue Loot Table identifier. This allows multiple items to supply the same Rogue Loot Table without affecting each other.
+The reset command also uses this saving token.
+
+Example:
+```
+/rogue_loot reset @s generated_entries rogueloot_test:test saving_token
+```
+
 ---
 
 ### Reserving
@@ -151,18 +158,15 @@ Example:
 
 Table Entries can be permanent. These entries will always appear in any Rogue Loot Tables that contains it. However, this is only true if the entry is unlocked according to their unlock predicate, if it has not reached its use limit and if it's not banished.
 
+---
 
+### Complete Reset
 
-TODO
-
-```
-/rogue_loot reset @s generated_entries rogueloot_test:test
-```
+There is also a command that resets everything. This is basically just a shortcut, the same effect can be achieved using the individual commands described above.
 
 ```
 /rogue_loot reset @s everything
 ```
-
 
 ## How to create rogue loot tables?
 
@@ -170,154 +174,155 @@ Rogue Loot Tables are data-driven, which means they are defined using a data pac
 
 Some parts of the Rogue Loot Table are data-driven on their own.
 
+<a id="rogue_loot_table"></a>
 ### Rogue Loot Table
 
 Path:
 ```
-data/your_namespace/rogue_loot/table/your_rogue_loot_table.json
+data/<your_namespace>/rogue_loot/table/<your_rogue_loot_table>.json
 ```
 
-Example:
+Structure:
 
-```json5
-{
-  "rogue_loot_table_entries": "#rogueloot_test:test",
-  "rarity_overrides": {
-    "rogueloot_test:epic": "rogueloot_test:uncommon"
-  },
-  "gui_settings_id": "rogueloot_test:test",
-  "roll_amount_modifier": {
-    "min_value": 1,
-    "max_value": 20,
-    "influencing_attribute_identifier": "minecraft:luck",
-    "influence_multiplier": 2.0
-  },
-  "rerolling": {
-    "enabled": true,
-    "cost": {
-      "id": "minecraft:lapis_lazuli"
-    }
-  },
-  "banishing": {
-    "enabled": true,
-    "cost": {
-      "id": "minecraft:emerald"
-    }
-  },
-  "reserving": {
-    "enabled": true,
-    "cost": {
-      "id": "minecraft:iron_ingot",
-      "count": 10
-    }
-  },
-  "random_sequence": "rogueloot_test:test"
-}
-```
+- "rogue_loot_table_entries", a list of Table Entry identifiers and/or tags, empty by default.
+- "rarity_overrides", an optional map of Entry Rarity identifiers to Entry Rarity identifiers, empty by default. Entry Rarities of Table Entries in "rogue_loot_table_entries" are overridden, according to this map.
+- "gui_settings_identifier", an optional identifier field, empty by default. Defines the GUI Settings used by this Rogue Loot Table.
+- "roll_amount_modifier", an optional [Attribute Influenced Integer Modifier](#attribute_influenced_integer_modifier) field, empty by default. Modifies the rolls value coming from the Rogue Loot Table Supplier.
+- "min_choices_modifier", an optional [Attribute Influenced Integer Modifier](#attribute_influenced_integer_modifier) field, empty by default. Modifies the min_choices value coming from the Rogue Loot Table Supplier.
+- "max_choices_modifier", an optional [Attribute Influenced Integer Modifier](#attribute_influenced_integer_modifier) field, empty by default. Modifies the max_choices value coming from the Rogue Loot Table Supplier.
+- "rerolling", an optional [Rogue Loot Table Interaction](#rogue_loot_table_interaction) field, empty by default. When this field is present, rerolling is enabled.
+- "banishing", an optional [Rogue Loot Table Interaction](#rogue_loot_table_interaction) field, empty by default. When this field is present, banishing is enabled.
+- "reserving", an optional [Rogue Loot Table Interaction](#rogue_loot_table_interaction) field, empty by default. When this field is present, reserving is enabled.
+- "reserving", an optional [Rogue Loot Table Interaction](#rogue_loot_table_interaction) field, empty by default. When this field is present, reserving is enabled.
+- "random_sequence", an optional identifier field, empty by default. Is used to create deterministic randomization.
 
+<a id="rogue_loot_table_interaction"></a>
+#### Rogue Loot Table Interaction
+
+This is a sub-data structure used only by Rogue Loot Tables. When present, it enables optional mechanics on the Rogue Loot Screen. It also can optionally define an item cost for these mechanics.
+
+Structure:
+
+- "cost", an optional item stack field, empty by default. Defines the item stack that has to be paid in order to use the mechanic enabled by this interaction.
+
+---
+
+<a id="gui_settings"></a>
 ### GUI Settings
 
 Gui Settings are referenced by Rogue Loot Tables. They define several cosmetic features and are entirely optional.
 
 Path:
 ```
-data/your_namespace/rogue_loot/gui_settings/your_table_gui_settings.json
+data/<your_namespace>/rogue_loot/gui_settings/<your_table_gui_settings>.json
 ```
 
-Example:
+Structure:
 
-```json5
-{
-  "background_texture_path": "",
-  "entries_asset_path_addition": "",
-  "confirmation_requirements_not_met": {
-    "formatting": [
-      "red"
-    ]
-  },
-  "confirmation_requirements_met": {
-    "formatting": [
-      "green"
-    ]
-  }
-}
-```
+- "background_texture_path", an optional string field, "" by default. This string describes the texture path of the background texture for the Rogue Loot Screen.
+- "entries_asset_path_addition", an optional string field, "" by default. This string is added to the background texture paths of Table Entry buttons.
+- "reroll_requirements_not_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "reroll_requirements_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "enable_banishing_requirements_not_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "enable_banishing_requirements_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "disable_banishing", an optional [Label Settings](#label_settings) field, empty by default.
+- "enable_reserving_requirements_not_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "enable_reserving_requirements_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "disable_reserving", an optional [Label Settings](#label_settings) field, empty by default.
+- "confirmation_requirements_not_met", an optional [Label Settings](#label_settings) field, empty by default.
+- "confirmation_requirements_met", an optional [Label Settings](#label_settings) field, empty by default.
 
+---
+
+<a id="table_entry"></a>
 ### Table Entry
 
 Table Entries are referenced by Rogue Loot Tables. They define the individual reward choices.
 
+On the Rogue Loot Screen, each Table Entry is represented by a button. This button allows the player to select the entry. The specific interactions are described above. Each different button state is reflected by a different button texture.
+
+By default, these textures are found here (please refer to the sources on GitHub):
+```
+assets/rogueloot/textures/gui/sprites/widgets/loot_option_button/<specific_texture_name>.png
+```
+
+However, the GUI Settings of the Rogue  Loot Table and the entry's rarity can influence the texture path, allowing for custom textures based on loot table and/or rarity.
+
+If both GUI Settings and Entry Rarity have the corresponding fields set, the texture path looks like this:
+```
+assets/rogueloot/textures/gui/sprites/widgets/loot_option_button/<entries_asset_path_addition>/<asset_path_addition>/<specific_texture_name>.png
+```
+"entries_asset_path_addition" is the field in Gui Settings and "asset_path_addition" is the field in Entry Rarity. If one of these fields is missing/empty, they are ignored.
+
+> Note that the "/" are not part of these fields. "/" at the start or end of these strings are not allowed. Putting a "/" somewhere in the middle is allowed and will correspond to an additional folder in the file path.
+
 Path:
 ```
-data/your_namespace/rogue_loot/table_entry/your_table_entry.json
+data/<your_namespace>/rogue_loot/table_entry/<your_table_entry>.json
 ```
 
-Example:
+Structure:
 
-```json5
-{
-  "component": {
-    "type": "rogueloot:item_stack",
-    "item_stack": {
-      "id": "minecraft:iron_sword"
-    }
-  },
-  "display_stack": {
-    "id": "minecraft:iron_sword"
-  },
-  "label_text": "Iron Sword",
-  "tooltip_stack": {
-    "id": "minecraft:iron_sword"
-  },
-  "rarity": "rogueloot_test:rare",
-  "use_limit": 0,
-  "allow_banishing": true,
-  "allow_reserving": true,
-  "is_permanent": false
-}
-```
+- "unlock_predicate", an optional Context Aware Predicate field, empty by default. Checks whether the entry is unlocked.
+- "component", a required [Entry Component](#entry-component) field. Defines the reward granted by this entry.
+- "display", an optional [Entry Display](#entry_display) field, empty by default.
+- "tooltip", an optional [Entry Tooltip](#entry_tooltip) field, empty by default.
+- "rarity_identifier", an optional identifier field, empty by default. Defines the Entry Rarity used by this Table Entry.
+- "use_limit", an optional int field, 0 by default. Defines the amount of times this entry can be chosen, before becoming unavailable.
+- "allow_banishing", an optional boolean field, true by default. Defines whether the entry can be banished.
+- "allow_reserving", an optional boolean field, true by default. Defines whether the entry can be reserved.
+- "is_permanent", an optional boolean field, false by default. Defines whether the entry is permanent.
 
+<a id="entry_display"></a>
+#### Entry Display
+
+This is a sub-data structure used only by Table Entries. It defines what is displayed on the button representing this Table Entry.
+
+Structure:
+
+- "display_stack", an optional Item Stack field, empty by default. Is not compatible with the "icon_texture_identifier" field.
+- "icon_texture_identifier", an optional Identifier field, empty by default. Is not compatible with the "display_stack" field.
+- "label_text", an optional string field, "" by default. Defines the Entry Rarity used by this Table Entry.
+
+<a id="entry_tooltip"></a>
+#### Entry Tooltip
+
+This is a sub-data structure used only by Table Entries. It defines what is displayed on the button representing this Table Entry.
+
+Structure:
+
+- "display_stack", an optional Item Stack field, empty by default. Is not compatible with the "icon_texture_identifier" field.
+- "tooltip_label_lines", an optional list of strings, empty by default. Defines the Entry Rarity used by this Table Entry.
+
+---
+
+<a id="entry_rarity"></a>
 ### Entry Rarity
 
 Each Table Entry can reference an Entry Rarity. These are mostly cosmetic, but they also define how often a Table Entry is presented to a player, based on a weight system.
 
 Path:
 ```
-data/your_namespace/rogue_loot/entry_rarity/your_entry_rarity.json
+data/<your_namespace>/rogue_loot/entry_rarity/<your_entry_rarity>.json
 ```
 
-Example:
+Structure:
 
-```json5
-{
-  "asset_path_addition": "common",
-  "weight": 15,
-  "banished_label": {
-    "formatting": [
-      "gray"
-    ]
-  },
-  "default_label": {
-    "formatting": [
-      "gray"
-    ]
-  },
-  "reserved_label": {
-    "formatting": [
-      "gray"
-    ]
-  },
-  "selected_label": {
-    "formatting": [
-      "gray"
-    ]
-  }
-}
-```
+- "asset_path_addition", an optional string field, "" by default. This string is added to the background texture paths of Table Entry buttons. 
+- "weight", an optional int field, 1 by default. Overwrites the weight of the Table Entry.
+- "weight_modifier", an optional [Attribute Influenced Integer Modifier](#attribute_influenced_integer_modifier) field, empty by default. Modifies the weight value
+- "banished_label", an optional [Label Settings](#label_settings) field, empty by default. Modifies the entry's text label when the entry is banished.
+- "default_label", an optional [Label Settings](#label_settings) field, empty by default. Modifies the entry's text label when none of the other cases are true.
+- "reserved_label", an optional [Label Settings](#label_settings) field, empty by default. Modifies the entry's text label when the entry is reserved.
+- "selected_label", an optional [Label Settings](#label_settings) field, empty by default. Modifies the entry's text label when the entry is selected.
+- "tooltip_style", an optional identifier field, empty by default. Defines the tooltip style (background texture + frame).
 
+---
+
+<a id="entry_component"></a>
 ### Entry Component
 
-A Table Entry defines a list of rewards, which are granted to the player when the entry is chosen. The rewards are called Entry Components, and they have a variety of possible types. These types are defined in Java code, but can have data-driven fields for further customization.
+A Table Entry defines a reward, which is granted to the player when the entry is chosen. Rewards are called Entry Components, and they have a variety of possible types. These types are defined in Java code, but can have data-driven fields for further customization.
 
 Component Types:
 
@@ -330,7 +335,13 @@ Component Types:
 - "rogueloot:heal_x_amount", heals the player by the specified amount
 - "rogueloot:item_stack", adds the specified item stack to the player's inventory (or drops it on the ground when no space is left)
 - "rogueloot:list", grants all specified Entry Components
-- "rogueloot:mob_effect_instance", applies the specified mob effect instance
+- "rogueloot:mob_effect_instance", applies the specified mob effect instance, respecting the specified stacking mode
+  - if no stacking mode is specified, the vanilla functionality (e.g. onEffectUpdated()) is called
+  - the stacking mode can be one of:
+    - "none", an existing effect instance is removed (if one is present) and the new is applied
+    - "amplifier", an existing effect instance is removed (if one is present) and the new is applied, but the amplifier of the existing instance is added
+    - "duration", an existing effect instance is removed (if one is present) and the new is applied, but the duration of the existing instance is added
+    - "both", an existing effect instance is removed (if one is present) and the new is applied, but both the amplifier and duration of the existing instance are added
 - "rogueloot:modify_equipment", applies the specified list of loot item functions to all items in the specified equipment slots (optionally filtered by a condition)
 - "rogueloot:play_sound", plays the specified sound at the player's location
 - "rogueloot:random_components", grants a random reward out of a list of Entry Components, each having a weight.
@@ -365,11 +376,13 @@ Stamina Attributes:
 - "rogueloot:compat/staminaattributes/add_stamina", adds the specified amount of stamina
 - "rogueloot:compat/staminaattributes/set_stamina", sets the player's stamina to the specified percentage
 
+---
 
 ### Common Data Structures
 
 These structures are used by several of the data files described above.
 
+<a id="label_settings"></a>
 #### Label Settings
 
 Text labels (e.g. on buttons) can be customized. A "Chat Formatting" is used to describe such a customization. Label Settings can define a list of these formattings, which will then be applied to the text in question.
@@ -411,6 +424,7 @@ Example:
 }
 ```
 
+<a id="attribute_influenced_integer_modifier"></a>
 #### Attribute Influenced Integer Modifier
 
 Some values used by various mechanics in Rogue Loot can optionally be modified by the value of an entity attribute. 
