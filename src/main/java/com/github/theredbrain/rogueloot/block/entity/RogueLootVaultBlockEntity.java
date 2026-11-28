@@ -371,16 +371,15 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 				} else if (serverData.hasRewardedPlayer(player)) {
 					playInsertFailSound(serverLevel, serverData, pos, SoundEvents.VAULT_REJECT_REWARDED_PLAYER);
 				} else if (player instanceof ServerPlayer serverPlayer) {
-					Identifier lootTableIdentifier = Identifier.tryParse(config.lootTableIdentifier());
-					if (lootTableIdentifier == null) {
+					if (config.lootTableIdentifier().isEmpty()) {
 						serverPlayer.sendSystemMessage(Component.translatable("hud.message.rogue_loot_vault_block.invalid_loot_table_id").withStyle(ChatFormatting.RED), true);
 						return;
 					}
 					if (config.lootTableMode() == RogueLootVaultConfig.Mode.ROGUE_LOOT) {
-						int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, lootTableIdentifier, config.rolls());
-						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, lootTableIdentifier, config.minChoices());
-						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, lootTableIdentifier, config.maxChoices());
-						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(lootTableIdentifier, Identifier.fromNamespaceAndPath(lootTableIdentifier.getNamespace(), lootTableIdentifier.getPath() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
+						int modifiedRolls = RogueLootTableHelper.calculateModifiedRolls(serverLevel, serverPlayer, config.lootTableIdentifier().get(), config.rolls());
+						int modifiedMinChoices = RogueLootTableHelper.calculateModifiedMinChoices(serverLevel, serverPlayer, config.lootTableIdentifier().get(), config.minChoices());
+						int modifiedMaxChoices = RogueLootTableHelper.calculateModifiedMaxChoices(serverLevel, serverPlayer, config.lootTableIdentifier().get(), config.maxChoices());
+						RogueLootTableHelper.supplyRogueLootTable(serverLevel, serverPlayer, new GeneratedRogueLootData(config.lootTableIdentifier().get(), Identifier.fromNamespaceAndPath(config.lootTableIdentifier().get().getNamespace(), config.lootTableIdentifier().get().getPath() + "_" + pos.getX() + "_" + pos.getY() + "_" + pos.getZ()), config.rolls(), modifiedRolls, config.minChoices(), modifiedMinChoices, config.maxChoices(), modifiedMaxChoices, Optional.of(pos), Optional.of(stack), Optional.of(interactionHand)));
 //					} else { // lootable compat
 //						RogueLoot.supplyLootableLoot(lootTableIdentifier, serverLevel, serverPlayer, Vec3.atLowerCornerOf(pos), config.rolls(), config.minChoices(), config.lootTableMode() == RogueLootVaultConfig.Mode.LOOTABLE_CHOICE, stack);
 //						serverData.markPlayerAsRewarded(player);
@@ -402,8 +401,8 @@ public class RogueLootVaultBlockEntity extends BlockEntity implements SuppliesRo
 				sharedData.setDisplayItem(ItemStack.EMPTY);
 			} else {
 				ItemStack itemStack = ItemStack.EMPTY;
-				if (!config.displayLootTableIdentifier().isEmpty()) {
-					itemStack = getRandomDisplayItemFromLootTable(serverLevel, pos, ResourceKey.create(Registries.LOOT_TABLE, Identifier.parse(config.displayLootTableIdentifier())));
+				if (config.displayLootTableIdentifier().isPresent()) {
+					itemStack = getRandomDisplayItemFromLootTable(serverLevel, pos, ResourceKey.create(Registries.LOOT_TABLE, config.displayLootTableIdentifier().get()));
 				}
 				sharedData.setDisplayItem(itemStack);
 			}

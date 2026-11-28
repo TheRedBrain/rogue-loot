@@ -4,11 +4,9 @@ import com.github.theredbrain.rogueloot.data.GeneratedRogueLootData;
 import com.github.theredbrain.rogueloot.data.RogueLootTable;
 import com.github.theredbrain.rogueloot.data.helper.DataAttachmentHelper;
 import com.github.theredbrain.rogueloot.data.helper.RogueLootTableHelper;
-import com.mojang.brigadier.Command;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.minecraft.commands.CommandSource;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -71,12 +69,15 @@ public class RogueLootCommands {
 																		Commands.literal("generated_entries")
 																				.then(
 																						Commands.argument("entry_identifier", IdentifierArgument.id())
-																								.executes(
-																										(ctx) -> resetGeneratedEntries(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.of(IdentifierArgument.getId(ctx, "entry_identifier")))
+																								.then(
+																										Commands.argument("saving_token", StringArgumentType.word())
+																												.executes(
+																														(ctx) -> resetGeneratedEntries(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.of(IdentifierArgument.getId(ctx, "entry_identifier")), StringArgumentType.getString(ctx, "saving_token"))
+																												)
 																								)
 																				)
 																				.executes(
-																						(ctx) -> resetGeneratedEntries(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.empty())
+																						(ctx) -> resetGeneratedEntries(ctx.getSource(), EntityArgument.getPlayer(ctx, "player"), Optional.empty(), "")
 																				)
 
 																)
@@ -235,9 +236,19 @@ public class RogueLootCommands {
 		return 1;
 	}
 
-	private static int resetGeneratedEntries(final CommandSourceStack source, final ServerPlayer serverPlayer, final Optional<Identifier> optionalEntryIdentifier) {
-		DataAttachmentHelper.removeGeneratedRogueLootEntry(serverPlayer, optionalEntryIdentifier);
-		source.sendSuccess(() -> optionalEntryIdentifier.isPresent() ? Component.translatable("commands.rogueloot.reset_generated_entry.single", optionalEntryIdentifier.get().toString(), serverPlayer.getDisplayName()) : Component.translatable("commands.rogueloot.reset_generated_entry.all", serverPlayer.getDisplayName()), true);
+	private static int resetGeneratedEntries(final CommandSourceStack source, final ServerPlayer serverPlayer, final Optional<Identifier> optionalEntryIdentifier, final String savingToken) {
+		Optional<Identifier> actualEntryIdentifier;
+		if (optionalEntryIdentifier.isPresent()) {
+			String pathAddition = "";
+			if (!savingToken.isEmpty()) {
+				pathAddition = "_" + savingToken;
+			}
+			actualEntryIdentifier = Optional.of(Identifier.fromNamespaceAndPath(optionalEntryIdentifier.get().getNamespace(), optionalEntryIdentifier.get().getPath() + pathAddition));
+		} else {
+			actualEntryIdentifier = Optional.empty();
+		}
+		DataAttachmentHelper.removeGeneratedRogueLootEntry(serverPlayer, actualEntryIdentifier);
+		source.sendSuccess(() -> actualEntryIdentifier.map(identifier -> Component.translatable("commands.rogueloot.reset_generated_entry.single", identifier.toString(), serverPlayer.getDisplayName())).orElseGet(() -> Component.translatable("commands.rogueloot.reset_generated_entry.all", serverPlayer.getDisplayName())), true);
 		return 1;
 	}
 

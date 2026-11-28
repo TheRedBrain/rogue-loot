@@ -4,12 +4,15 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.Items;
 
+import java.util.Optional;
+
 public record RogueLootVaultConfig(
-		String lootTableIdentifier,
+		Optional<Identifier> lootTableIdentifier,
 		Mode lootTableMode,
 		int rolls,
 		int minChoices,
@@ -17,12 +20,12 @@ public record RogueLootVaultConfig(
 		double activationRange,
 		double deactivationRange,
 		ItemStackTemplate keyItem,
-		String displayLootTableIdentifier
+		Optional<Identifier> displayLootTableIdentifier
 ) {
 	public static RogueLootVaultConfig DEFAULT = new RogueLootVaultConfig();
 	public static final Codec<RogueLootVaultConfig> CODEC = RecordCodecBuilder.<RogueLootVaultConfig>create(
 					instance -> instance.group(
-									Codec.STRING.fieldOf("loot_table_identifier").forGetter(RogueLootVaultConfig::lootTableIdentifier),
+									Identifier.CODEC.optionalFieldOf("loot_table_identifier").forGetter(RogueLootVaultConfig::lootTableIdentifier),
 									Mode.CODEC.optionalFieldOf("loot_table_mode", Mode.ROGUE_LOOT).forGetter(RogueLootVaultConfig::lootTableMode),
 									Codec.INT.fieldOf("rolls").forGetter(RogueLootVaultConfig::rolls),
 									Codec.INT.fieldOf("min_choices").forGetter(RogueLootVaultConfig::minChoices),
@@ -30,7 +33,7 @@ public record RogueLootVaultConfig(
 									Codec.DOUBLE.fieldOf("activation_range").forGetter(RogueLootVaultConfig::activationRange),
 									Codec.DOUBLE.fieldOf("deactivation_range").forGetter(RogueLootVaultConfig::deactivationRange),
 									ItemStackTemplate.CODEC.fieldOf("key_item").forGetter(RogueLootVaultConfig::keyItem),
-									Codec.STRING.fieldOf("display_loot_table_identifier").forGetter(RogueLootVaultConfig::displayLootTableIdentifier)
+									Identifier.CODEC.optionalFieldOf("display_loot_table_identifier").forGetter(RogueLootVaultConfig::displayLootTableIdentifier)
 							)
 							.apply(instance, RogueLootVaultConfig::new)
 			)
@@ -38,7 +41,7 @@ public record RogueLootVaultConfig(
 
 	private RogueLootVaultConfig() {
 		this(
-				"",
+				Optional.empty(),
 				Mode.ROGUE_LOOT,
 				3,
 				1,
@@ -46,7 +49,7 @@ public record RogueLootVaultConfig(
 				4.0,
 				4.5,
 				new ItemStackTemplate(Items.TRIAL_KEY),
-				""
+				Optional.empty()
 		);
 	}
 
