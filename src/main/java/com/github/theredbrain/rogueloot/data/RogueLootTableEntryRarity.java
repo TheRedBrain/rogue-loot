@@ -39,7 +39,7 @@ public record RogueLootTableEntryRarity(
 	).apply(instance, RogueLootTableEntryRarity::new));
 
 	private static DataResult<String> validateAssetPathAddition(final String string) {
-		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_] character in asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of asset_path_addition is not allowed") : DataResult.success(string);
+		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_-] character in asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of asset_path_addition is not allowed") : DataResult.success(string);
 	}
 
 	private static boolean isInvalidPathAddition(final String path) {
@@ -53,7 +53,7 @@ public record RogueLootTableEntryRarity(
 	}
 
 	private static boolean validPathAdditionChar(final char c) {
-		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/';
+		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '-';
 	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RogueLootTableEntryRarity> STREAM_CODEC = StreamCodec.ofMember(RogueLootTableEntryRarity::write, RogueLootTableEntryRarity::new);

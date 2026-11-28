@@ -47,7 +47,7 @@ public record RogueLootGuiSettings(
 	).apply(instance, RogueLootGuiSettings::new));
 
 	private static DataResult<String> validateEntriesAssetPathAddition(final String string) {
-		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_] character in entries_asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of entries_asset_path_addition is not allowed") : DataResult.success(string);
+		return isInvalidPathAddition(string) ? DataResult.error(() -> "Non [a-z0-9/_-] character in entries_asset_path_addition is not allowed") : string.startsWith("/") || string.endsWith("/") ? DataResult.error(() -> "'/' at start or end of entries_asset_path_addition is not allowed") : DataResult.success(string);
 	}
 
 	private static boolean isInvalidPathAddition(final String path) {
@@ -61,7 +61,7 @@ public record RogueLootGuiSettings(
 	}
 
 	private static boolean validPathAdditionChar(final char c) {
-		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/';
+		return c == '_' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '-';
 	}
 
 	public static final StreamCodec<RegistryFriendlyByteBuf, RogueLootGuiSettings> STREAM_CODEC = StreamCodec.ofMember(RogueLootGuiSettings::write, RogueLootGuiSettings::new);
